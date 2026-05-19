@@ -18,7 +18,7 @@
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
   import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js';
-  
+  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
   const firebaseConfig = {
     apiKey: "AIzaSyBFsjAzJU6CaCxz_NK3BU0ct5kGN91uqpc",
     authDomain: "vaenorix.firebaseapp.com",
@@ -33,6 +33,10 @@
   const db = getFirestore(app);
   
   window.db = db;
+window.auth = getAuth(app);
+window.signInWithPopup = signInWithPopup;
+window.GoogleAuthProvider = GoogleAuthProvider;
+window.onAuthStateChanged = onAuthStateChanged;
   window.collection = collection;
   window.addDoc = addDoc;
   window.getDocs = getDocs;
@@ -47,11 +51,15 @@
     <div class="container">
         <!-- Navbar -->
         <nav class="navbar">
-            <div class="logo">
-                <span class="logo-icon">🧠</span>
-                <span class="logo-text">Vaenorix</span>
-            </div>
-            <div class="nav-badge">AI Beta</div>
+    <div class="logo">
+        <span class="logo-icon">🧠</span>
+        <span class="logo-text">Vaenorix</span>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <div class="nav-badge">AI Beta</div>
+        <button id="loginBtn" class="login-btn">🔐 Sign in</button>
+        <button id="logoutBtn" class="logout-btn" style="display:none;">🚪 Sign Out</button>
+    </div>
         </nav>
 
         <!-- Hero Section -->
