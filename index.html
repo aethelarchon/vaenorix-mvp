@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Vaenorix - Your AI Second Brain</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="logo">
+                <span class="logo-icon">🧠</span>
+                <span class="logo-text">Vaenorix</span>
+            </div>
+            <div class="nav-badge">AI Beta</div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-title">
+                Your <span class="glow-text">AI Second Brain</span>
+            </h1>
+            <p class="hero-desc">
+                Save anything from the internet. Find everything later.<br>
+                Your digital memory, forever organized.
+            </p>
+            <button class="btn-primary" id="getStartedBtn">
+                ✨ Start Saving Memories
+            </button>
+        </section>
+
+        <!-- Save Memory Section -->
+        <section class="save-section">
+            <h2 class="section-title">💾 Save Memory</h2>
+            <div class="input-group">
+                <input type="text" id="noteInput" placeholder="Write a note... e.g., 'Startup idea: AI bookmark manager'">
+                <input type="text" id="linkInput" placeholder="Or paste a link... e.g., https://example.com">
+                <button class="btn-save" id="saveBtn">
+                    🔖 Save to Second Brain
+                </button>
+            </div>
+        </section>
+
+        <!-- AI Search Section -->
+        <section class="search-section">
+            <h2 class="section-title">🔍 AI Search</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder='Try: "business idea" or "AI tool"'>
+                <button class="btn-search" id="searchBtn">
+                    ⚡ Search Memory
+                </button>
+            </div>
+        </section>
+
+        <!-- Saved Memories Section -->
+        <section class="memories-section">
+            <h2 class="section-title">📚 Saved Memories</h2>
+            <div id="memoriesList" class="memories-list">
+                <!-- এখানে কার্ড দেখাবে -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Vaenorix — Your AI Second Brain</p>
+        <p class="footer-small">Save anything. Find everything later.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+  </html>
