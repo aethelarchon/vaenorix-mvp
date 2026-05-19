@@ -1,5 +1,6 @@
+// Firebase is already loaded from index.html
 // Wait for page to load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     
     // Get elements
     const noteInput = document.getElementById('noteInput');
@@ -10,30 +11,36 @@ document.addEventListener('DOMContentLoaded', function() {
     const memoriesList = document.getElementById('memoriesList');
     const getStartedBtn = document.getElementById('getStartedBtn');
 
-    // Load saved memories from localStorage
     let memories = [];
 
-    function loadMemories() {
-        const saved = localStorage.getItem('vaenorix_memories');
-        if (saved) {
-            memories = JSON.parse(saved);
+    // Load memories from Firebase
+    async function loadMemories() {
+        try {
+            const q = query(collection(window.db, "memories"), orderBy("timestamp", "desc"));
+            const querySnapshot = await getDocs(q);
+            memories = [];
+            querySnapshot.forEach((doc) => {
+                memories.push({ id: doc.id, ...doc.data() });
+            });
+            renderMemories();
+        } catch (error) {
+            console.error("Error loading memories:", error);
+            memoriesList.innerHTML = '<div class="empty-message">⚠️ Error loading memories. Check console.</div>';
         }
-        renderMemories();
     }
 
-    // Save memories to localStorage
-    function saveToLocal() {
-        localStorage.setItem('vaenorix_memories', JSON.stringify(memories));
+    // Delete memory
+    async function deleteMemory(id) {
+        try {
+            await deleteDoc(doc(window.db, "memories", id));
+            await loadMemories(); // Reload after delete
+        } catch (error) {
+            console.error("Error deleting:", error);
+            alert("Failed to delete. Check console.");
+        }
     }
 
-    // Delete a memory
-    function deleteMemory(id) {
-        memories = memories.filter(memory => memory.id !== id);
-        saveToLocal();
-        renderMemories();
-    }
-
-    // Render memories on screen
+    // Render memories
     function renderMemories(filterText = '') {
         if (memories.length === 0) {
             memoriesList.innerHTML = '<div class="empty-message">✨ No memories yet. Save your first one above!</div>';
@@ -67,17 +74,16 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `).join('');
 
-        // Add delete event listeners
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                const id = parseInt(this.getAttribute('data-id'));
+                const id = this.getAttribute('data-id');
                 deleteMemory(id);
             });
         });
     }
 
-    // Add new memory
-    function addMemory() {
+    // Add new memory to Firebase
+    async function addMemory() {
         const note = noteInput.value.trim();
         const link = linkInput.value.trim();
 
@@ -99,24 +105,25 @@ document.addEventListener('DOMContentLoaded', function() {
             linkInput.value = '';
         }
 
-        memories.unshift({
-            id: Date.now(),
-            type: type,
-            content: content,
-            date: new Date().toISOString()
-        });
-
-        saveToLocal();
-        renderMemories();
+        try {
+            await addDoc(collection(window.db, "memories"), {
+                type: type,
+                content: content,
+                timestamp: new Date().toISOString()
+            });
+            await loadMemories(); // Reload after adding
+        } catch (error) {
+            console.error("Error adding memory:", error);
+            alert("Failed to save. Check console.");
+        }
     }
 
-    // Search memories
+    // Search memories (local filter)
     function searchMemories() {
         const searchTerm = searchInput.value.trim();
         renderMemories(searchTerm);
     }
 
-    // Scroll to save section when button clicked
     function scrollToSave() {
         document.querySelector('.save-section').scrollIntoView({ behavior: 'smooth' });
     }
@@ -126,7 +133,6 @@ document.addEventListener('DOMContentLoaded', function() {
     searchBtn.addEventListener('click', searchMemories);
     getStartedBtn.addEventListener('click', scrollToSave);
     
-    // Press Enter to search
     searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             searchMemories();
@@ -134,5 +140,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initial load
-    loadMemories();
+    await loadMemories();
 });
