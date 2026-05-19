@@ -1,0 +1,213 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0a0a0f;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #ffffff;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.logo-icon {
+    font-size: 32px;
+}
+
+.logo-text {
+    background: linear-gradient(135deg, #00ffff, #0066ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.nav-badge {
+    background: rgba(0, 255, 255, 0.1);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #00ffff;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.hero-title {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+@media (max-width: 600px) {
+    .hero-title {
+        font-size: 32px;
+    }
+}
+
+.glow-text {
+    background: linear-gradient(135deg, #00ffff, #0066ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.hero-desc {
+    font-size: 18px;
+    color: #aaaaaa;
+    margin-bottom: 30px;
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #00ffff, #0066ff);
+    border: none;
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #0a0a0f;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-save, .btn-search {
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 16px;
+    color: #00ffff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-save:active, .btn-search:active {
+    background: rgba(0, 255, 255, 0.2);
+}
+
+/* Sections */
+.section-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #00ffff;
+}
+
+.input-group, .search-box {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 14px 18px;
+    border-radius: 16px;
+    font-size: 16px;
+    color: #ffffff;
+    outline: none;
+    transition: border 0.2s;
+}
+
+input:focus {
+    border-color: #00ffff;
+}
+
+/* Memories List */
+.memories-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.memory-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 18px;
+    transition: all 0.2s;
+}
+
+.memory-card:hover {
+    border-color: rgba(0, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.memory-type {
+    font-size: 12px;
+    color: #00ffff;
+    margin-bottom: 8px;
+}
+
+.memory-content {
+    font-size: 16px;
+    word-break: break-word;
+}
+
+.memory-link {
+    color: #00ffff;
+    text-decoration: none;
+}
+
+.memory-link:hover {
+    text-decoration: underline;
+}
+
+.empty-message {
+    text-align: center;
+    color: #666;
+    padding: 40px;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 40px 20px;
+    border-top: 1px solid rgba(0, 255, 255, 0.1);
+    margin-top: 40px;
+    color: #666;
+    font-size: 14px;
+}
+
+.footer-small {
+    font-size: 12px;
+    margin-top: 8px;
+}
