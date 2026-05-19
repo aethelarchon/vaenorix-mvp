@@ -89,9 +89,11 @@
             <h1 class="waitlist-title">🚀 Be the First to Try</h1>
             <p class="waitlist-desc">Vaenorix is launching soon. Join the waitlist to get early access.</p>
             
-            <input type="text" id="nameInput" class="name-input" placeholder="Your name (optional)">
-            <input type="email" id="emailInput" class="email-input" placeholder="Your email address *" required>
-            <button class="join-btn" id="joinBtn">✨ Join Waitlist</button>
+            <form id="waitlistForm" action="https://formspree.io/f/xjgzkjqv" method="POST">
+                <input type="text" name="name" id="nameInput" class="name-input" placeholder="Your name (optional)">
+                <input type="email" name="email" id="emailInput" class="email-input" placeholder="Your email address *" required>
+                <button type="submit" class="join-btn" id="joinBtn">✨ Join Waitlist</button>
+            </form>
             
             <div id="messageBox" class="message"></div>
             <a href="/" class="back-link">← Back to Home</a>
@@ -104,47 +106,52 @@
     </footer>
 
     <script>
-        document.getElementById('joinBtn').addEventListener('click', function() {
+        const form = document.getElementById('waitlistForm');
+        const messageBox = document.getElementById('messageBox');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
             const email = document.getElementById('emailInput').value.trim();
-            const name = document.getElementById('nameInput').value.trim();
-            const messageBox = document.getElementById('messageBox');
-            
             if (!email) {
-                messageBox.textContent = '❌ Please enter your email address';
-                messageBox.className = 'message error';
-                messageBox.style.display = 'block';
+                showMessage('❌ Please enter your email address', 'error');
                 return;
             }
             
-            if (!email.includes('@') || !email.includes('.')) {
-                messageBox.textContent = '❌ Please enter a valid email address';
-                messageBox.className = 'message error';
-                messageBox.style.display = 'block';
-                return;
-            }
+            const submitBtn = document.getElementById('joinBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Submitting...';
             
-            messageBox.textContent = '⏳ Saving...';
-            messageBox.className = 'message';
-            messageBox.style.display = 'block';
-            
-            const YOUR_GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1HZFZ0wLIQIqxinXPstysLqYYVTS6sMf6HhRGchLH2HY/edit?usp=drivesdk';
-            
-            fetch('https://api.sheetbest.com/sheets/11a97ba7-077a-4a8f-aca8-9f71853eda4b', {
+            fetch(form.action, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ Timestamp: new Date().toISOString(), Email: email, Name: name })
+                body: new FormData(form),
+                headers: { 'Accept': 'application/json' }
             })
-            .then(() => {
-                messageBox.textContent = '✅ You\'re on the list! We\'ll notify you when Vaenorix launches.';
-                messageBox.className = 'message success';
-                document.getElementById('emailInput').value = '';
-                document.getElementById('nameInput').value = '';
+            .then(response => {
+                if (response.ok) {
+                    showMessage('✅ You\'re on the list! We\'ll notify you when Vaenorix launches.', 'success');
+                    form.reset();
+                } else {
+                    showMessage('❌ Something went wrong. Please try again.', 'error');
+                }
             })
             .catch(() => {
-                messageBox.textContent = '⚠️ Something went wrong. Please try again.';
-                messageBox.className = 'message error';
+                showMessage('❌ Network error. Please check your connection and try again.', 'error');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✨ Join Waitlist';
             });
         });
+
+        function showMessage(msg, type) {
+            messageBox.textContent = msg;
+            messageBox.className = `message ${type}`;
+            messageBox.style.display = 'block';
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 5000);
+        }
     </script>
 </body>
-  </html>
+</html>
