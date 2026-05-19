@@ -14,6 +14,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Vaenorix - Your AI Second Brain</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
+  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js';
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyBFsjAzJU6CaCxz_NK3BU0ct5kGN91uqpc",
+    authDomain: "vaenorix.firebaseapp.com",
+    projectId: "vaenorix",
+    storageBucket: "vaenorix.firebasestorage.app",
+    messagingSenderId: "729849613491",
+    appId: "1:729849613491:web:aec60b0b4e51129b8734c6",
+    measurementId: "G-PCRQMNP32M"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  
+  window.db = db;
+  window.collection = collection;
+  window.addDoc = addDoc;
+  window.getDocs = getDocs;
+  window.deleteDoc = deleteDoc;
+  window.doc = doc;
+  window.query = query;
+  window.orderBy = orderBy;
+</script>
 </head>
 <body>
 
