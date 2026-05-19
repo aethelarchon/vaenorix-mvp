@@ -32,15 +32,24 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Login function
     async function login() {
-        const provider = new window.GoogleAuthProvider();
-        try {
-            await window.signInWithPopup(window.auth, provider);
-        } catch (error) {
-            console.error("Login error:", error);
+    const provider = new window.GoogleAuthProvider();
+    provider.setCustomParameters({
+        prompt: 'select_account'
+    });
+    try {
+        const result = await window.signInWithPopup(window.auth, provider);
+        console.log("Login success:", result.user.email);
+    } catch (error) {
+        console.error("Login error:", error);
+        if (error.code === 'auth/popup-closed-by-user') {
+            // ইউজার পপআপ বন্ধ করেছে, কিছু করবেন না
+        } else if (error.code === 'auth/unauthorized-domain') {
+            alert("Domain not authorized. Please add to Firebase.");
+        } else {
             alert("Login failed: " + error.message);
         }
     }
-
+    }
     // Logout function
     async function logout() {
         try {
