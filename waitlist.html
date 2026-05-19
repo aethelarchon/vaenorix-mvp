@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Vaenorix - Join Waitlist</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .waitlist-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .waitlist-title {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .waitlist-desc {
+            color: #aaa;
+            margin-bottom: 40px;
+        }
+        .email-input {
+            width: 100%;
+            padding: 16px;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .name-input {
+            width: 100%;
+            padding: 16px;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .join-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #00ffff, #0066ff);
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            color: #0a0a0f;
+            cursor: pointer;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 12px;
+            display: none;
+        }
+        .success {
+            background: rgba(0,255,0,0.1);
+            border: 1px solid rgba(0,255,0,0.3);
+            color: #00ff00;
+        }
+        .error {
+            background: rgba(255,0,0,0.1);
+            border: 1px solid rgba(255,0,0,0.3);
+            color: #ff6666;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #00ffff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="logo">
+                <span class="logo-icon">🧠</span>
+                <span class="logo-text">Vaenorix</span>
+            </div>
+            <div class="nav-badge">Join Beta</div>
+        </nav>
+
+        <div class="waitlist-container">
+            <h1 class="waitlist-title">🚀 Be the First to Try</h1>
+            <p class="waitlist-desc">Vaenorix is launching soon. Join the waitlist to get early access.</p>
+            
+            <input type="text" id="nameInput" class="name-input" placeholder="Your name (optional)">
+            <input type="email" id="emailInput" class="email-input" placeholder="Your email address *" required>
+            <button class="join-btn" id="joinBtn">✨ Join Waitlist</button>
+            
+            <div id="messageBox" class="message"></div>
+            <a href="/" class="back-link">← Back to Home</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Vaenorix — Your AI Second Brain</p>
+        <p class="footer-small">Save anything. Find everything later.</p>
+    </footer>
+
+    <script>
+        document.getElementById('joinBtn').addEventListener('click', function() {
+            const email = document.getElementById('emailInput').value.trim();
+            const name = document.getElementById('nameInput').value.trim();
+            const messageBox = document.getElementById('messageBox');
+            
+            if (!email) {
+                messageBox.textContent = '❌ Please enter your email address';
+                messageBox.className = 'message error';
+                messageBox.style.display = 'block';
+                return;
+            }
+            
+            if (!email.includes('@') || !email.includes('.')) {
+                messageBox.textContent = '❌ Please enter a valid email address';
+                messageBox.className = 'message error';
+                messageBox.style.display = 'block';
+                return;
+            }
+            
+            messageBox.textContent = '⏳ Saving...';
+            messageBox.className = 'message';
+            messageBox.style.display = 'block';
+            
+            const YOUR_GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1HZFZ0wLIQIqxinXPstysLqYYVTS6sMf6HhRGchLH2HY/edit?usp=drivesdk';
+            
+            fetch('https://api.sheetbest.com/sheets/YOUR_SHEET_ID', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Timestamp: new Date().toISOString(), Email: email, Name: name })
+            })
+            .then(() => {
+                messageBox.textContent = '✅ You\'re on the list! We\'ll notify you when Vaenorix launches.';
+                messageBox.className = 'message success';
+                document.getElementById('emailInput').value = '';
+                document.getElementById('nameInput').value = '';
+            })
+            .catch(() => {
+                messageBox.textContent = '⚠️ Something went wrong. Please try again.';
+                messageBox.className = 'message error';
+            });
+        });
+    </script>
+</body>
+  </html>
