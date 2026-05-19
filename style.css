@@ -235,3 +235,25 @@ input:focus {
     background: rgba(255, 0, 0, 0.3);
     transform: scale(0.95);
                      }
+/* Login & Logout Buttons - Fixed */
+.login-btn, .logout-btn {
+    background: linear-gradient(135deg, #00ffff, #0066ff);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #0a0a0f;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.login-btn:hover, .logout-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+.login-btn:active, .logout-btn:active {
+    transform: scale(0.95);
+    }
