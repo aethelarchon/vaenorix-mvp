@@ -1,5 +1,4 @@
 // Firebase is already loaded from index.html
-// Wait for page to load
 document.addEventListener('DOMContentLoaded', async function() {
     
     // Get elements
@@ -10,13 +9,53 @@ document.addEventListener('DOMContentLoaded', async function() {
     const searchBtn = document.getElementById('searchBtn');
     const memoriesList = document.getElementById('memoriesList');
     const getStartedBtn = document.getElementById('getStartedBtn');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
 
     let memories = [];
+    let currentUser = null;
 
-    // Load memories from Firebase
-    async function loadMemories() {
+    // Check auth state
+    window.onAuthStateChanged(window.auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            loginBtn.style.display = 'none';
+            logoutBtn.style.display = 'block';
+            await loadMemories();
+        } else {
+            currentUser = null;
+            loginBtn.style.display = 'block';
+            logoutBtn.style.display = 'none';
+            memoriesList.innerHTML = '<div class="empty-message">🔐 Please sign in to see your memories</div>';
+        }
+    });
+
+    // Login function
+    async function login() {
+        const provider = new window.GoogleAuthProvider();
         try {
-            const q = query(collection(window.db, "memories"), orderBy("timestamp", "desc"));
+            await window.signInWithPopup(window.auth, provider);
+        } catch (error) {
+            console.error("Login error:", error);
+            alert("Login failed: " + error.message);
+        }
+    }
+
+    // Logout function
+    async function logout() {
+        try {
+            await window.auth.signOut();
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+    }
+
+    // Load memories from Firebase (only current user's)
+    async function loadMemories() {
+        if (!currentUser) return;
+        
+        try {
+            const q = query(collection(window.db, `users/${currentUser.uid}/memories`), orderBy("timestamp", "desc"));
             const querySnapshot = await getDocs(q);
             memories = [];
             querySnapshot.forEach((doc) => {
@@ -25,25 +64,28 @@ document.addEventListener('DOMContentLoaded', async function() {
             renderMemories();
         } catch (error) {
             console.error("Error loading memories:", error);
-            memoriesList.innerHTML = '<div class="empty-message">⚠️ Error loading memories. Check console.</div>';
+            memoriesList.innerHTML = '<div class="empty-message">⚠️ Error loading memories</div>';
         }
     }
 
     // Delete memory
     async function deleteMemory(id) {
+        if (!currentUser) return;
         try {
-            await deleteDoc(doc(window.db, "memories", id));
-            await loadMemories(); // Reload after delete
+            await deleteDoc(doc(window.db, `users/${currentUser.uid}/memories`, id));
+            await loadMemories();
         } catch (error) {
             console.error("Error deleting:", error);
-            alert("Failed to delete. Check console.");
+            alert("Failed to delete");
         }
     }
 
     // Render memories
     function renderMemories(filterText = '') {
+        if (!currentUser) return;
+        
         if (memories.length === 0) {
-            memoriesList.innerHTML = '<div class="empty-message">✨ No memories yet. Save your first one above!</div>';
+            memoriesList.innerHTML = '<div class="empty-message">✨ No memories yet. Save your first one!</div>';
             return;
         }
 
@@ -55,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         if (filteredMemories.length === 0) {
-            memoriesList.innerHTML = '<div class="empty-message">🔍 No memories found. Try a different search.</div>';
+            memoriesList.innerHTML = '<div class="empty-message">🔍 No memories found</div>';
             return;
         }
 
@@ -82,8 +124,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
 
-    // Add new memory to Firebase
+    // Add new memory
     async function addMemory() {
+        if (!currentUser) {
+            alert('Please sign in first!');
+            login();
+            return;
+        }
+
         const note = noteInput.value.trim();
         const link = linkInput.value.trim();
 
@@ -106,19 +154,19 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         try {
-            await addDoc(collection(window.db, "memories"), {
+            await addDoc(collection(window.db, `users/${currentUser.uid}/memories`), {
                 type: type,
                 content: content,
                 timestamp: new Date().toISOString()
             });
-            await loadMemories(); // Reload after adding
+            await loadMemories();
         } catch (error) {
             console.error("Error adding memory:", error);
-            alert("Failed to save. Check console.");
+            alert("Failed to save");
         }
     }
 
-    // Search memories (local filter)
+    // Search memories
     function searchMemories() {
         const searchTerm = searchInput.value.trim();
         renderMemories(searchTerm);
@@ -132,13 +180,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     saveBtn.addEventListener('click', addMemory);
     searchBtn.addEventListener('click', searchMemories);
     getStartedBtn.addEventListener('click', scrollToSave);
+    loginBtn.addEventListener('click', login);
+    logoutBtn.addEventListener('click', logout);
     
     searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             searchMemories();
         }
     });
-
-    // Initial load
-    await loadMemories();
 });
