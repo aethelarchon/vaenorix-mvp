@@ -26,6 +26,13 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('vaenorix_memories', JSON.stringify(memories));
     }
 
+    // Delete a memory
+    function deleteMemory(id) {
+        memories = memories.filter(memory => memory.id !== id);
+        saveToLocal();
+        renderMemories();
+    }
+
     // Render memories on screen
     function renderMemories(filterText = '') {
         if (memories.length === 0) {
@@ -45,9 +52,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        memoriesList.innerHTML = filteredMemories.map((memory, index) => `
+        memoriesList.innerHTML = filteredMemories.map((memory) => `
             <div class="memory-card">
-                <div class="memory-type">${memory.type === 'note' ? '📝 Note' : '🔗 Link'}</div>
+                <div class="memory-header">
+                    <div class="memory-type">${memory.type === 'note' ? '📝 Note' : '🔗 Link'}</div>
+                    <button class="delete-btn" data-id="${memory.id}">🗑️ Delete</button>
+                </div>
                 <div class="memory-content">
                     ${memory.type === 'link' ? 
                         `<a href="${memory.content}" target="_blank" class="memory-link">${memory.content}</a>` : 
@@ -56,6 +66,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
         `).join('');
+
+        // Add delete event listeners
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = parseInt(this.getAttribute('data-id'));
+                deleteMemory(id);
+            });
+        });
     }
 
     // Add new memory
