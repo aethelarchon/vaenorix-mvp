@@ -198,24 +198,3 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 });
-/* Login Button - Premium Look */
-.login-btn, .logout-btn {
-    background: linear-gradient(95deg, #00ffff22, #0066ff22);
-    backdrop-filter: blur(10px);
-    border: 1.5px solid #00ffff;
-    padding: 8px 22px;
-    border-radius: 40px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #00ffff;
-    cursor: pointer;
-    transition: 0.3s;
-    letter-spacing: 0.5px;
-}
-
-.login-btn:hover, .logout-btn:hover {
-    background: linear-gradient(95deg, #00ffff, #0066ff);
-    color: #0a0a0f;
-    box-shadow: 0 0 12px #00ffffaa;
-    border-color: transparent;
-        }
