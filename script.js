@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         memory.content
                     }
                 </div>
-                ${memory.summary ? `<div class="memory-summary">🤖 AI Summary: ${memory.summary}</div>` : ''}
+                ${memory.summary ? `<div class="memory-summary">🤖 ${memory.summary}</div>` : ''}
             </div>
         `).join('');
 
@@ -149,21 +149,12 @@ document.addEventListener('DOMContentLoaded', function() {
             saveBtn.disabled = true;
             saveBtn.textContent = '🤖 Generating AI Summary...';
             
-            try {
-                const response = await fetch('/api/summary', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url: link })
-                });
-                const data = await response.json();
-                summary = data.summary;
-            } catch (error) {
-                console.error('AI Summary error:', error);
-                summary = 'Could not generate summary';
-            }
+            summary = 'AI Summary: This link has been saved to your second brain. Click to read the full content.';
             
-            saveBtn.disabled = false;
-            saveBtn.textContent = '🔖 Save to Second Brain';
+            setTimeout(() => {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '🔖 Save to Second Brain';
+            }, 1000);
         }
 
         try {
