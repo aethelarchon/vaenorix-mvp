@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Vaenorix - Join Waitlist</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         .waitlist-container {
             max-width: 500px;
@@ -20,7 +21,7 @@
             color: #aaa;
             margin-bottom: 40px;
         }
-        .email-input {
+        .email-input, .name-input {
             width: 100%;
             padding: 16px;
             border-radius: 50px;
@@ -29,16 +30,6 @@
             color: white;
             font-size: 16px;
             margin-bottom: 15px;
-        }
-        .name-input {
-            width: 100%;
-            padding: 16px;
-            border-radius: 50px;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            background: rgba(255,255,255,0.05);
-            color: white;
-            font-size: 16px;
-            margin-bottom: 20px;
         }
         .join-btn {
             width: 100%;
@@ -73,30 +64,33 @@
             color: #00ffff;
             text-decoration: none;
         }
+        .back-link i {
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <nav class="navbar">
             <div class="logo">
-                <span class="logo-icon">🧠</span>
+                <i class="fas fa-brain logo-icon"></i>
                 <span class="logo-text">Vaenorix</span>
             </div>
             <div class="nav-badge">Join Beta</div>
         </nav>
 
         <div class="waitlist-container">
-            <h1 class="waitlist-title">🚀 Be the First to Try</h1>
+            <h1 class="waitlist-title"><i class="fas fa-rocket"></i> Be the First to Try</h1>
             <p class="waitlist-desc">Vaenorix is launching soon. Join the waitlist to get early access.</p>
             
             <form id="waitlistForm" action="https://formspree.io/f/xjgzkjqv" method="POST">
                 <input type="text" name="name" id="nameInput" class="name-input" placeholder="Your name (optional)">
                 <input type="email" name="email" id="emailInput" class="email-input" placeholder="Your email address *" required>
-                <button type="submit" class="join-btn" id="joinBtn">✨ Join Waitlist</button>
+                <button type="submit" class="join-btn" id="joinBtn"><i class="fas fa-envelope"></i> Join Waitlist</button>
             </form>
             
             <div id="messageBox" class="message"></div>
-            <a href="/" class="back-link">← Back to Home</a>
+            <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
         </div>
     </div>
 
@@ -114,13 +108,13 @@
             
             const email = document.getElementById('emailInput').value.trim();
             if (!email) {
-                showMessage('❌ Please enter your email address', 'error');
+                showMessage('Please enter your email address', 'error');
                 return;
             }
             
             const submitBtn = document.getElementById('joinBtn');
             submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Submitting...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Submitting...';
             
             fetch(form.action, {
                 method: 'POST',
@@ -129,18 +123,18 @@
             })
             .then(response => {
                 if (response.ok) {
-                    showMessage('✅ You\'re on the list! We\'ll notify you when Vaenorix launches.', 'success');
+                    showMessage('You\'re on the list! We\'ll notify you when Vaenorix launches.', 'success');
                     form.reset();
                 } else {
-                    showMessage('❌ Something went wrong. Please try again.', 'error');
+                    showMessage('Something went wrong. Please try again.', 'error');
                 }
             })
             .catch(() => {
-                showMessage('❌ Network error. Please check your connection and try again.', 'error');
+                showMessage('Network error. Please check your connection.', 'error');
             })
             .finally(() => {
                 submitBtn.disabled = false;
-                submitBtn.textContent = '✨ Join Waitlist';
+                submitBtn.innerHTML = '<i class="fas fa-envelope"></i> Join Waitlist';
             });
         });
 
@@ -154,4 +148,4 @@
         }
     </script>
 </body>
-</html>
+            </html>
