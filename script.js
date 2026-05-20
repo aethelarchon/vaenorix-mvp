@@ -63,97 +63,106 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    async function deleteMemory(id) {
+        if (!currentUser) return;
+        try {
+            await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, id));
+            await loadMemories();
+        } catch (error) {
+            console.error("Error deleting:", error);
+            alert("Failed to delete");
+        }
+    }
+
+    async function editMemory(id, newContent) {
+        if (!currentUser) return;
+        try {
+            const memoryRef = window.doc(window.db, `users/${currentUser.uid}/memories`, id);
+            await window.updateDoc(memoryRef, { content: newContent });
+            await loadMemories();
+        } catch (error) {
+            alert("Failed to edit");
+        }
+    }
+
     function renderMemories(filterText = '') {
-    if (!currentUser) return;
-    
-    if (memories.length === 0) {
-        memoriesList.innerHTML = '<div class="empty-message">No memories yet. Save your first one!</div>';
-        return;
-    }
+        if (!currentUser) return;
+        
+        if (memories.length === 0) {
+            memoriesList.innerHTML = '<div class="empty-message">No memories yet. Save your first one!</div>';
+            return;
+        }
 
-    let filteredMemories = memories;
-    if (filterText) {
-        filteredMemories = memories.filter(m => 
-            m.content.toLowerCase().includes(filterText.toLowerCase())
-        );
-    }
+        let filteredMemories = memories;
+        if (filterText) {
+            filteredMemories = memories.filter(m => 
+                m.content.toLowerCase().includes(filterText.toLowerCase())
+            );
+        }
 
-    if (filteredMemories.length === 0) {
-        memoriesList.innerHTML = '<div class="empty-message">No memories found</div>';
-        return;
-    }
+        if (filteredMemories.length === 0) {
+            memoriesList.innerHTML = '<div class="empty-message">No memories found</div>';
+            return;
+        }
 
-    memoriesList.innerHTML = filteredMemories.map((memory) => `
-        <div class="memory-card">
-            <div class="memory-header">
-                <div class="memory-type">${memory.type === 'note' ? 'Note' : 'Link'}</div>
-                <div class="menu-container">
-                    <button class="three-dots" data-id="${memory.id}">⋯</button>
-                    <div class="dropdown-menu" id="menu-${memory.id}">
-                        <button class="edit-btn" data-id="${memory.id}">Edit</button>
-                        <button class="delete-btn-menu" data-id="${memory.id}">Delete</button>
+        memoriesList.innerHTML = filteredMemories.map((memory) => `
+            <div class="memory-card">
+                <div class="memory-header">
+                    <div class="memory-type">${memory.type === 'note' ? 'Note' : 'Link'}</div>
+                    <div class="menu-container">
+                        <button class="three-dots" data-id="${memory.id}">⋯</button>
+                        <div class="dropdown-menu" id="menu-${memory.id}">
+                            <button class="edit-btn" data-id="${memory.id}">Edit</button>
+                            <button class="delete-btn-menu" data-id="${memory.id}">Delete</button>
+                        </div>
                     </div>
                 </div>
+                <div class="memory-content">
+                    ${memory.type === 'link' ? 
+                        `<a href="${memory.content}" target="_blank" class="memory-link">${memory.content}</a>` : 
+                        memory.content
+                    }
+                </div>
+                ${memory.summary ? `<div class="memory-summary">🤖 ${memory.summary}</div>` : ''}
             </div>
-            <div class="memory-content">
-                ${memory.type === 'link' ? 
-                    `<a href="${memory.content}" target="_blank" class="memory-link">${memory.content}</a>` : 
-                    memory.content
+        `).join('');
+
+        document.querySelectorAll('.three-dots').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const id = this.getAttribute('data-id');
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+                document.getElementById(`menu-${id}`).classList.toggle('show');
+            });
+        });
+
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const id = this.getAttribute('data-id');
+                const memory = memories.find(m => m.id === id);
+                const newContent = prompt('Edit:', memory.content);
+                if (newContent && newContent.trim()) {
+                    editMemory(id, newContent.trim());
                 }
-            </div>
-        </div>
-    `).join('');
-
-    // Three dots menu
-    document.querySelectorAll('.three-dots').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const id = this.getAttribute('data-id');
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-            document.getElementById(`menu-${id}`).classList.toggle('show');
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+            });
         });
-    });
 
-    // Edit
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const id = this.getAttribute('data-id');
-            const memory = memories.find(m => m.id === id);
-            const newContent = prompt('Edit:', memory.content);
-            if (newContent && newContent.trim()) {
-                editMemory(id, newContent.trim());
-            }
+        document.querySelectorAll('.delete-btn-menu').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const id = this.getAttribute('data-id');
+                deleteMemory(id);
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+            });
+        });
+
+        document.addEventListener('click', function() {
             document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
         });
-    });
-
-    // Delete
-    document.querySelectorAll('.delete-btn-menu').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const id = this.getAttribute('data-id');
-            deleteMemory(id);
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-        });
-    });
-
-    document.addEventListener('click', function() {
-        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-    });
-}
-
-// Edit function - add this at the end of script.js
-async function editMemory(id, newContent) {
-    if (!currentUser) return;
-    try {
-        const memoryRef = window.doc(window.db, `users/${currentUser.uid}/memories`, id);
-        await window.updateDoc(memoryRef, { content: newContent });
-        await loadMemories();
-    } catch (error) {
-        alert("Failed to edit");
     }
-    }
+
     async function addMemory() {
         if (!currentUser) {
             alert('Please sign in first!');
@@ -229,12 +238,3 @@ async function editMemory(id, newContent) {
         }
     });
 });
-async function deleteMemory(id) {
-    if (!currentUser) return;
-    try {
-        await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, id));
-        await loadMemories();
-    } catch (error) {
-        alert("Failed to delete");
-    }
-}
