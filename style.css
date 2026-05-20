@@ -419,3 +419,43 @@ input {
     padding: 50px 20px;
     margin-top: 60px;
 }
+/* Footer Social Links */
+.footer-content {
+    text-align: center;
+    padding: 20px;
+}
+
+.footer-logo {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #00ffff;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.social-link {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.social-link:hover {
+    color: #00ffff;
+}
+
+.footer-copyright {
+    color: #666;
+    font-size: 12px;
+    margin: 15px 0 5px;
+    }
