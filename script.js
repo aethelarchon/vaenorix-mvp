@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentUser = null;
             loginBtn.style.display = 'inline-block';
             logoutBtn.style.display = 'none';
-            memoriesList.innerHTML = '<div class="empty-message">🔐 Please sign in to see your memories</div>';
+            memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
         }
     });
 
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
             renderMemories();
         } catch (error) {
             console.error("Error loading memories:", error);
-            memoriesList.innerHTML = '<div class="empty-message">⚠️ Error loading memories</div>';
+            memoriesList.innerHTML = '<div class="empty-message">Error loading memories</div>';
         }
     }
 
@@ -96,12 +96,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let filteredMemories = memories;
         
-        // Apply type filter
         if (currentFilter !== 'all') {
             filteredMemories = filteredMemories.filter(m => m.type === currentFilter);
         }
         
-        // Apply search filter
         if (filterText) {
             filteredMemories = filteredMemories.filter(m => 
                 m.content.toLowerCase().includes(filterText.toLowerCase())
@@ -116,12 +114,12 @@ document.addEventListener('DOMContentLoaded', function() {
         memoriesList.innerHTML = filteredMemories.map((memory) => `
             <div class="memory-card">
                 <div class="memory-header">
-                    <div class="memory-type">${memory.type === 'note' ? '📝 Note' : memory.type === 'link' ? '🔗 Link' : '📸 Image'}</div>
+                    <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
                     <div class="menu-container">
                         <button class="three-dots" data-id="${memory.id}">⋯</button>
                         <div class="dropdown-menu" id="menu-${memory.id}">
-                            <button class="edit-btn" data-id="${memory.id}">✏️ Edit</button>
-                            <button class="delete-btn-menu" data-id="${memory.id}">🗑️ Delete</button>
+                            <button class="edit-btn" data-id="${memory.id}">Edit</button>
+                            <button class="delete-btn-menu" data-id="${memory.id}">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -129,11 +127,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     ${memory.type === 'link' ? 
                         `<a href="${memory.content}" target="_blank" class="memory-link">${memory.content}</a>` : 
                         memory.type === 'image' ?
-                        `<img src="${memory.content}" alt="Screenshot" loading="lazy" class="clickable-image" onclick="showImageModal('${memory.content}')">`
+                        `<img src="${memory.content}" alt="Screenshot" loading="lazy" class="clickable-image" onclick="showImageModal('${memory.content}')">` :
                         memory.content
                     }
                 </div>
-                ${memory.summary ? `<div class="memory-summary">🤖 ${memory.summary}</div>` : ''}
+                ${memory.summary ? `<div class="memory-summary">${memory.summary}</div>` : ''}
             </div>
         `).join('');
 
@@ -204,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
             linkInput.value = '';
             
             saveBtn.disabled = true;
-            saveBtn.textContent = '⏳ Saving...';
+            saveBtn.textContent = 'Saving...';
             
             setTimeout(() => {
                 saveBtn.disabled = false;
@@ -235,7 +233,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.save-section').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Filter buttons functionality
     function initFilters() {
         const filterBtns = document.querySelectorAll('.filter-btn');
         if (filterBtns.length === 0) return;
@@ -250,7 +247,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ImgBB Screenshot Upload
     const uploadArea = document.getElementById('uploadArea');
     const screenshotInput = document.getElementById('screenshotInput');
     const uploadBtn = document.getElementById('uploadBtn');
@@ -287,10 +283,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     timestamp: new Date().toISOString()
                 });
 
-                alert('✅ Screenshot saved!');
+                alert('Screenshot saved!');
                 await loadMemories();
             } catch (error) {
-                alert('❌ Failed: ' + error.message);
+                alert('Failed: ' + error.message);
             } finally {
                 uploadBtn.disabled = false;
                 uploadBtn.innerHTML = 'Upload Screenshot';
@@ -311,10 +307,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Initialize filters after DOM is ready
     setTimeout(initFilters, 100);
-});                
-// Image Modal Function
+});
+
 window.showImageModal = function(imageUrl) {
     const modal = document.createElement('div');
     modal.className = 'image-modal';
