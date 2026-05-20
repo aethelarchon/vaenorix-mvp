@@ -1,66 +1,69 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta name="google-site-verification" content="jd5nrMC2HAkXVGKAH2h5v84_N7FyyKMFAzCLiV4Stxg" />
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZCNV92D19B"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-ZCNV92D19B');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZCNV92D19B"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-ZCNV92D19B');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Vaenorix - Your AI Second Brain</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
-  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js';
-  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
-  const firebaseConfig = {
-    apiKey: "AIzaSyBFsjAzJU6CaCxz_NK3BU0ct5kGN91uqpc",
-    authDomain: "vaenorix.firebaseapp.com",
-    projectId: "vaenorix",
-    storageBucket: "vaenorix.firebasestorage.app",
-    messagingSenderId: "729849613491",
-    appId: "1:729849613491:web:aec60b0b4e51129b8734c6",
-    measurementId: "G-PCRQMNP32M"
-  };
-  
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  
-  window.db = db;
-window.auth = getAuth(app);
-window.signInWithPopup = signInWithPopup;
-window.GoogleAuthProvider = GoogleAuthProvider;
-window.onAuthStateChanged = onAuthStateChanged;
-  window.collection = collection;
-  window.addDoc = addDoc;
-  window.getDocs = getDocs;
-  window.deleteDoc = deleteDoc;
-  window.doc = doc;
-  window.query = query;
-  window.orderBy = orderBy;
-</script>
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
+      import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js';
+      import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
+      
+      const firebaseConfig = {
+        apiKey: "AIzaSyBFsjAzJU6CaCxz_NK3BU0ct5kGN91uqpc",
+        authDomain: "vaenorix.firebaseapp.com",
+        projectId: "vaenorix",
+        storageBucket: "vaenorix.firebasestorage.app",
+        messagingSenderId: "729849613491",
+        appId: "1:729849613491:web:aec60b0b4e51129b8734c6",
+        measurementId: "G-PCRQMNP32M"
+      };
+      
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+      
+      window.db = db;
+      window.auth = auth;
+      window.signInWithPopup = signInWithPopup;
+      window.GoogleAuthProvider = GoogleAuthProvider;
+      window.onAuthStateChanged = onAuthStateChanged;
+      window.collection = collection;
+      window.addDoc = addDoc;
+      window.getDocs = getDocs;
+      window.deleteDoc = deleteDoc;
+      window.doc = doc;
+      window.query = query;
+      window.orderBy = orderBy;
+    </script>
 </head>
 <body>
 
     <div class="container">
         <!-- Navbar -->
         <nav class="navbar">
-    <div class="logo">
-        <span class="logo-icon">🧠</span>
-        <span class="logo-text">Vaenorix</span>
-    </div>
-    <div style="display: flex; gap: 10px; align-items: center;">
-        <div class="nav-badge">AI Beta</div>
-        <button id="loginBtn" class="login-btn">🔐 Sign in</button>
-        <button id="logoutBtn" class="logout-btn" style="display:none;">🚪 Sign Out</button>
-    </div>
+            <div class="logo">
+                <i class="fas fa-brain logo-icon"></i>
+                <span class="logo-text">Vaenorix</span>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <div class="nav-badge">AI Beta</div>
+                <button id="loginBtn" class="login-btn"><i class="fas fa-sign-in-alt"></i> Sign in</button>
+                <button id="logoutBtn" class="logout-btn" style="display:none;"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+            </div>
         </nav>
 
         <!-- Hero Section -->
@@ -73,37 +76,37 @@ window.onAuthStateChanged = onAuthStateChanged;
                 Your digital memory, forever organized.
             </p>
             <button class="btn-primary" id="getStartedBtn">
-                ✨ Start Saving Memories
+                <i class="fas fa-rocket"></i> Start Saving Memories
             </button>
-            <a href="/waitlist.html" class="btn-waitlist">📧 Join Waitlist for Early Access</a>
+            <a href="/waitlist.html" class="btn-waitlist"><i class="fas fa-envelope"></i> Join Waitlist for Early Access</a>
         </section>
 
         <!-- Save Memory Section -->
         <section class="save-section">
-            <h2 class="section-title">💾 Save Memory</h2>
+            <h2 class="section-title"><i class="fas fa-database"></i> Save Memory</h2>
             <div class="input-group">
                 <input type="text" id="noteInput" placeholder="Write a note... e.g., 'Startup idea: AI bookmark manager'">
                 <input type="text" id="linkInput" placeholder="Or paste a link... e.g., https://example.com">
                 <button class="btn-save" id="saveBtn">
-                    🔖 Save to Second Brain
+                    <i class="fas fa-save"></i> Save to Second Brain
                 </button>
             </div>
         </section>
 
         <!-- AI Search Section -->
         <section class="search-section">
-            <h2 class="section-title">🔍 AI Search</h2>
+            <h2 class="section-title"><i class="fas fa-microchip"></i> AI Search</h2>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder='Try: "business idea" or "AI tool"'>
                 <button class="btn-search" id="searchBtn">
-                    ⚡ Search Memory
+                    <i class="fas fa-search"></i> Search Memory
                 </button>
             </div>
         </section>
 
         <!-- Saved Memories Section -->
         <section class="memories-section">
-            <h2 class="section-title">📚 Saved Memories</h2>
+            <h2 class="section-title"><i class="fas fa-folder-open"></i> Saved Memories</h2>
             <div id="memoriesList" class="memories-list">
                 <!-- এখানে কার্ড দেখাবে -->
             </div>
@@ -118,4 +121,4 @@ window.onAuthStateChanged = onAuthStateChanged;
 
     <script src="script.js"></script>
 </body>
-  </html>
+    </html>
