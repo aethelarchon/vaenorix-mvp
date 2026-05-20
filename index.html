@@ -19,7 +19,7 @@
     <!-- Firebase SDK -->
     <script type="module">
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
-      import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js';
+      import { getFirestore, collection, addDoc, getDocs, deleteDoc, updateDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js';
       import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
       
       const firebaseConfig = {
@@ -48,6 +48,7 @@
       window.doc = doc;
       window.query = query;
       window.orderBy = orderBy;
+      window.updateDoc = updateDoc;  
     </script>
 </head>
 <body>
