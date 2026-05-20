@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ${memory.type === 'link' ? 
                         `<a href="${memory.content}" target="_blank" class="memory-link">${memory.content}</a>` : 
                         memory.type === 'image' ?
-                        `<img src="${memory.content}" alt="Screenshot" loading="lazy">` :
+                        `<img src="${memory.content}" alt="Screenshot" loading="lazy" class="clickable-image" onclick="showImageModal('${memory.content}')">`
                         memory.content
                     }
                 </div>
@@ -314,3 +314,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize filters after DOM is ready
     setTimeout(initFilters, 100);
 });                
+// Image Modal Function
+window.showImageModal = function(imageUrl) {
+    const modal = document.createElement('div');
+    modal.className = 'image-modal';
+    modal.innerHTML = `
+        <div class="image-modal-content">
+            <span class="image-modal-close">&times;</span>
+            <img src="${imageUrl}" alt="Full size">
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    modal.querySelector('.image-modal-close').onclick = () => modal.remove();
+    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+};
