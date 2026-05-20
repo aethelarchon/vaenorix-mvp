@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
         memoriesList.innerHTML = filteredMemories.map((memory) => `
             <div class="memory-card">
                 <div class="memory-header">
-                    <div class="memory-type">${memory.type === 'note' ? 'Note' : 'Link'}</div>
+                    <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
                     <div class="menu-container">
                         <button class="three-dots" data-id="${memory.id}">⋯</button>
                         <div class="dropdown-menu" id="menu-${memory.id}">
@@ -120,6 +120,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="memory-content">
                     ${memory.type === 'link' ? 
                         `<a href="${memory.content}" target="_blank" class="memory-link">${memory.content}</a>` : 
+                        memory.type === 'image' ?
+                        `<img src="${memory.content}" alt="Screenshot" style="max-width:100%; border-radius:12px;">` :
                         memory.content
                     }
                 </div>
@@ -132,7 +134,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.stopPropagation();
                 const id = this.getAttribute('data-id');
                 document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-                document.getElementById(`menu-${id}`).classList.toggle('show');
+                const menu = document.getElementById(`menu-${id}`);
+                if(menu) menu.classList.toggle('show');
             });
         });
 
@@ -141,9 +144,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.stopPropagation();
                 const id = this.getAttribute('data-id');
                 const memory = memories.find(m => m.id === id);
-                const newContent = prompt('Edit:', memory.content);
-                if (newContent && newContent.trim()) {
-                    editMemory(id, newContent.trim());
+                if(memory) {
+                    const newContent = prompt('Edit:', memory.content);
+                    if (newContent && newContent.trim()) {
+                        editMemory(id, newContent.trim());
+                    }
                 }
                 document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
             });
@@ -180,7 +185,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let type = '';
         let content = '';
-        let summary = '';
 
         if (note) {
             type = 'note';
@@ -192,14 +196,12 @@ document.addEventListener('DOMContentLoaded', function() {
             linkInput.value = '';
             
             saveBtn.disabled = true;
-            saveBtn.textContent = '🤖 Generating AI Summary...';
-            
-            summary = 'AI Summary: This link has been saved to your second brain. Click to read the full content.';
+            saveBtn.textContent = '⏳ Saving...';
             
             setTimeout(() => {
                 saveBtn.disabled = false;
-                saveBtn.textContent = '🔖 Save to Second Brain';
-            }, 1000);
+                saveBtn.textContent = 'Save to Second Brain';
+            }, 500);
         }
 
         try {
@@ -207,7 +209,6 @@ document.addEventListener('DOMContentLoaded', function() {
             await window.addDoc(memoriesRef, {
                 type: type,
                 content: content,
-                summary: summary,
                 timestamp: new Date().toISOString()
             });
             await loadMemories();
@@ -226,6 +227,72 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.save-section').scrollIntoView({ behavior: 'smooth' });
     }
 
+    // Screenshot Upload Functionality
+    const uploadArea = document.getElementById('uploadArea');
+    const screenshotInput = document.getElementById('screenshotInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+
+    if(uploadArea) {
+        uploadArea.addEventListener('click', () => {
+            screenshotInput.click();
+        });
+    }
+
+    if(uploadBtn) {
+        uploadBtn.addEventListener('click', () => {
+            screenshotInput.click();
+        });
+    }
+
+    if(screenshotInput) {
+        screenshotInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (!currentUser) {
+                alert('Please sign in first!');
+                return;
+            }
+            
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Uploading...';
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'vaenorix_upload');
+            formData.append('cloud_name', 'dcv4wnyf2');
+            
+            try {
+                const response = await fetch(`https://api.cloudinary.com/v1_1/dcv4wnyf2/image/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if(!response.ok) throw new Error('Upload failed');
+                const data = await response.json();
+                const imageUrl = data.secure_url;
+                
+                const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+                await window.addDoc(memoriesRef, {
+                    type: 'image',
+                    content: imageUrl,
+                    timestamp: new Date().toISOString()
+                });
+                
+                alert('✅ Screenshot saved!');
+                await loadMemories();
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('❌ Upload failed: ' + error.message);
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
+                screenshotInput.value = '';
+            }
+        });
+    }
+
     saveBtn.addEventListener('click', addMemory);
     searchBtn.addEventListener('click', searchMemories);
     getStartedBtn.addEventListener('click', scrollToSave);
@@ -237,70 +304,4 @@ document.addEventListener('DOMContentLoaded', function() {
             searchMemories();
         }
     });
-});
-// Screenshot Upload Functionality
-const uploadArea = document.getElementById('uploadArea');
-const screenshotInput = document.getElementById('screenshotInput');
-const uploadBtn = document.getElementById('uploadBtn');
-
-// Click on upload area to select file
-uploadArea.addEventListener('click', () => {
-    screenshotInput.click();
-});
-
-// Click on upload button
-uploadBtn.addEventListener('click', () => {
-    screenshotInput.click();
-});
-
-// When file is selected
-screenshotInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    if (!currentUser) {
-        alert('Please sign in first!');
-        return;
-    }
-    
-    // Show loading state
-    uploadBtn.disabled = true;
-    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Uploading...';
-    
-    // Create form data
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', 'vaenorix_uploads');
-    formData.append('cloud_name', 'dcv4wnyf2');
-    
-    try {
-        // Upload to Cloudinary
-        const response = await fetch(`https://api.cloudinary.com/v1_1/dcv4wnyf2/image/upload`, {
-            method: 'POST',
-            body: formData
-        });
-        
-        const data = await response.json();
-        const imageUrl = data.secure_url;
-        
-        // Save to Firebase
-        const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-        await window.addDoc(memoriesRef, {
-            type: 'image',
-            content: imageUrl,
-            summary: '📸 Screenshot saved',
-            timestamp: new Date().toISOString()
-        });
-        
-        alert('✅ Screenshot saved successfully!');
-        await loadMemories();
-        
-    catch (error) {
-    console.error('Upload error:', error);
-    alert('❌ Failed to upload screenshot: ' + error.message);
-    } finally {
-        uploadBtn.disabled = false;
-        uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
-        screenshotInput.value = '';
-    }
 });
