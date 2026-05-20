@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let memories = [];
     let currentUser = null;
+    let currentFilter = 'all';
 
     window.onAuthStateChanged(window.auth, async (user) => {
         if (user) {
@@ -94,8 +95,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         let filteredMemories = memories;
+        
+        // Apply type filter
+        if (currentFilter !== 'all') {
+            filteredMemories = filteredMemories.filter(m => m.type === currentFilter);
+        }
+        
+        // Apply search filter
         if (filterText) {
-            filteredMemories = memories.filter(m => 
+            filteredMemories = filteredMemories.filter(m => 
                 m.content.toLowerCase().includes(filterText.toLowerCase())
             );
         }
@@ -108,12 +116,12 @@ document.addEventListener('DOMContentLoaded', function() {
         memoriesList.innerHTML = filteredMemories.map((memory) => `
             <div class="memory-card">
                 <div class="memory-header">
-                    <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
+                    <div class="memory-type">${memory.type === 'note' ? '📝 Note' : memory.type === 'link' ? '🔗 Link' : '📸 Image'}</div>
                     <div class="menu-container">
                         <button class="three-dots" data-id="${memory.id}">⋯</button>
                         <div class="dropdown-menu" id="menu-${memory.id}">
-                            <button class="edit-btn" data-id="${memory.id}">Edit</button>
-                            <button class="delete-btn-menu" data-id="${memory.id}">Delete</button>
+                            <button class="edit-btn" data-id="${memory.id}">✏️ Edit</button>
+                            <button class="delete-btn-menu" data-id="${memory.id}">🗑️ Delete</button>
                         </div>
                     </div>
                 </div>
@@ -121,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ${memory.type === 'link' ? 
                         `<a href="${memory.content}" target="_blank" class="memory-link">${memory.content}</a>` : 
                         memory.type === 'image' ?
-                        `<img src="${memory.content}" alt="Screenshot" style="max-width:100%; border-radius:12px;">` :
+                        `<img src="${memory.content}" alt="Screenshot" loading="lazy">` :
                         memory.content
                     }
                 </div>
@@ -227,6 +235,21 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.save-section').scrollIntoView({ behavior: 'smooth' });
     }
 
+    // Filter buttons functionality
+    function initFilters() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        if (filterBtns.length === 0) return;
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.getAttribute('data-filter');
+                renderMemories(searchInput.value.trim());
+            });
+        });
+    }
+
     // ImgBB Screenshot Upload
     const uploadArea = document.getElementById('uploadArea');
     const screenshotInput = document.getElementById('screenshotInput');
@@ -287,4 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
             searchMemories();
         }
     });
-});
+    
+    // Initialize filters after DOM is ready
+    setTimeout(initFilters, 100);
+});                
