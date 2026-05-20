@@ -229,3 +229,12 @@ async function editMemory(id, newContent) {
         }
     });
 });
+async function deleteMemory(id) {
+    if (!currentUser) return;
+    try {
+        await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, id));
+        await loadMemories();
+    } catch (error) {
+        alert("Failed to delete");
+    }
+}
