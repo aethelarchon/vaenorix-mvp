@@ -309,3 +309,46 @@ input:focus {
     font-size: 13px;
     color: #aaa;
         }
+.menu-container {
+    position: relative;
+    display: inline-block;
+}
+
+.three-dots {
+    background: none;
+    border: none;
+    color: #00ffff;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: #1a1a2e;
+    border: 1px solid #00ffff33;
+    border-radius: 12px;
+    min-width: 100px;
+    z-index: 100;
+}
+
+.dropdown-menu button {
+    background: none;
+    border: none;
+    width: 100%;
+    padding: 10px 15px;
+    text-align: left;
+    color: white;
+    cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+    background: #00ffff22;
+}
+
+.show {
+    display: block;
+}
