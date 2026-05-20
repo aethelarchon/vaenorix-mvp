@@ -227,72 +227,65 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.save-section').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Screenshot Upload Functionality
-    const uploadArea = document.getElementById('uploadArea');
-    const screenshotInput = document.getElementById('screenshotInput');
-    const uploadBtn = document.getElementById('uploadBtn');
+    // Screenshot Upload with Cloudinary
+const uploadArea = document.getElementById('uploadArea');
+const screenshotInput = document.getElementById('screenshotInput');
+const uploadBtn = document.getElementById('uploadBtn');
 
-    if(uploadArea) {
-        uploadArea.addEventListener('click', () => {
-            screenshotInput.click();
-        });
-    }
+if(uploadArea) uploadArea.addEventListener('click', () => screenshotInput.click());
+if(uploadBtn) uploadBtn.addEventListener('click', () => screenshotInput.click());
 
-    if(uploadBtn) {
-        uploadBtn.addEventListener('click', () => {
-            screenshotInput.click();
-        });
-    }
-
-    if(screenshotInput) {
-        screenshotInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+if(screenshotInput) {
+    screenshotInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!currentUser) {
+            alert('Please sign in first!');
+            return;
+        }
+        
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Uploading...';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', 'vaenorix_uploas');  // আপনার প্রিসেট নাম
+        formData.append('cloud_name', 'dcv4wnyf2');
+        
+        try {
+            const response = await fetch(`https://api.cloudinary.com/v1_1/dcv4wnyf2/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
             
-            if (!currentUser) {
-                alert('Please sign in first!');
-                return;
+            if(!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText);
             }
             
-            uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Uploading...';
+            const data = await response.json();
+            const imageUrl = data.secure_url;
             
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', 'vaenorix_upload');
-            formData.append('cloud_name', 'dcv4wnyf2');
+            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+            await window.addDoc(memoriesRef, {
+                type: 'image',
+                content: imageUrl,
+                timestamp: new Date().toISOString()
+            });
             
-            try {
-                const response = await fetch(`https://api.cloudinary.com/v1_1/dcv4wnyf2/image/upload`, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if(!response.ok) throw new Error('Upload failed');
-                const data = await response.json();
-                const imageUrl = data.secure_url;
-                
-                const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-                await window.addDoc(memoriesRef, {
-                    type: 'image',
-                    content: imageUrl,
-                    timestamp: new Date().toISOString()
-                });
-                
-                alert('✅ Screenshot saved!');
-                await loadMemories();
-                
-            } catch (error) {
-                console.error('Upload error:', error);
-                alert('❌ Upload failed: ' + error.message);
-            } finally {
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
-                screenshotInput.value = '';
-            }
-        });
+            alert('✅ Screenshot saved!');
+            await loadMemories();
+            
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('❌ Upload failed: ' + error.message);
+        } finally {
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
+            screenshotInput.value = '';
+        }
+    });
     }
-
     saveBtn.addEventListener('click', addMemory);
     searchBtn.addEventListener('click', searchMemories);
     getStartedBtn.addEventListener('click', scrollToSave);
