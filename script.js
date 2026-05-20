@@ -227,65 +227,55 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.save-section').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Screenshot Upload with Cloudinary
-const uploadArea = document.getElementById('uploadArea');
-const screenshotInput = document.getElementById('screenshotInput');
-const uploadBtn = document.getElementById('uploadBtn');
+    // ImgBB Screenshot Upload
+    const uploadArea = document.getElementById('uploadArea');
+    const screenshotInput = document.getElementById('screenshotInput');
+    const uploadBtn = document.getElementById('uploadBtn');
 
-if(uploadArea) uploadArea.addEventListener('click', () => screenshotInput.click());
-if(uploadBtn) uploadBtn.addEventListener('click', () => screenshotInput.click());
+    if(uploadArea) uploadArea.addEventListener('click', () => screenshotInput.click());
+    if(uploadBtn) uploadBtn.addEventListener('click', () => screenshotInput.click());
 
-if(screenshotInput) {
-    screenshotInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        if (!currentUser) {
-            alert('Please sign in first!');
-            return;
-        }
-        
-        uploadBtn.disabled = true;
-        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Uploading...';
-        
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', 'vaenorix_uploas');  // আপনার প্রিসেট নাম
-        formData.append('cloud_name', 'dcv4wnyf2');
-        
-        try {
-            const response = await fetch(`https://api.cloudinary.com/v1_1/dcv4wnyf2/image/upload`, {
-                method: 'POST',
-                body: formData
-            });
-            
-            if(!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText);
+    if(screenshotInput) {
+        screenshotInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (!currentUser) return alert('Please sign in first!');
+
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = 'Uploading...';
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const response = await fetch('https://api.imgbb.com/1/upload?key=e27afa0854f1728a1445914cdd2f5304', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if(!data.success) throw new Error(data.error.message);
+
+                const imageUrl = data.data.url;
+
+                const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+                await window.addDoc(memoriesRef, {
+                    type: 'image',
+                    content: imageUrl,
+                    timestamp: new Date().toISOString()
+                });
+
+                alert('✅ Screenshot saved!');
+                await loadMemories();
+            } catch (error) {
+                alert('❌ Failed: ' + error.message);
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = 'Upload Screenshot';
+                screenshotInput.value = '';
             }
-            
-            const data = await response.json();
-            const imageUrl = data.secure_url;
-            
-            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-            await window.addDoc(memoriesRef, {
-                type: 'image',
-                content: imageUrl,
-                timestamp: new Date().toISOString()
-            });
-            
-            alert('✅ Screenshot saved!');
-            await loadMemories();
-            
-        } catch (error) {
-            console.error('Upload error:', error);
-            alert('❌ Upload failed: ' + error.message);
-        } finally {
-            uploadBtn.disabled = false;
-            uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
-            screenshotInput.value = '';
-        }
-    });
+        });
     }
+
     saveBtn.addEventListener('click', addMemory);
     searchBtn.addEventListener('click', searchMemories);
     getStartedBtn.addEventListener('click', scrollToSave);
