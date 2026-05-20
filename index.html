@@ -79,7 +79,7 @@
             <button class="btn-primary" id="getStartedBtn">
                 <i class="fas fa-rocket"></i> Start Saving Memories
             </button>
-            <a href="/waitlist.html" class="btn-waitlist"><i class="fas fa-envelope"></i> Join Waitlist for Early Access</a>
+            <a href="/waitlist.html" class="btn-waitlist"><i class="fas fa-envelope"></i> Join Waitlist</a>
         </section>
 
         <!-- Save Memory Section -->
@@ -93,16 +93,16 @@
                 </button>
             </div>
             <!-- Screenshot Upload -->
-<div class="upload-section">
-    <div class="upload-area" id="uploadArea">
-        <i class="fas fa-cloud-upload-alt"></i>
-        <p>Click or drag & drop screenshot</p>
-        <input type="file" id="screenshotInput" accept="image/*" style="display:none;">
-    </div>
-    <button class="btn-upload" id="uploadBtn">
-        <i class="fas fa-camera"></i> Upload Screenshot
-    </button>
-</div>
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Click or drag & drop screenshot</p>
+                    <input type="file" id="screenshotInput" accept="image/*" style="display:none;">
+                </div>
+                <button class="btn-upload" id="uploadBtn">
+                    <i class="fas fa-camera"></i> Upload Screenshot
+                </button>
+            </div>
         </section>
 
         <!-- AI Search Section -->
@@ -120,40 +120,40 @@
         <section class="memories-section">
             <h2 class="section-title"><i class="fas fa-folder-open"></i> Saved Memories</h2>
             <!-- Filter Buttons -->
-<div class="filter-buttons">
-    <button class="filter-btn active" data-filter="all">📋 All</button>
-    <button class="filter-btn" data-filter="note">📝 Notes</button>
-    <button class="filter-btn" data-filter="link">🔗 Links</button>
-    <button class="filter-btn" data-filter="image">📸 Images</button>
-</div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="note">Notes</button>
+                <button class="filter-btn" data-filter="link">Links</button>
+                <button class="filter-btn" data-filter="image">Images</button>
+            </div>
             <div id="memoriesList" class="memories-list">
-                <!-- এখানে কার্ড দেখাবে -->
+                <!-- Cards will show here -->
             </div>
         </section>
     </div>
 
     <!-- Footer -->
-<footer class="footer">
-    <div class="footer-content">
-        <div class="footer-logo">
-            <i class="fas fa-brain"></i> Vaenorix
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fas fa-brain"></i> Vaenorix
+            </div>
+            <div class="footer-links">
+                <a href="https://x.com/VaenorixAI" target="_blank" class="social-link">
+                    <i class="fab fa-twitter"></i> Twitter
+                </a>
+                <a href="https://github.com/vaenorix/vaenorix" target="_blank" class="social-link">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+                <a href="mailto:aethelarchon@gmail.com" class="social-link">
+                    <i class="fas fa-envelope"></i> Contact
+                </a>
+            </div>
+            <p class="footer-copyright">© 2026 Vaenorix — Your AI Second Brain</p>
+            <p class="footer-small">Save anything. Find everything later.</p>
         </div>
-        <div class="footer-links">
-            <a href="https://x.com/VaenorixAI" target="_blank" class="social-link">
-                <i class="fab fa-twitter"></i> Twitter
-            </a>
-            <a href="https://github.com/vaenorix/vaenorix" target="_blank" class="social-link">
-                <i class="fab fa-github"></i> GitHub
-            </a>
-            <a href="mailto:aethelarchon@gmail.com" class="social-link">
-                <i class="fas fa-envelope"></i> Contact
-            </a>
-        </div>
-        <p class="footer-copyright">© 2026 Vaenorix — Your AI Second Brain</p>
-        <p class="footer-small">Save anything. Find everything later.</p>
-    </div>
-</footer>
+    </footer>
 
     <script src="script.js"></script>
 </body>
-    </html>
+</html>
