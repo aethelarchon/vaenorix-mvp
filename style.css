@@ -459,3 +459,52 @@ input {
     font-size: 12px;
     margin: 15px 0 5px;
     }
+/* Screenshot Upload Section */
+.upload-section {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.upload-area {
+    border: 2px dashed rgba(0, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: rgba(0, 255, 255, 0.02);
+}
+
+.upload-area:hover {
+    border-color: #00ffff;
+    background: rgba(0, 255, 255, 0.05);
+}
+
+.upload-area i {
+    font-size: 48px;
+    color: #00ffff;
+    margin-bottom: 15px;
+}
+
+.upload-area p {
+    color: #aaa;
+    font-size: 14px;
+}
+
+.btn-upload {
+    background: linear-gradient(135deg, #00ffff, #0066ff);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #0a0a0f;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.3s;
+}
+
+.btn-upload:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
