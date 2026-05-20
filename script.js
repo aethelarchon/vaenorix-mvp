@@ -238,3 +238,69 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+// Screenshot Upload Functionality
+const uploadArea = document.getElementById('uploadArea');
+const screenshotInput = document.getElementById('screenshotInput');
+const uploadBtn = document.getElementById('uploadBtn');
+
+// Click on upload area to select file
+uploadArea.addEventListener('click', () => {
+    screenshotInput.click();
+});
+
+// Click on upload button
+uploadBtn.addEventListener('click', () => {
+    screenshotInput.click();
+});
+
+// When file is selected
+screenshotInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    if (!currentUser) {
+        alert('Please sign in first!');
+        return;
+    }
+    
+    // Show loading state
+    uploadBtn.disabled = true;
+    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Uploading...';
+    
+    // Create form data
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'vaenorix_uploads');
+    formData.append('cloud_name', 'dcv4wnyf2');
+    
+    try {
+        // Upload to Cloudinary
+        const response = await fetch(`https://api.cloudinary.com/v1_1/dcv4wnyf2/image/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        const imageUrl = data.secure_url;
+        
+        // Save to Firebase
+        const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+        await window.addDoc(memoriesRef, {
+            type: 'image',
+            content: imageUrl,
+            summary: '📸 Screenshot saved',
+            timestamp: new Date().toISOString()
+        });
+        
+        alert('✅ Screenshot saved successfully!');
+        await loadMemories();
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        alert('❌ Failed to upload screenshot. Please try again.');
+    } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
+        screenshotInput.value = '';
+    }
+});
