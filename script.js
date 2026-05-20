@@ -295,9 +295,9 @@ screenshotInput.addEventListener('change', async (e) => {
         alert('✅ Screenshot saved successfully!');
         await loadMemories();
         
-    } catch (error) {
-        console.error('Upload error:', error);
-        alert('❌ Failed to upload screenshot. Please try again.');
+    catch (error) {
+    console.error('Upload error:', error);
+    alert('❌ Failed to upload screenshot: ' + error.message);
     } finally {
         uploadBtn.disabled = false;
         uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
