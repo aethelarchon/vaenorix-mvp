@@ -726,3 +726,17 @@ html {
     background: linear-gradient(135deg, #ff4444, #cc0000);
     box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
         }
+/* Download Button */
+.download-btn {
+    background: none;
+    border: none;
+    color: #00ffff;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+    transition: all 0.3s;
+}
+
+.download-btn:hover {
+    color: #0066ff;
+    }
