@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const provider = new window.GoogleAuthProvider();
         try {
             await window.signInWithPopup(window.auth, provider);
-            showToast('Login successful!');
+            showToast('Welcome back!');
         } catch (error) {
             showToast("Login failed: " + error.message, true);
         }
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
             renderMemories();
         } catch (error) {
             memoriesList.innerHTML = '<div class="empty-message">Error loading memories</div>';
-            showToast("Error loading memories", true);
+            showToast("Failed to load memories", true);
         }
     }
 
@@ -84,8 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!currentUser) return;
         try {
             await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, id));
-            await loadMemories();
             showToast('Memory deleted');
+            await loadMemories();
         } catch (error) {
             showToast("Failed to delete", true);
         }
@@ -96,8 +96,8 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const memoryRef = window.doc(window.db, `users/${currentUser.uid}/memories`, id);
             await window.updateDoc(memoryRef, { content: newContent });
-            await loadMemories();
             showToast('Memory updated');
+            await loadMemories();
         } catch (error) {
             showToast("Failed to edit", true);
         }
@@ -166,6 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `).join('');
 
+        // Load link previews
         document.querySelectorAll('.link-preview-container').forEach(async (container) => {
             const url = container.getAttribute('data-url');
             const preview = await fetchLinkPreview(url);
@@ -175,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${preview.image ? `<img src="${preview.image}" class="link-preview-img" onerror="this.style.display='none'">` : ''}
                         <div class="link-preview-content">
                             <div class="link-preview-title">${preview.title.substring(0, 60)}</div>
-                            <div class="link-preview-desc">${preview.description.substring(0, 80)}</div>
+                            <div class="link-preview-desc">${preview.description ? preview.description.substring(0, 80) : 'No description'}</div>
                         </div>
                     </a>
                 `;
@@ -184,6 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // Three dots menu
         document.querySelectorAll('.three-dots').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -200,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const id = this.getAttribute('data-id');
                 const memory = memories.find(m => m.id === id);
                 if(memory) {
-                    const newContent = prompt('Edit your memory:', memory.content);
+                    const newContent = prompt('Edit:', memory.content);
                     if (newContent && newContent.trim()) {
                         editMemory(id, newContent.trim());
                     }
@@ -262,8 +264,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 content: content,
                 timestamp: new Date().toISOString()
             });
-            await loadMemories();
             showToast('Memory saved!');
+            await loadMemories();
         } catch (error) {
             showToast("Failed to save", true);
         } finally {
@@ -283,6 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.save-section').scrollIntoView({ behavior: 'smooth' });
     }
 
+    // Filter buttons
     function initFilters() {
         const filterBtns = document.querySelectorAll('.filter-btn');
         if (filterBtns.length === 0) return;
@@ -308,10 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
         screenshotInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
-            if (!currentUser) {
-                showToast('Please sign in first!', true);
-                return;
-            }
+            if (!currentUser) return showToast('Please sign in first!', true);
 
             uploadBtn.disabled = true;
             uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
@@ -385,4 +385,4 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
         .then(reg => console.log('SW registered:', reg))
         .catch(err => console.log('SW error:', err));
-        }
+                          }
