@@ -473,7 +473,37 @@ window.downloadImage = async function(imageUrl) {
 };
 // Share Function
 window.shareMemory = function(content, type) {
-    let text = `Vaenorix Memory: ${content}\n\nhttps://vaenorix-mvp.vercel.app`;
-    navigator.clipboard.writeText(text);
-    showToast('Copied to clipboard! Share anywhere.');
+    let shareText = '';
+    let shareUrl = '';
+    
+    if (type === 'note') {
+        shareText = `📝 Note: ${content}`;
+        shareUrl = 'https://vaenorix-mvp.vercel.app';
+    } else if (type === 'link') {
+        shareText = `🔗 Check out this link:`;
+        shareUrl = content;
+    } else if (type === 'image') {
+        shareText = `📸 Check out this image:`;
+        shareUrl = content;
+    }
+    
+    const fullText = `${shareText}\n\n${shareUrl}\n\nShared from Vaenorix - Your AI Second Brain`;
+    
+    // Try native share first (mobile)
+    if (navigator.share) {
+        navigator.share({
+            title: 'Vaenorix Memory',
+            text: shareText,
+            url: shareUrl
+        }).catch(() => {
+            copyToClipboard(fullText);
+        });
+    } else {
+        copyToClipboard(fullText);
+    }
 };
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text);
+    showToast('✓ Copied to clipboard! You can now paste and share anywhere.');
+}
