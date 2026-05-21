@@ -1,3 +1,18 @@
+// Toast Notification Function
+function showToast(message, isError = false) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    if (isError) toast.classList.add('error');
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 2500);
+}
 document.addEventListener('DOMContentLoaded', function() {
     
     const noteInput = document.getElementById('noteInput');
