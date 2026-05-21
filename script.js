@@ -412,3 +412,37 @@ window.downloadImage = async function(imageUrl) {
         showToast('Failed to download image', true);
     }
 };
+// Clear All Memories Function
+const clearAllBtn = document.getElementById('clearAllBtn');
+if (clearAllBtn) {
+    clearAllBtn.addEventListener('click', async () => {
+        if (!currentUser) {
+            showToast('Please sign in first!', true);
+            return;
+        }
+        
+        if (memories.length === 0) {
+            showToast('No memories to clear', true);
+            return;
+        }
+        
+        const confirm = window.confirm('⚠️ Are you sure? This will delete ALL your memories permanently!');
+        if (!confirm) return;
+        
+        try {
+            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+            const querySnapshot = await window.getDocs(memoriesRef);
+            
+            const deletePromises = [];
+            querySnapshot.forEach((doc) => {
+                deletePromises.push(window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, doc.id)));
+            });
+            
+            await Promise.all(deletePromises);
+            showToast('All memories cleared!');
+            await loadMemories();
+        } catch (error) {
+            showToast('Failed to clear memories', true);
+        }
+    });
+}
