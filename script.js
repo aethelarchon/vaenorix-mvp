@@ -31,26 +31,26 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentFilter = 'all';
 
     window.onAuthStateChanged(window.auth, async (user) => {
-        if (user) {// Show user avatar
-const avatarImg = document.getElementById('userAvatar');
-if (avatarImg && user.photoURL) {
-    avatarImg.src = user.photoURL;
-    avatarImg.style.display = 'block';
-}
-            currentUser = user;
-            loginBtn.style.display = 'none';
-            logoutBtn.style.display = 'inline-block';
-            if (avatarImg) {
-    avatarImg.style.display = 'none';
-            }
-            await loadMemories();
-        } else {
-            currentUser = null;
-            loginBtn.style.display = 'inline-block';
-            logoutBtn.style.display = 'none';
-            memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
+    const avatarImg = document.getElementById('userAvatar');
+    if (user) {
+        currentUser = user;
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+        if (avatarImg && user.photoURL) {
+            avatarImg.src = user.photoURL;
+            avatarImg.style.display = 'block';
         }
-    });
+        await loadMemories();
+    } else {
+        currentUser = null;
+        loginBtn.style.display = 'inline-block';
+        logoutBtn.style.display = 'none';
+        if (avatarImg) {
+            avatarImg.style.display = 'none';
+        }
+        memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
+    }
+});
 
     async function login() {
         const provider = new window.GoogleAuthProvider();
