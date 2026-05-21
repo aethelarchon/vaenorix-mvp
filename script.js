@@ -232,11 +232,13 @@ document.addEventListener('DOMContentLoaded', function() {
             linkInput.value = '';
             
             saveBtn.disabled = true;
-            saveBtn.textContent = 'Saving...';
-            setTimeout(() => {
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Save to Second Brain';
-            }, 500);
+saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
+saveBtn.classList.add('btn-loading');
+setTimeout(() => {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = '<i class="fas fa-save"></i> Save to Second Brain';
+    saveBtn.classList.remove('btn-loading');
+}, 500);
         }
 
         try {
@@ -274,54 +276,57 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Screenshot Upload
-    const uploadArea = document.getElementById('uploadArea');
-    const screenshotInput = document.getElementById('screenshotInput');
-    const uploadBtn = document.getElementById('uploadBtn');
+    // ImgBB Screenshot Upload
+const uploadArea = document.getElementById('uploadArea');
+const screenshotInput = document.getElementById('screenshotInput');
+const uploadBtn = document.getElementById('uploadBtn');
 
-    if(uploadArea) uploadArea.addEventListener('click', () => screenshotInput.click());
-    if(uploadBtn) uploadBtn.addEventListener('click', () => screenshotInput.click());
+if(uploadArea) uploadArea.addEventListener('click', () => screenshotInput.click());
+if(uploadBtn) uploadBtn.addEventListener('click', () => screenshotInput.click());
 
-    if(screenshotInput) {
-        screenshotInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            if (!currentUser) return alert('Please sign in first!');
+if(screenshotInput) {
+    screenshotInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!currentUser) return alert('Please sign in first!');
 
-            uploadBtn.disabled = true;
-            uploadBtn.innerHTML = 'Uploading...';
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
+        uploadBtn.classList.add('btn-loading');
 
-            const formData = new FormData();
-            formData.append('image', file);
+        const formData = new FormData();
+        formData.append('image', file);
 
-            try {
-                const response = await fetch('https://api.imgbb.com/1/upload?key=e27afa0854f1728a1445914cdd2f5304', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await response.json();
-                if(!data.success) throw new Error(data.error.message);
+        try {
+            const response = await fetch('https://api.imgbb.com/1/upload?key=e27afa0854f1728a1445914cdd2f5304', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if(!data.success) throw new Error(data.error.message);
 
-                const imageUrl = data.data.url;
+            const imageUrl = data.data.url;
 
-                const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-                await window.addDoc(memoriesRef, {
-                    type: 'image',
-                    content: imageUrl,
-                    timestamp: new Date().toISOString()
-                });
+            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+            await window.addDoc(memoriesRef, {
+                type: 'image',
+                content: imageUrl,
+                timestamp: new Date().toISOString()
+            });
 
-                alert('Screenshot saved!');
-                await loadMemories();
-            } catch (error) {
-                alert('Failed: ' + error.message);
-            } finally {
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML = 'Upload Screenshot';
-                screenshotInput.value = '';
-            }
-        });
-    }
+            alert('✅ Screenshot saved!');
+            await loadMemories();
+        } catch (error) {
+            alert('❌ Failed: ' + error.message);
+        } finally {
+            // FINALLY BLOCK - always runs, whether success or error
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
+            uploadBtn.classList.remove('btn-loading');
+            screenshotInput.value = '';
+        }
+    });
+                                     }
 
     saveBtn.addEventListener('click', addMemory);
     searchBtn.addEventListener('click', searchMemories);
