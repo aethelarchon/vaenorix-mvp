@@ -739,7 +739,8 @@ html {
 
 .download-btn:hover {
     color: #0066ff;
-    }
+}
+
 /* Memory Counter */
 .memory-count {
     font-size: 14px;
@@ -748,7 +749,8 @@ html {
     padding: 2px 8px;
     border-radius: 20px;
     margin-left: 10px;
-    
+}
+
 /* Clear All Button - Theme Matching */
 .clear-all-btn {
     background: rgba(0, 255, 255, 0.08);
@@ -772,5 +774,4 @@ html {
 
 .clear-all-btn:active {
     transform: scale(0.98);
-}
-    
+    }
