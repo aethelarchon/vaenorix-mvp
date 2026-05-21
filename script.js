@@ -159,7 +159,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="loading-preview">Loading preview...</div>
                          </div>` :
                         memory.type === 'image' ?
-                        `<img src="${memory.content}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${memory.content}')">` :
+                        `<div style="position: relative;">
+    <img src="${memory.content}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${memory.content}')">
+    <button class="download-btn" onclick="downloadImage('${memory.content}')">⬇️ Download</button>
+</div>`
                         memory.content
                     }
                 </div>
@@ -386,3 +389,21 @@ if ('serviceWorker' in navigator) {
         .then(reg => console.log('SW registered:', reg))
         .catch(err => console.log('SW error:', err));
                           }
+// Download Image Function
+window.downloadImage = async function(imageUrl) {
+    try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `vaenorix-${Date.now()}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Image downloaded!');
+    } catch (error) {
+        showToast('Failed to download image', true);
+    }
+};
