@@ -134,7 +134,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 m.content.toLowerCase().includes(filterText.toLowerCase())
             );
         }
-
+// Update memory counter
+const counterSpan = document.getElementById('memoryCount');
+if (counterSpan) {
+    counterSpan.textContent = `(${filteredMemories.length})`;
+}
         if (filteredMemories.length === 0) {
             memoriesList.innerHTML = '<div class="empty-message">No memories found</div>';
             return;
