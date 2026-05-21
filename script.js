@@ -1,3 +1,7 @@
+// Simple test toast
+setTimeout(() => {
+    showToast('✅ Vaenorix is ready!');
+}, 2000);
 // Toast Notification Function
 function showToast(message, isError = false) {
     const toast = document.createElement('div');
