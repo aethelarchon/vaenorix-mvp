@@ -766,3 +766,30 @@ html {
     background: rgba(255, 0, 0, 0.3);
     border-color: #ff4444;
 }
+/* Filter Buttons Container */
+.filter-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+/* Clear All Button - Fixed */
+.clear-all-btn {
+    background: rgba(255, 0, 0, 0.15);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 14px;
+    color: #ff6666;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-left: auto;
+}
+
+.clear-all-btn:hover {
+    background: rgba(255, 0, 0, 0.3);
+    border-color: #ff4444;
+    transform: scale(1.02);
+    }
