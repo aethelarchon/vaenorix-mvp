@@ -748,48 +748,29 @@ html {
     padding: 2px 8px;
     border-radius: 20px;
     margin-left: 10px;
-}
-/* Clear All Button */
+    
+/* Clear All Button - Theme Matching */
 .clear-all-btn {
-    background: rgba(255, 0, 0, 0.15);
-    border: 1px solid rgba(255, 0, 0, 0.3);
+    background: rgba(0, 255, 255, 0.08);
+    border: 1px solid rgba(0, 255, 255, 0.25);
     padding: 8px 20px;
     border-radius: 50px;
     font-size: 14px;
-    color: #ff6666;
+    color: #00ffff;
     cursor: pointer;
     transition: all 0.3s;
     margin-left: auto;
+    backdrop-filter: blur(4px);
 }
 
 .clear-all-btn:hover {
-    background: rgba(255, 0, 0, 0.3);
-    border-color: #ff4444;
-}
-/* Filter Buttons Container */
-.filter-buttons {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-bottom: 30px;
-}
-
-/* Clear All Button - Fixed */
-.clear-all-btn {
-    background: rgba(255, 0, 0, 0.15);
-    border: 1px solid rgba(255, 0, 0, 0.3);
-    padding: 8px 20px;
-    border-radius: 50px;
-    font-size: 14px;
-    color: #ff6666;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-left: auto;
-}
-
-.clear-all-btn:hover {
-    background: rgba(255, 0, 0, 0.3);
-    border-color: #ff4444;
+    background: rgba(0, 255, 255, 0.2);
+    border-color: #00ffff;
     transform: scale(1.02);
-    }
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+}
+
+.clear-all-btn:active {
+    transform: scale(0.98);
+}
+    
