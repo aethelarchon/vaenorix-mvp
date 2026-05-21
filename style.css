@@ -775,3 +775,18 @@ html {
 .clear-all-btn:active {
     transform: scale(0.98);
     }
+/* User Avatar */
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #00ffff;
+    object-fit: cover;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.user-avatar:hover {
+    transform: scale(1.05);
+    border-color: #0066ff;
+}
