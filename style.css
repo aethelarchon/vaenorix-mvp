@@ -740,3 +740,12 @@ html {
 .download-btn:hover {
     color: #0066ff;
     }
+/* Memory Counter */
+.memory-count {
+    font-size: 14px;
+    color: #00ffff;
+    background: rgba(0, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: 10px;
+}
