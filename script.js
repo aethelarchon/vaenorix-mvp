@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             await window.signInWithPopup(window.auth, provider);
         } catch (error) {
-            console.error("Login error:", error);
             alert("Login failed: " + error.message);
         }
     }
@@ -48,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function loadMemories() {
         if (!currentUser) return;
-        
         try {
             const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
             const q = window.query(memoriesRef, window.orderBy("timestamp", "desc"));
@@ -59,7 +57,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             renderMemories();
         } catch (error) {
-            console.error("Error loading memories:", error);
             memoriesList.innerHTML = '<div class="empty-message">Error loading memories</div>';
         }
     }
@@ -70,7 +67,6 @@ document.addEventListener('DOMContentLoaded', function() {
             await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, id));
             await loadMemories();
         } catch (error) {
-            console.error("Error deleting:", error);
             alert("Failed to delete");
         }
     }
@@ -86,6 +82,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    async function fetchLinkPreview(url) {
+        try {
+            const response = await fetch('/api/preview', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            return null;
+        }
+    }
+
     function renderMemories(filterText = '') {
         if (!currentUser) return;
         
@@ -95,11 +105,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         let filteredMemories = memories;
-        
         if (currentFilter !== 'all') {
             filteredMemories = filteredMemories.filter(m => m.type === currentFilter);
         }
-        
         if (filterText) {
             filteredMemories = filteredMemories.filter(m => 
                 m.content.toLowerCase().includes(filterText.toLowerCase())
@@ -125,16 +133,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="memory-content">
                     ${memory.type === 'link' ? 
-                        `<a href="${memory.content}" target="_blank" class="memory-link">${memory.content}</a>` : 
+                        `<a href="${memory.content}" target="_blank" class="memory-link">${memory.content}</a>
+                         <div class="link-preview-container" data-url="${memory.content}">
+                            <div class="loading-preview">Loading preview...</div>
+                         </div>` :
                         memory.type === 'image' ?
-                        `<img src="${memory.content}" alt="Screenshot" loading="lazy" class="clickable-image" onclick="showImageModal('${memory.content}')">` :
+                        `<img src="${memory.content}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${memory.content}')">` :
                         memory.content
                     }
                 </div>
-                ${memory.summary ? `<div class="memory-summary">${memory.summary}</div>` : ''}
             </div>
         `).join('');
 
+        // Load link previews
+        document.querySelectorAll('.link-preview-container').forEach(async (container) => {
+            const url = container.getAttribute('data-url');
+            const preview = await fetchLinkPreview(url);
+            if (preview && preview.title) {
+                container.innerHTML = `
+                    <a href="${url}" target="_blank" class="link-preview">
+                        ${preview.image ? `<img src="${preview.image}" class="link-preview-img" onerror="this.style.display='none'">` : ''}
+                        <div class="link-preview-content">
+                            <div class="link-preview-title">${preview.title.substring(0, 60)}</div>
+                            <div class="link-preview-desc">${preview.description.substring(0, 80)}</div>
+                        </div>
+                    </a>
+                `;
+            } else {
+                container.innerHTML = '';
+            }
+        });
+
+        // Three dots menu
         document.querySelectorAll('.three-dots').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -203,7 +233,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             saveBtn.disabled = true;
             saveBtn.textContent = 'Saving...';
-            
             setTimeout(() => {
                 saveBtn.disabled = false;
                 saveBtn.textContent = 'Save to Second Brain';
@@ -219,24 +248,22 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             await loadMemories();
         } catch (error) {
-            console.error("Error adding memory:", error);
             alert("Failed to save");
         }
     }
 
     function searchMemories() {
-        const searchTerm = searchInput.value.trim();
-        renderMemories(searchTerm);
+        renderMemories(searchInput.value.trim());
     }
 
     function scrollToSave() {
         document.querySelector('.save-section').scrollIntoView({ behavior: 'smooth' });
     }
 
+    // Filter buttons
     function initFilters() {
         const filterBtns = document.querySelectorAll('.filter-btn');
         if (filterBtns.length === 0) return;
-        
         filterBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 filterBtns.forEach(b => b.classList.remove('active'));
@@ -247,6 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Screenshot Upload
     const uploadArea = document.getElementById('uploadArea');
     const screenshotInput = document.getElementById('screenshotInput');
     const uploadBtn = document.getElementById('uploadBtn');
@@ -310,6 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(initFilters, 100);
 });
 
+// Image Modal
 window.showImageModal = function(imageUrl) {
     const modal = document.createElement('div');
     modal.className = 'image-modal';
@@ -320,7 +349,6 @@ window.showImageModal = function(imageUrl) {
         </div>
     `;
     document.body.appendChild(modal);
-    
     modal.querySelector('.image-modal-close').onclick = () => modal.remove();
     modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
 };
