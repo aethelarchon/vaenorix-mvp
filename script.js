@@ -258,7 +258,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
             });
         });
-
+document.querySelectorAll('.share-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const id = this.getAttribute('data-id');
+        const memory = memories.find(m => m.id === id);
+        if(memory) window.shareMemory(memory.content, memory.type);
+        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+    });
+});
         // Clear All Button
         const clearAllBtn = document.getElementById('clearAllBtn');
         if (clearAllBtn) {
@@ -462,4 +470,10 @@ window.downloadImage = async function(imageUrl) {
     } catch (error) {
         showToast('Failed to download image', true);
     }
+};
+// Share Function
+window.shareMemory = function(content, type) {
+    let text = `Vaenorix Memory: ${content}\n\nhttps://vaenorix-mvp.vercel.app`;
+    navigator.clipboard.writeText(text);
+    showToast('Copied to clipboard! Share anywhere.');
 };
