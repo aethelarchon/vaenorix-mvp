@@ -228,6 +228,25 @@ if (counterSpan) {
         });
 
         document.addEventListener('click', function() {
+            // Clear All Button
+const clearAllBtn = document.getElementById('clearAllBtn');
+if (clearAllBtn) {
+    clearAllBtn.onclick = () => {
+        if (!currentUser) {
+            showToast('Please sign in first!', true);
+            return;
+        }
+        
+        if (memories.length === 0) {
+            showToast('No memories to clear', true);
+            return;
+        }
+        
+        if (confirm('⚠️ Are you sure? This will delete ALL your memories permanently!')) {
+            deleteAllMemories();
+        }
+    };
+                    }
             document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
         });
     }
@@ -412,37 +431,19 @@ window.downloadImage = async function(imageUrl) {
         showToast('Failed to download image', true);
     }
 };
-// Clear All Memories Function
-const clearAllBtn = document.getElementById('clearAllBtn');
-if (clearAllBtn) {
-    clearAllBtn.addEventListener('click', async () => {
-        if (!currentUser) {
-            showToast('Please sign in first!', true);
-            return;
-        }
+// Delete all memories function
+async function deleteAllMemories() {
+    if (!currentUser) return;
+    try {
+        const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+        const querySnapshot = await window.getDocs(memoriesRef);
         
-        if (memories.length === 0) {
-            showToast('No memories to clear', true);
-            return;
+        for (const doc of querySnapshot.docs) {
+            await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, doc.id));
         }
-        
-        const confirm = window.confirm('⚠️ Are you sure? This will delete ALL your memories permanently!');
-        if (!confirm) return;
-        
-        try {
-            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-            const querySnapshot = await window.getDocs(memoriesRef);
-            
-            const deletePromises = [];
-            querySnapshot.forEach((doc) => {
-                deletePromises.push(window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, doc.id)));
-            });
-            
-            await Promise.all(deletePromises);
-            showToast('All memories cleared!');
-            await loadMemories();
-        } catch (error) {
-            showToast('Failed to clear memories', true);
-        }
-    });
+        showToast('All memories cleared!');
+        await loadMemories();
+    } catch (error) {
+        showToast('Failed to clear memories', true);
+    }
 }
