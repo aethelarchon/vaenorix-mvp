@@ -160,9 +160,9 @@ document.addEventListener('DOMContentLoaded', function() {
                          </div>` :
                         memory.type === 'image' ?
                         `<div style="position: relative;">
-    <img src="${memory.content}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${memory.content}')">
-    <button class="download-btn" onclick="downloadImage('${memory.content}')">⬇️ Download</button>
-</div>`
+                            <img src="${memory.content}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${memory.content}')">
+                            <button class="download-btn" onclick="downloadImage('${memory.content}')">⬇️ Download</button>
+                        </div>` :
                         memory.content
                     }
                 </div>
@@ -388,7 +388,8 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
         .then(reg => console.log('SW registered:', reg))
         .catch(err => console.log('SW error:', err));
-                          }
+}
+
 // Download Image Function
 window.downloadImage = async function(imageUrl) {
     try {
