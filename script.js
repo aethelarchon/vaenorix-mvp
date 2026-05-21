@@ -13,6 +13,7 @@ function showToast(message, isError = false) {
         setTimeout(() => toast.remove(), 300);
     }, 2500);
 }
+
 document.addEventListener('DOMContentLoaded', function() {
     
     const noteInput = document.getElementById('noteInput');
@@ -47,16 +48,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const provider = new window.GoogleAuthProvider();
         try {
             await window.signInWithPopup(window.auth, provider);
+            showToast('Login successful!');
         } catch (error) {
-            alert("Login failed: " + error.message);
+            showToast("Login failed: " + error.message, true);
         }
     }
 
     async function logout() {
         try {
             await window.auth.signOut();
+            showToast('Logged out successfully');
         } catch (error) {
-            console.error("Logout error:", error);
+            showToast("Logout failed", true);
         }
     }
 
@@ -73,6 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
             renderMemories();
         } catch (error) {
             memoriesList.innerHTML = '<div class="empty-message">Error loading memories</div>';
+            showToast("Error loading memories", true);
         }
     }
 
@@ -81,8 +85,9 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, id));
             await loadMemories();
+            showToast('Memory deleted');
         } catch (error) {
-            alert("Failed to delete");
+            showToast("Failed to delete", true);
         }
     }
 
@@ -92,8 +97,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const memoryRef = window.doc(window.db, `users/${currentUser.uid}/memories`, id);
             await window.updateDoc(memoryRef, { content: newContent });
             await loadMemories();
+            showToast('Memory updated');
         } catch (error) {
-            alert("Failed to edit");
+            showToast("Failed to edit", true);
         }
     }
 
@@ -160,7 +166,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `).join('');
 
-        // Load link previews
         document.querySelectorAll('.link-preview-container').forEach(async (container) => {
             const url = container.getAttribute('data-url');
             const preview = await fetchLinkPreview(url);
@@ -179,7 +184,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Three dots menu
         document.querySelectorAll('.three-dots').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -196,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const id = this.getAttribute('data-id');
                 const memory = memories.find(m => m.id === id);
                 if(memory) {
-                    const newContent = prompt('Edit:', memory.content);
+                    const newContent = prompt('Edit your memory:', memory.content);
                     if (newContent && newContent.trim()) {
                         editMemory(id, newContent.trim());
                     }
@@ -221,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function addMemory() {
         if (!currentUser) {
-            alert('Please sign in first!');
+            showToast('Please sign in first!', true);
             login();
             return;
         }
@@ -230,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const link = linkInput.value.trim();
 
         if (!note && !link) {
-            alert('Please write a note or paste a link');
+            showToast('Please write a note or paste a link', true);
             return;
         }
 
@@ -247,13 +251,8 @@ document.addEventListener('DOMContentLoaded', function() {
             linkInput.value = '';
             
             saveBtn.disabled = true;
-saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
-saveBtn.classList.add('btn-loading');
-setTimeout(() => {
-    saveBtn.disabled = false;
-    saveBtn.innerHTML = '<i class="fas fa-save"></i> Save to Second Brain';
-    saveBtn.classList.remove('btn-loading');
-}, 500);
+            saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
+            saveBtn.classList.add('btn-loading');
         }
 
         try {
@@ -264,8 +263,15 @@ setTimeout(() => {
                 timestamp: new Date().toISOString()
             });
             await loadMemories();
+            showToast('Memory saved!');
         } catch (error) {
-            alert("Failed to save");
+            showToast("Failed to save", true);
+        } finally {
+            if (type === 'link') {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save to Second Brain';
+                saveBtn.classList.remove('btn-loading');
+            }
         }
     }
 
@@ -277,7 +283,6 @@ setTimeout(() => {
         document.querySelector('.save-section').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Filter buttons
     function initFilters() {
         const filterBtns = document.querySelectorAll('.filter-btn');
         if (filterBtns.length === 0) return;
@@ -291,57 +296,59 @@ setTimeout(() => {
         });
     }
 
-    // ImgBB Screenshot Upload
-const uploadArea = document.getElementById('uploadArea');
-const screenshotInput = document.getElementById('screenshotInput');
-const uploadBtn = document.getElementById('uploadBtn');
+    // Screenshot Upload
+    const uploadArea = document.getElementById('uploadArea');
+    const screenshotInput = document.getElementById('screenshotInput');
+    const uploadBtn = document.getElementById('uploadBtn');
 
-if(uploadArea) uploadArea.addEventListener('click', () => screenshotInput.click());
-if(uploadBtn) uploadBtn.addEventListener('click', () => screenshotInput.click());
+    if(uploadArea) uploadArea.addEventListener('click', () => screenshotInput.click());
+    if(uploadBtn) uploadBtn.addEventListener('click', () => screenshotInput.click());
 
-if(screenshotInput) {
-    screenshotInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        if (!currentUser) return alert('Please sign in first!');
+    if(screenshotInput) {
+        screenshotInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (!currentUser) {
+                showToast('Please sign in first!', true);
+                return;
+            }
 
-        uploadBtn.disabled = true;
-        uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
-        uploadBtn.classList.add('btn-loading');
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
+            uploadBtn.classList.add('btn-loading');
 
-        const formData = new FormData();
-        formData.append('image', file);
+            const formData = new FormData();
+            formData.append('image', file);
 
-        try {
-            const response = await fetch('https://api.imgbb.com/1/upload?key=e27afa0854f1728a1445914cdd2f5304', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
-            if(!data.success) throw new Error(data.error.message);
+            try {
+                const response = await fetch('https://api.imgbb.com/1/upload?key=e27afa0854f1728a1445914cdd2f5304', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if(!data.success) throw new Error(data.error.message);
 
-            const imageUrl = data.data.url;
+                const imageUrl = data.data.url;
 
-            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-            await window.addDoc(memoriesRef, {
-                type: 'image',
-                content: imageUrl,
-                timestamp: new Date().toISOString()
-            });
+                const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+                await window.addDoc(memoriesRef, {
+                    type: 'image',
+                    content: imageUrl,
+                    timestamp: new Date().toISOString()
+                });
 
-            alert('✅ Screenshot saved!');
-            await loadMemories();
-        } catch (error) {
-            alert('❌ Failed: ' + error.message);
-        } finally {
-            // FINALLY BLOCK - always runs, whether success or error
-            uploadBtn.disabled = false;
-            uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
-            uploadBtn.classList.remove('btn-loading');
-            screenshotInput.value = '';
-        }
-    });
-                                     }
+                showToast('Screenshot saved!');
+                await loadMemories();
+            } catch (error) {
+                showToast('Failed: ' + error.message, true);
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
+                uploadBtn.classList.remove('btn-loading');
+                screenshotInput.value = '';
+            }
+        });
+    }
 
     saveBtn.addEventListener('click', addMemory);
     searchBtn.addEventListener('click', searchMemories);
@@ -372,9 +379,10 @@ window.showImageModal = function(imageUrl) {
     modal.querySelector('.image-modal-close').onclick = () => modal.remove();
     modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
 };
+
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
         .then(reg => console.log('SW registered:', reg))
         .catch(err => console.log('SW error:', err));
-}
+        }
