@@ -676,3 +676,7 @@ input {
 .btn-loading i, .btn-loading span {
     display: none;
     }
+/* Smooth Scroll */
+html {
+    scroll-behavior: smooth;
+    }
