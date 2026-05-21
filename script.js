@@ -183,6 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <button class="three-dots" data-id="${memory.id}">⋯</button>
                         <div class="dropdown-menu" id="menu-${memory.id}">
                             <button class="edit-btn" data-id="${memory.id}">Edit</button>
+                            <button class="share-btn" data-id="${memory.id}">Share</button>
                             <button class="delete-btn-menu" data-id="${memory.id}">Delete</button>
                         </div>
                     </div>
