@@ -117,6 +117,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Delete all memories function
+    async function deleteAllMemories() {
+        if (!currentUser) {
+            showToast('Please sign in first!', true);
+            return;
+        }
+        try {
+            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+            const querySnapshot = await window.getDocs(memoriesRef);
+            
+            for (const doc of querySnapshot.docs) {
+                await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, doc.id));
+            }
+            showToast('All memories cleared!');
+            await loadMemories();
+        } catch (error) {
+            console.error("Clear all error:", error);
+            showToast('Failed to clear memories', true);
+        }
+    }
+
     function renderMemories(filterText = '') {
         if (!currentUser) return;
         
@@ -134,11 +155,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 m.content.toLowerCase().includes(filterText.toLowerCase())
             );
         }
-// Update memory counter
-const counterSpan = document.getElementById('memoryCount');
-if (counterSpan) {
-    counterSpan.textContent = `(${filteredMemories.length})`;
-}
+        
+        // Update memory counter
+        const counterSpan = document.getElementById('memoryCount');
+        if (counterSpan) {
+            counterSpan.textContent = `(${filteredMemories.length})`;
+        }
+        
         if (filteredMemories.length === 0) {
             memoriesList.innerHTML = '<div class="empty-message">No memories found</div>';
             return;
@@ -227,26 +250,26 @@ if (counterSpan) {
             });
         });
 
+        // Clear All Button
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        if (clearAllBtn) {
+            clearAllBtn.onclick = null;
+            clearAllBtn.onclick = () => {
+                if (!currentUser) {
+                    showToast('Please sign in first!', true);
+                    return;
+                }
+                if (memories.length === 0) {
+                    showToast('No memories to clear', true);
+                    return;
+                }
+                if (confirm('⚠️ Are you sure? This will delete ALL your memories permanently!')) {
+                    deleteAllMemories();
+                }
+            };
+        }
+
         document.addEventListener('click', function() {
-            // Clear All Button
-const clearAllBtn = document.getElementById('clearAllBtn');
-if (clearAllBtn) {
-    clearAllBtn.onclick = () => {
-        if (!currentUser) {
-            showToast('Please sign in first!', true);
-            return;
-        }
-        
-        if (memories.length === 0) {
-            showToast('No memories to clear', true);
-            return;
-        }
-        
-        if (confirm('⚠️ Are you sure? This will delete ALL your memories permanently!')) {
-            deleteAllMemories();
-        }
-    };
-                    }
             document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
         });
     }
@@ -431,19 +454,3 @@ window.downloadImage = async function(imageUrl) {
         showToast('Failed to download image', true);
     }
 };
-// Delete all memories function
-async function deleteAllMemories() {
-    if (!currentUser) return;
-    try {
-        const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-        const querySnapshot = await window.getDocs(memoriesRef);
-        
-        for (const doc of querySnapshot.docs) {
-            await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, doc.id));
-        }
-        showToast('All memories cleared!');
-        await loadMemories();
-    } catch (error) {
-        showToast('Failed to clear memories', true);
-    }
-}
