@@ -31,10 +31,18 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentFilter = 'all';
 
     window.onAuthStateChanged(window.auth, async (user) => {
-        if (user) {
+        if (user) {// Show user avatar
+const avatarImg = document.getElementById('userAvatar');
+if (avatarImg && user.photoURL) {
+    avatarImg.src = user.photoURL;
+    avatarImg.style.display = 'block';
+}
             currentUser = user;
             loginBtn.style.display = 'none';
             logoutBtn.style.display = 'inline-block';
+            if (avatarImg) {
+    avatarImg.style.display = 'none';
+            }
             await loadMemories();
         } else {
             currentUser = null;
