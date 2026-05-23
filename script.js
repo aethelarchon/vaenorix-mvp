@@ -301,15 +301,7 @@ document.querySelectorAll('.share-btn').forEach(btn => {
         document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
     });
 });
-        // Clear All Button
-        const clearAllBtn = document.getElementById('clearAllBtn');
-        if (clearAllBtn) {
-            clearAllBtn.onclick = null;
-            clearAllBtn.onclick = () => {
-                if (!currentUser) {
-                    showToast('Please sign in first!', true);
-                    return;
-                }
+        
                 if (memories.length === 0) {
                     showToast('No memories to clear', true);
                     return;
@@ -496,7 +488,20 @@ if (exportBtn) {
             searchMemories();
         }
     });
+        saveBtn.addEventListener('click', addMemory);
+    searchBtn.addEventListener('click', searchMemories);
+    getStartedBtn.addEventListener('click', scrollToSave);
+    loginBtn.addEventListener('click', login);
+    logoutBtn.addEventListener('click', logout);
     
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchMemories();
+        }
+    });
+    
+    setTimeout(initFilters, 100);
+});
     setTimeout(initFilters, 100);
 });
 
