@@ -11,6 +11,7 @@ async function compressImage(file) {
                 let width = img.width;
                 let height = img.height;
                 
+                // Max width 1200px
                 if (width > 1200) {
                     height = (height * 1200) / width;
                     width = 1200;
@@ -28,7 +29,6 @@ async function compressImage(file) {
         };
     });
 }
-
 // Toast Notification Function
 function showToast(message, isError = false) {
     const toast = document.createElement('div');
@@ -62,26 +62,26 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentFilter = 'all';
 
     window.onAuthStateChanged(window.auth, async (user) => {
-        const avatarImg = document.getElementById('userAvatar');
-        if (user) {
-            currentUser = user;
-            loginBtn.style.display = 'none';
-            logoutBtn.style.display = 'inline-block';
-            if (avatarImg && user.photoURL) {
-                avatarImg.src = user.photoURL;
-                avatarImg.style.display = 'block';
-            }
-            await loadMemories();
-        } else {
-            currentUser = null;
-            loginBtn.style.display = 'inline-block';
-            logoutBtn.style.display = 'none';
-            if (avatarImg) {
-                avatarImg.style.display = 'none';
-            }
-            memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
+    const avatarImg = document.getElementById('userAvatar');
+    if (user) {
+        currentUser = user;
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+        if (avatarImg && user.photoURL) {
+            avatarImg.src = user.photoURL;
+            avatarImg.style.display = 'block';
         }
-    });
+        await loadMemories();
+    } else {
+        currentUser = null;
+        loginBtn.style.display = 'inline-block';
+        logoutBtn.style.display = 'none';
+        if (avatarImg) {
+            avatarImg.style.display = 'none';
+        }
+        memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
+    }
+});
 
     async function login() {
         const provider = new window.GoogleAuthProvider();
@@ -156,11 +156,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Delete all memories function
     async function deleteAllMemories() {
-        if (!currentUser) return;
+        if (!currentUser) {
+            showToast('Please sign in first!', true);
+            return;
+        }
         try {
             const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
             const querySnapshot = await window.getDocs(memoriesRef);
+            
             for (const doc of querySnapshot.docs) {
                 await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, doc.id));
             }
@@ -172,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function renderMemories(filterText = '', aiFilterIds = null) {
+    function renderMemories(filterText = '') {
         if (!currentUser) return;
         
         if (memories.length === 0) {
@@ -181,9 +186,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         let filteredMemories = memories;
-        if (aiFilterIds && aiFilterIds.length > 0) {
-            filteredMemories = filteredMemories.filter(m => aiFilterIds.includes(m.id));
-        }
         if (currentFilter !== 'all') {
             filteredMemories = filteredMemories.filter(m => m.type === currentFilter);
         }
@@ -193,6 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
             );
         }
         
+        // Update memory counter
         const counterSpan = document.getElementById('memoryCount');
         if (counterSpan) {
             counterSpan.textContent = `(${filteredMemories.length})`;
@@ -233,6 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `).join('');
 
+        // Load link previews
         document.querySelectorAll('.link-preview-container').forEach(async (container) => {
             const url = container.getAttribute('data-url');
             const preview = await fetchLinkPreview(url);
@@ -251,6 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // Three dots menu
         document.querySelectorAll('.three-dots').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -284,16 +289,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
             });
         });
-
-        document.querySelectorAll('.share-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const id = this.getAttribute('data-id');
-                const memory = memories.find(m => m.id === id);
-                if(memory) window.shareMemory(memory.content, memory.type);
-                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-            });
-        });
+document.querySelectorAll('.share-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const id = this.getAttribute('data-id');
+        const memory = memories.find(m => m.id === id);
+        if(memory) window.shareMemory(memory.content, memory.type);
+        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+    });
+});
+        // Clear All Button
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        if (clearAllBtn) {
+            clearAllBtn.onclick = null;
+            clearAllBtn.onclick = () => {
+                if (!currentUser) {
+                    showToast('Please sign in first!', true);
+                    return;
+                }
+                if (memories.length === 0) {
+                    showToast('No memories to clear', true);
+                    return;
+                }
+                if (confirm('⚠️ Are you sure? This will delete ALL your memories permanently!')) {
+                    deleteAllMemories();
+                }
+            };
+        }
 
         document.addEventListener('click', function() {
             document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
@@ -342,7 +364,6 @@ document.addEventListener('DOMContentLoaded', function() {
             showToast('Memory saved!');
             await loadMemories();
         } catch (error) {
-            console.error("Add memory error:", error);
             showToast("Failed to save", true);
         } finally {
             if (type === 'link') {
@@ -361,6 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.save-section').scrollIntoView({ behavior: 'smooth' });
     }
 
+    // Filter buttons
     function initFilters() {
         const filterBtns = document.querySelectorAll('.filter-btn');
         if (filterBtns.length === 0) return;
@@ -385,6 +407,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if(screenshotInput) {
         screenshotInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
+            const compressedFile = await compressImage(file);
             if (!file) return;
             if (!currentUser) return showToast('Please sign in first!', true);
 
@@ -392,7 +415,6 @@ document.addEventListener('DOMContentLoaded', function() {
             uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
             uploadBtn.classList.add('btn-loading');
 
-            const compressedFile = await compressImage(file);
             const formData = new FormData();
             formData.append('image', compressedFile);
 
@@ -416,7 +438,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 showToast('Screenshot saved!');
                 await loadMemories();
             } catch (error) {
-                console.error("Upload error:", error);
                 showToast('Failed: ' + error.message, true);
             } finally {
                 uploadBtn.disabled = false;
@@ -427,89 +448,84 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Export Data Button
-    const exportBtn = document.getElementById('exportBtn');
-    if (exportBtn) {
-        exportBtn.addEventListener('click', async () => {
-            if (!currentUser) {
-                showToast('Please sign in first!', true);
-                return;
-            }
-            if (memories.length === 0) {
-                showToast('No memories to export', true);
-                return;
-            }
-            showToast('Preparing export...');
-            const exportData = {
-                exportDate: new Date().toISOString(),
-                version: '1.0',
-                memories: memories.map(m => ({
-                    type: m.type,
-                    content: m.content,
-                    timestamp: m.timestamp
-                }))
-            };
-            const dataStr = JSON.stringify(exportData, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `vaenorix-backup-${Date.now()}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast(`Exported ${memories.length} memories!`);
-        });
-    }
-
-    // Clear All Button
-    const clearAllBtn = document.getElementById('clearAllBtn');
-    if (clearAllBtn) {
-        clearAllBtn.addEventListener('click', () => {
-            if (!currentUser) {
-                showToast('Please sign in first!', true);
-                return;
-            }
-            if (memories.length === 0) {
-                showToast('No memories to clear', true);
-                return;
-            }
-            if (confirm('⚠️ Are you sure? This will delete ALL your memories permanently!')) {
-                deleteAllMemories();
-            }
-        });
-    }
-
-    // AI Natural Language Search
-    const aiSearchInput = document.getElementById('aiSearchInput');
-    const aiSearchBtn = document.getElementById('aiSearchBtn');
-    const aiSearchResult = document.getElementById('aiSearchResult');
-
-    function parseAIQuery(query, memoriesList) {
-        query = query.toLowerCase();
-        let filtered = [...memoriesList];
-        let message = '';
-        
-        const now = new Date();
-        let startDate = null;
-        
-        if (query.includes('last week')) {
-            startDate = new Date(now);
-            startDate.setDate(now.getDate() - 7);
-            message = 'Last week • ';
-        } else if (query.includes('yesterday')) {
-            startDate = new Date(now);
-            startDate.setDate(now.getDate() - 1);
-            message = 'Yesterday • ';
-        } else if (query.includes('last month')) {
-            startDate = new Date(now);
-            startDate.setMonth(now.getMonth() - 1);
-            message = 'Last month • ';
-        } else if (query.includes('today')) {
-            startDate = new Date(now);
-            startDate.setHours(0, 0, 0, 0);
-            message = 'Today • ';
+    saveBtn.addEventListener('click', addMemory);
+    searchBtn.addEventListener('click', searchMemories);
+    getStartedBtn.addEventListener('click', scrollToSave);
+    loginBtn.addEventListener('click', login);
+    logoutBtn.addEventListener('click', logout);
+    
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchMemories();
         }
-        
-        if (startDate)
+    });
+    
+    setTimeout(initFilters, 100);
+});
+
+// Image Modal
+window.showImageModal = function(imageUrl) {
+    const modal = document.createElement('div');
+    modal.className = 'image-modal';
+    modal.innerHTML = `
+        <div class="image-modal-content">
+            <span class="image-modal-close">&times;</span>
+            <img src="${imageUrl}" alt="Full size">
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelector('.image-modal-close').onclick = () => modal.remove();
+    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+};
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('SW registered:', reg))
+        .catch(err => console.log('SW error:', err));
+}
+
+// Download Image Function
+window.downloadImage = async function(imageUrl) {
+    try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `vaenorix-${Date.now()}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Image downloaded!');
+    } catch (error) {
+        showToast('Failed to download image', true);
+    }
+};
+// Share Function
+window.shareMemory = function(content, type) {
+    let shareText = '';
+    let shareUrl = '';
+    
+    if (type === 'note') {
+        shareText = `📝 Note: ${content}`;
+        shareUrl = 'https://vaenorix-mvp.vercel.app';
+    } else if (type === 'link') {
+        shareText = `🔗 Check out this link:`;
+        shareUrl = content;
+    } else if (type === 'image') {
+        shareText = `📸 Check out this image:`;
+        shareUrl = content;
+    }
+    
+    const fullText = `${shareText}\n\n${shareUrl}\n\nShared from Vaenorix - Your AI Second Brain`;
+    
+    // Try native share first (mobile)
+    if (navigator.share) {
+        navigator.share({
+            title: 'Vaenorix Memory',
+            text: shareText,
+            url: shareUrl
+        }).catch(() => {
+            copyToClipbo
