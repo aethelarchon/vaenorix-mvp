@@ -1,3 +1,34 @@
+// Image compression function before upload
+async function compressImage(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                // Max width 1200px
+                if (width > 1200) {
+                    height = (height * 1200) / width;
+                    width = 1200;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                canvas.toBlob((blob) => {
+                    resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+                }, 'image/jpeg', 0.8);
+            };
+        };
+    });
+}
 // Toast Notification Function
 function showToast(message, isError = false) {
     const toast = document.createElement('div');
@@ -376,6 +407,7 @@ document.querySelectorAll('.share-btn').forEach(btn => {
     if(screenshotInput) {
         screenshotInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
+            const compressedFile = await compressImage(file);
             if (!file) return;
             if (!currentUser) return showToast('Please sign in first!', true);
 
@@ -384,7 +416,7 @@ document.querySelectorAll('.share-btn').forEach(btn => {
             uploadBtn.classList.add('btn-loading');
 
             const formData = new FormData();
-            formData.append('image', file);
+            formData.append('image', compressedFile);
 
             try {
                 const response = await fetch('https://api.imgbb.com/1/upload?key=e27afa0854f1728a1445914cdd2f5304', {
