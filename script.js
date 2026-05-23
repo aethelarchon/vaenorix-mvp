@@ -521,11 +521,3 @@ window.shareMemory = function(content, type) {
     
     const fullText = `${shareText}\n\n${shareUrl}\n\nShared from Vaenorix - Your AI Second Brain`;
     
-    // Try native share first (mobile)
-    if (navigator.share) {
-        navigator.share({
-            title: 'Vaenorix Memory',
-            text: shareText,
-            url: shareUrl
-        }).catch(() => {
-            copyToClipbo
