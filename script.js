@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function renderMemories(filterText = '') {
+    function renderMemories(filterText = '', aiFilterIds = null) {
         if (!currentUser) return;
         
         if (memories.length === 0) {
@@ -186,6 +186,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         let filteredMemories = memories;
+        if (aiFilterIds && aiFilterIds.length > 0) {
+    filteredMemories = filteredMemories.filter(m => aiFilterIds.includes(m.id));
+        }
         if (currentFilter !== 'all') {
             filteredMemories = filteredMemories.filter(m => m.type === currentFilter);
         }
