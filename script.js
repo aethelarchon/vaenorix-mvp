@@ -453,7 +453,41 @@ document.querySelectorAll('.share-btn').forEach(btn => {
     getStartedBtn.addEventListener('click', scrollToSave);
     loginBtn.addEventListener('click', login);
     logoutBtn.addEventListener('click', logout);
-    
+    // Export Data Button
+const exportBtn = document.getElementById('exportBtn');
+if (exportBtn) {
+    exportBtn.addEventListener('click', async () => {
+        if (!currentUser) {
+            showToast('Please sign in first!', true);
+            return;
+        }
+        if (memories.length === 0) {
+            showToast('No memories to export', true);
+            return;
+        }
+        showToast('Preparing export...');
+        const exportData = {
+            exportDate: new Date().toISOString(),
+            version: '1.0',
+            memories: memories.map(m => ({
+                type: m.type,
+                content: m.content,
+                timestamp: m.timestamp
+            }))
+        };
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `vaenorix-backup-${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast(`Exported ${memories.length} memories!`);
+    });
+                               }
     searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             searchMemories();
@@ -539,43 +573,3 @@ function copyToClipboard(text) {
     navigator.clipboard.writeText(text);
     showToast('✓ Copied to clipboard! You can now paste and share anywhere.');
 }
-// Export Data Function
-const exportBtn = document.getElementById('exportBtn');
-if (exportBtn) {
-    exportBtn.addEventListener('click', async () => {
-        if (!currentUser) {
-            showToast('Please sign in first!', true);
-            return;
-        }
-        
-        if (memories.length === 0) {
-            showToast('No memories to export', true);
-            return;
-        }
-        
-        showToast('Preparing export...');
-        
-        const exportData = {
-            exportDate: new Date().toISOString(),
-            version: '1.0',
-            memories: memories.map(m => ({
-                type: m.type,
-                content: m.content,
-                timestamp: m.timestamp
-            }))
-        };
-        
-        const dataStr = JSON.stringify(exportData, null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `vaenorix-backup-${Date.now()}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        showToast(`Exported ${memories.length} memories!`);
-    });
-            }
