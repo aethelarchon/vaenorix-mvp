@@ -807,3 +807,26 @@ html {
     border-color: #00ffff;
     transform: scale(1.02);
         }
+/* AI Search Result */
+.ai-result {
+    margin-top: 15px;
+    padding: 12px;
+    background: rgba(0, 255, 255, 0.05);
+    border-radius: 12px;
+    border-left: 3px solid #00ffff;
+    display: none;
+}
+
+.ai-result.show {
+    display: block;
+}
+
+.ai-result-text {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.ai-result-count {
+    color: #00ffff;
+    font-weight: bold;
+    }
