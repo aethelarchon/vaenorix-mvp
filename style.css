@@ -790,3 +790,20 @@ html {
     transform: scale(1.05);
     border-color: #0066ff;
 }
+/* Export Button */
+.export-btn {
+    background: rgba(0, 255, 255, 0.08);
+    border: 1px solid rgba(0, 255, 255, 0.25);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 14px;
+    color: #00ffff;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.export-btn:hover {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: #00ffff;
+    transform: scale(1.02);
+        }
