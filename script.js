@@ -573,3 +573,93 @@ function copyToClipboard(text) {
     navigator.clipboard.writeText(text);
     showToast('✓ Copied to clipboard! You can now paste and share anywhere.');
 }
+// AI Natural Language Search Function
+const aiSearchInput = document.getElementById('aiSearchInput');
+const aiSearchBtn = document.getElementById('aiSearchBtn');
+const aiSearchResult = document.getElementById('aiSearchResult');
+
+function parseAIQuery(query, memoriesList) {
+    query = query.toLowerCase();
+    let filtered = [...memoriesList];
+    let message = '';
+    
+    // Time filter: "last week", "yesterday", "last month"
+    const now = new Date();
+    let startDate = null;
+    
+    if (query.includes('last week')) {
+        startDate = new Date(now);
+        startDate.setDate(now.getDate() - 7);
+        message = '📅 Last week • ';
+    } else if (query.includes('yesterday')) {
+        startDate = new Date(now);
+        startDate.setDate(now.getDate() - 1);
+        message = '📅 Yesterday • ';
+    } else if (query.includes('last month')) {
+        startDate = new Date(now);
+        startDate.setMonth(now.getMonth() - 1);
+        message = '📅 Last month • ';
+    } else if (query.includes('today')) {
+        startDate = new Date(now);
+        startDate.setHours(0, 0, 0, 0);
+        message = '📅 Today • ';
+    }
+    
+    if (startDate) {
+        filtered = filtered.filter(m => new Date(m.timestamp) >= startDate);
+    }
+    
+    // Type filter
+    if (query.includes('link') || query.includes('links')) {
+        filtered = filtered.filter(m => m.type === 'link');
+        message += '🔗 Links';
+    } else if (query.includes('note') || query.includes('notes')) {
+        filtered = filtered.filter(m => m.type === 'note');
+        message += '📝 Notes';
+    } else if (query.includes('image') || query.includes('images') || query.includes('screenshot')) {
+        filtered = filtered.filter(m => m.type === 'image');
+        message += '📸 Images';
+    } else {
+        message += 'All memories';
+    }
+    
+    return { filtered, message };
+}
+
+if (aiSearchBtn) {
+    aiSearchBtn.addEventListener('click', () => {
+        if (!currentUser) {
+            showToast('Please sign in first!', true);
+            return;
+        }
+        
+        const query = aiSearchInput.value.trim();
+        if (!query) {
+            showToast('Ask me something like: "Show me links from last week"', true);
+            return;
+        }
+        
+        const { filtered, message } = parseAIQuery(query, memories);
+        
+        if (filtered.length === 0) {
+            aiSearchResult.innerHTML = `<div class="ai-result-text">🤖 No memories found for: "${query}"</div>`;
+            aiSearchResult.classList.add('show');
+            renderMemories('');
+        } else {
+            aiSearchResult.innerHTML = `
+                <div class="ai-result-text">🤖 ${message} • <span class="ai-result-count">${filtered.length}</span> memories found</div>
+            `;
+            aiSearchResult.classList.add('show');
+            
+            // Render filtered memories
+            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+            const filteredIds = filtered.map(m => m.id);
+            // Pass filter to render function
+            renderMemories('', filteredIds);
+        }
+        
+        setTimeout(() => {
+            aiSearchResult.classList.remove('show');
+        }, 5000);
+    });
+        }
