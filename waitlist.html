@@ -3,48 +3,40 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-    <title>Vaenorix - Your AI Second Brain</title>
+    <title>Vaenorix - Second Brain</title>
     
-    <!-- Font Awesome Icons -->
+    <!-- Font Awesome (CDN) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     
-    <!-- Firebase SDK (CDN) -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    
     <style>
-        /* ===== রিসেট ===== */
+        /* ===== গোটা সাইটের ডিজাইন (মোবাইল-ফ্রেন্ডলি) ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0a0a0f;
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
-            padding: 20px;
+            padding: 16px;
         }
+        .container { max-width: 800px; margin: 0 auto; }
         
-        /* ===== কন্টেইনার ===== */
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        /* ===== ন্যাভবার ===== */
+        /* ন্যাভবার */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 0;
+            padding: 12px 0;
             border-bottom: 1px solid rgba(255,255,255,0.05);
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .logo { display: flex; align-items: center; gap: 10px; }
         .logo-icon { font-size: 28px; color: #00ffff; }
         .logo-text { font-size: 22px; font-weight: bold; }
-        .nav-actions { display: flex; gap: 10px; align-items: center; }
+        .nav-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .nav-actions button {
-            padding: 8px 20px;
+            padding: 8px 18px;
             border-radius: 50px;
             border: none;
             font-size: 14px;
@@ -61,26 +53,24 @@
             color: #fff;
             display: none;
         }
-        #logoutBtn:hover { background: rgba(255,0,0,0.3); }
         .user-badge {
             color: #00ffff;
-            font-size: 14px;
+            font-size: 13px;
             display: none;
+            background: rgba(0,255,255,0.1);
+            padding: 5px 12px;
+            border-radius: 50px;
         }
         
-        /* ===== সেভ সেকশন ===== */
+        /* সেভ সেকশন */
         .save-section {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.06);
             border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 30px;
+            padding: 20px;
+            margin-bottom: 25px;
         }
-        .save-section h2 {
-            font-size: 20px;
-            margin-bottom: 15px;
-            color: #00ffff;
-        }
+        .save-section h2 { font-size: 18px; margin-bottom: 12px; color: #00ffff; }
         .save-section textarea {
             width: 100%;
             padding: 14px;
@@ -90,17 +80,16 @@
             color: white;
             font-size: 15px;
             resize: vertical;
-            min-height: 80px;
+            min-height: 70px;
             outline: none;
             font-family: inherit;
         }
-        .save-section textarea:focus {
-            border-color: #00ffff;
-        }
+        .save-section textarea:focus { border-color: #00ffff; }
         .input-row {
             display: flex;
             gap: 10px;
             margin-top: 12px;
+            flex-wrap: wrap;
         }
         .input-row input {
             flex: 1;
@@ -111,12 +100,11 @@
             color: white;
             font-size: 14px;
             outline: none;
+            min-width: 150px;
         }
-        .input-row input:focus {
-            border-color: #00ffff;
-        }
+        .input-row input:focus { border-color: #00ffff; }
         .btn-primary {
-            padding: 12px 30px;
+            padding: 12px 28px;
             border-radius: 50px;
             border: none;
             background: linear-gradient(135deg, #00ffff, #0066ff);
@@ -130,13 +118,8 @@
         .btn-primary:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(0,255,255,0.2); }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
         
-        /* ===== ফিল্টার ===== */
-        .filters {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin: 20px 0;
-        }
+        /* ফিল্টার */
+        .filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 15px 0; }
         .filter-btn {
             padding: 6px 18px;
             border-radius: 50px;
@@ -147,25 +130,21 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .filter-btn.active {
-            background: rgba(0,255,255,0.15);
-            border-color: #00ffff;
-            color: #00ffff;
-        }
+        .filter-btn.active { background: rgba(0,255,255,0.15); border-color: #00ffff; color: #00ffff; }
         .filter-btn:hover { border-color: #00ffff; color: #fff; }
         
-        /* ===== মেমোরি কার্ড ===== */
+        /* মেমোরি কার্ড */
         #memoriesList {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-top: 15px;
+            gap: 12px;
+            margin-top: 12px;
         }
         .memory-card {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.06);
             border-radius: 16px;
-            padding: 18px 20px;
+            padding: 16px 18px;
             transition: 0.3s;
         }
         .memory-card:hover { border-color: rgba(0,255,255,0.2); }
@@ -173,34 +152,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .memory-type {
-            font-size: 12px;
-            padding: 3px 12px;
+            font-size: 11px;
+            padding: 2px 12px;
             border-radius: 50px;
             background: rgba(0,255,255,0.1);
             color: #00ffff;
             text-transform: uppercase;
         }
-        .memory-content {
-            color: #ddd;
-            font-size: 15px;
-            word-break: break-word;
-        }
-        .memory-content a {
-            color: #00ffff;
-            text-decoration: none;
-        }
-        .memory-content a:hover { text-decoration: underline; }
-        .empty-message {
-            text-align: center;
-            color: #666;
-            padding: 40px 0;
-            font-size: 16px;
-        }
+        .memory-content { color: #ddd; font-size: 15px; word-break: break-word; }
+        .memory-content a { color: #00ffff; text-decoration: none; }
+        .empty-message { text-align: center; color: #666; padding: 30px 0; font-size: 15px; }
         
-        /* ===== ড্রপডাউন মেনু ===== */
+        /* ড্রপডাউন */
         .menu-container { position: relative; }
         .three-dots {
             background: none;
@@ -210,7 +176,6 @@
             cursor: pointer;
             padding: 0 8px;
         }
-        .three-dots:hover { color: #fff; }
         .dropdown-menu {
             position: absolute;
             right: 0;
@@ -234,20 +199,19 @@
             font-size: 14px;
             cursor: pointer;
         }
-        .dropdown-menu button:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .dropdown-menu button:hover { background: rgba(255,255,255,0.05); }
         .dropdown-menu .delete-btn-menu { color: #ff6666; }
-        .dropdown-menu .delete-btn-menu:hover { background: rgba(255,0,0,0.1); }
         
-        /* ===== টোস্ট ===== */
+        /* টোস্ট */
         .toast {
             position: fixed;
-            bottom: 30px;
+            bottom: 20px;
             left: 50%;
-            transform: translateX(-50%) translateY(100px);
+            transform: translateX(-50%) translateY(80px);
             background: #1a1a2e;
             border: 1px solid rgba(0,255,255,0.2);
             color: #fff;
-            padding: 14px 28px;
+            padding: 12px 24px;
             border-radius: 50px;
             font-size: 14px;
             opacity: 0;
@@ -255,39 +219,24 @@
             z-index: 999;
             max-width: 90%;
             text-align: center;
+            pointer-events: none;
         }
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-        .toast.error {
-            border-color: #ff4444;
-            background: #2a0a0a;
-        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.error { border-color: #ff4444; background: #2a0a0a; }
         
-        /* ===== ফুটার ===== */
-        .footer {
-            text-align: center;
-            padding: 30px 0 10px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            margin-top: 30px;
-            color: #555;
-            font-size: 14px;
-        }
+        .footer { text-align: center; padding: 30px 0 10px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 20px; color: #555; font-size: 13px; }
         
-        /* ===== রেস্পন্সিভ ===== */
-        @media (max-width: 600px) {
+        @media (max-width: 500px) {
             .input-row { flex-direction: column; }
             .btn-primary { width: 100%; justify-content: center; }
-            .navbar { flex-wrap: wrap; gap: 10px; }
+            .navbar { flex-direction: column; align-items: flex-start; }
             .nav-actions { width: 100%; justify-content: flex-start; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        
-        <!-- ===== ন্যাভবার ===== -->
+        <!-- ন্যাভবার -->
         <nav class="navbar">
             <div class="logo">
                 <i class="fas fa-brain logo-icon"></i>
@@ -300,7 +249,7 @@
             </div>
         </nav>
         
-        <!-- ===== সেভ সেকশন ===== -->
+        <!-- সেভ সেকশন -->
         <div class="save-section">
             <h2><i class="fas fa-pen"></i> Save a Memory</h2>
             <textarea id="noteInput" placeholder="Write a note..."></textarea>
@@ -310,33 +259,33 @@
             </div>
         </div>
         
-        <!-- ===== ফিল্টার ===== -->
+        <!-- ফিল্টার -->
         <div class="filters">
             <button class="filter-btn active" data-filter="all">All</button>
             <button class="filter-btn" data-filter="note">Notes</button>
             <button class="filter-btn" data-filter="link">Links</button>
         </div>
         
-        <!-- ===== মেমোরি লিস্ট ===== -->
+        <!-- মেমোরি লিস্ট -->
         <div id="memoriesList">
-            <div class="empty-message">Sign in to start saving memories</div>
+            <div class="empty-message">⏳ Loading...</div>
         </div>
         
-        <!-- ===== ফুটার ===== -->
-        <div class="footer">
-            Vaenorix — Your AI Second Brain
-        </div>
+        <div class="footer">Vaenorix — Your AI Second Brain</div>
     </div>
     
-    <!-- ===== টোস্ট ===== -->
     <div id="toast" class="toast"></div>
-    
+
     <!-- ============================================================ -->
-    <!-- ===== মূল JavaScript (Firebase + সব লজিক) ===== -->
+    <!--  Firebase SDK লোড (আপডেটেড ভার্সন) -->
     <!-- ============================================================ -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
     <script>
         // ============================================================
-        // ১. Firebase কনফিগারেশন (আপনার দেওয়া ডেটা)
+        //  কনফিগারেশন (আপনার দেওয়া ডেটা)
         // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyB4SxkLnozpPFv7O_jGljLvNXQW-Lbnapc",
@@ -354,10 +303,10 @@
         const db = firebase.firestore();
         const GoogleAuthProvider = new firebase.auth.GoogleAuthProvider();
 
-        console.log("✅ Firebase connected!");
+        console.log("✅ Firebase initialized!");
 
         // ============================================================
-        // ২. DOM এলিমেন্ট গুলো
+        //  ডম এলিমেন্ট
         // ============================================================
         const noteInput = document.getElementById('noteInput');
         const linkInput = document.getElementById('linkInput');
@@ -373,21 +322,19 @@
         let currentFilter = 'all';
 
         // ============================================================
-        // ৩. টোস্ট ফাংশন
+        //  টোস্ট ফাংশন
         // ============================================================
-        function showToast(message, isError = false) {
-            toast.textContent = message;
+        function showToast(msg, isError = false) {
+            toast.textContent = msg;
             toast.className = 'toast';
             if (isError) toast.classList.add('error');
             toast.classList.add('show');
             clearTimeout(toast._timer);
-            toast._timer = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         // ============================================================
-        // ৪. Firebase Auth স্টেট চেক
+        //  অথ স্টেট চেক
         // ============================================================
         auth.onAuthStateChanged(async (user) => {
             if (user) {
@@ -408,7 +355,7 @@
         });
 
         // ============================================================
-        // ৫. লগইন / লগআউট
+        //  লগইন/লগআউট
         // ============================================================
         loginBtn.onclick = () => {
             auth.signInWithPopup(GoogleAuthProvider)
@@ -417,13 +364,11 @@
         };
 
         logoutBtn.onclick = () => {
-            auth.signOut()
-                .then(() => showToast('Signed out'))
-                .catch(() => showToast('Logout failed', true));
+            auth.signOut().then(() => showToast('Signed out'));
         };
 
         // ============================================================
-        // ৬. মেমোরি লোড করা
+        //  ডাটা লোড
         // ============================================================
         async function loadMemories() {
             if (!currentUser) return;
@@ -432,23 +377,21 @@
                     .orderBy('timestamp', 'desc')
                     .get();
                 memories = [];
-                snapshot.forEach(doc => {
-                    memories.push({ id: doc.id, ...doc.data() });
-                });
+                snapshot.forEach(doc => memories.push({ id: doc.id, ...doc.data() }));
                 renderMemories();
-            } catch (error) {
-                console.error('Load error:', error);
-                memoriesList.innerHTML = '<div class="empty-message">❌ Failed to load memories</div>';
+            } catch (e) {
+                console.error(e);
+                memoriesList.innerHTML = '<div class="empty-message">❌ Error loading data</div>';
             }
         }
 
         // ============================================================
-        // ৭. মেমোরি রেন্ডার করা
+        //  রেন্ডার
         // ============================================================
         function renderMemories() {
             if (!currentUser) return;
             if (memories.length === 0) {
-                memoriesList.innerHTML = '<div class="empty-message">📭 No memories yet. Save one!</div>';
+                memoriesList.innerHTML = '<div class="empty-message">📭 No memories yet.</div>';
                 return;
             }
 
@@ -458,7 +401,7 @@
             }
 
             if (filtered.length === 0) {
-                memoriesList.innerHTML = '<div class="empty-message">🔍 No memories found</div>';
+                memoriesList.innerHTML = '<div class="empty-message">🔍 No matches</div>';
                 return;
             }
 
@@ -475,14 +418,12 @@
                         </div>
                     </div>
                     <div class="memory-content">
-                        ${m.type === 'link' 
-                            ? `<a href="${m.content}" target="_blank">${m.content}</a>` 
-                            : m.content}
+                        ${m.type === 'link' ? `<a href="${m.content}" target="_blank">${m.content}</a>` : m.content}
                     </div>
                 </div>
             `).join('');
 
-            // ===== ড্রপডাউন মেনু =====
+            // ড্রপডাউন
             document.querySelectorAll('.three-dots').forEach(btn => {
                 btn.onclick = (e) => {
                     e.stopPropagation();
@@ -493,54 +434,78 @@
                 };
             });
 
-            // ===== Edit =====
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.onclick = (e) => {
                     e.stopPropagation();
                     const id = btn.dataset.id;
-                    const memory = memories.find(m => m.id === id);
-                    if (memory) {
-                        const newContent = prompt('Edit memory:', memory.content);
-                        if (newContent && newContent.trim()) {
-                            updateMemory(id, newContent.trim());
-                        }
+                    const mem = memories.find(m => m.id === id);
+                    if (mem) {
+                        const newContent = prompt('Edit:', mem.content);
+                        if (newContent && newContent.trim()) updateMemory(id, newContent.trim());
                     }
                     document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
                 };
             });
 
-            // ===== Delete =====
             document.querySelectorAll('.delete-btn-menu').forEach(btn => {
                 btn.onclick = (e) => {
                     e.stopPropagation();
-                    const id = btn.dataset.id;
-                    if (confirm('Delete this memory?')) {
-                        deleteMemory(id);
-                    }
+                    if (confirm('Delete?')) deleteMemory(btn.dataset.id);
                     document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
                 };
             });
 
-            // ===== বাইরে ক্লিক করলে মেনু বন্ধ =====
-            document.onclick = () => {
-                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-            };
+            document.onclick = () => document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
         }
 
         // ============================================================
-        // ৮. মেমোরি সেভ/এডিট/ডিলিট
+        //  CRUD অপারেশন
         // ============================================================
         async function addMemory() {
-            if (!currentUser) {
-                showToast('Please sign in first!', true);
-                return;
-            }
+            if (!currentUser) { showToast('Sign in first!', true); return; }
             const note = noteInput.value.trim();
             const link = linkInput.value.trim();
-            if (!note && !link) {
-                showToast('Write something or paste a link', true);
-                return;
-            }
+            if (!note && !link) { showToast('Write something!', true); return; }
 
             const type = link ? 'link' : 'note';
-    
+            const content = link || note;
+
+            try {
+                await db.collection(`users/${currentUser.uid}/memories`).add({
+                    type, content, timestamp: new Date().toISOString()
+                });
+                showToast('✅ Saved!');
+                noteInput.value = '';
+                linkInput.value = '';
+                await loadMemories();
+            } catch (e) {
+                showToast('❌ Save failed', true);
+                console.error(e);
+            }
+        }
+
+        async function updateMemory(id, newContent) {
+            try {
+                await db.collection(`users/${currentUser.uid}/memories`).doc(id).update({ content: newContent });
+                showToast('✅ Updated');
+                await loadMemories();
+            } catch (e) { showToast('❌ Update failed', true); }
+        }
+
+        async function deleteMemory(id) {
+            try {
+                await db.collection(`users/${currentUser.uid}/memories`).doc(id).delete();
+                showToast('🗑️ Deleted');
+                await loadMemories();
+            } catch (e) { showToast('❌ Delete failed', true); }
+        }
+
+        // ============================================================
+        //  ইভেন্ট & ফিল্টার
+        // ============================================================
+        saveBtn.onclick = addMemory;
+        linkInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addMemory(); });
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.filter-btn').forEa
