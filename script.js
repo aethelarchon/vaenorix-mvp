@@ -47,11 +47,7 @@ function showToast(message, isError = false) {
 
 // ========== HELPER FUNCTIONS ==========
 function getTypeIcon(type) {
-    const icons = {
-        'note': '📝',
-        'link': '🔗',
-        'image': '📸'
-    };
+    const icons = { 'note': '📝', 'link': '🔗', 'image': '📸' };
     return icons[type] || '📄';
 }
 
@@ -88,17 +84,9 @@ function downloadImage(imageUrl) {
 function showImageModal(imageUrl) {
     const modal = document.createElement('div');
     modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-        cursor: pointer;
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9); display: flex; align-items: center;
+        justify-content: center; z-index: 10000; cursor: pointer;
     `;
     modal.innerHTML = `<img src="${imageUrl}" alt="Full Image" style="max-width: 90%; max-height: 90%; border-radius: 8px;">`;
     modal.addEventListener('click', () => modal.remove());
@@ -119,7 +107,6 @@ function shareMemory(content, type) {
 // ========== DOM READY ==========
 document.addEventListener('DOMContentLoaded', function() {
 
-    // ========== DOM ELEMENTS ==========
     const noteInput = document.getElementById('noteInput');
     const linkInput = document.getElementById('linkInput');
     const saveBtn = document.getElementById('saveBtn');
@@ -130,25 +117,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const clearAllBtn = document.getElementById('clearAllBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const uploadArea = document.getElementById('uploadArea');
+    const screenshotInput = document.getElementById('screenshotInput');
 
-    // ========== STATE ==========
     let memories = [];
     let currentUser = null;
     let currentFilter = 'all';
 
-    // ========== WAIT FOR FIREBASE TO LOAD ==========
     function waitForFirebase() {
         return new Promise((resolve) => {
             let attempts = 0;
             const checkFirebase = setInterval(() => {
                 if (window.auth && window.db) {
                     clearInterval(checkFirebase);
-                    console.log('✅ Firebase loaded successfully');
+                    console.log('✅ Firebase loaded');
                     resolve();
                 } else if (attempts > 50) {
                     clearInterval(checkFirebase);
-                    console.error('❌ Firebase failed to load');
-                    showToast('Firebase connection failed', true);
+                    console.error('❌ Firebase failed');
                     resolve();
                 }
                 attempts++;
@@ -156,15 +144,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ========== AUTH STATE ==========
     waitForFirebase().then(() => {
-        if (!window.auth) {
-            console.error('Firebase Auth not available');
-            return;
-        }
-
+        if (!window.auth) return;
         window.onAuthStateChanged(window.auth, async (user) => {
-            console.log('Auth state changed:', user ? user.email : 'logged out');
             const avatarImg = document.getElementById('userAvatar');
             if (user) {
                 currentUser = user;
@@ -180,55 +162,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentUser = null;
                 if (loginBtn) loginBtn.style.display = 'inline-block';
                 if (logoutBtn) logoutBtn.style.display = 'none';
-                if (avatarImg) {
-                    avatarImg.style.display = 'none';
-                }
-                if (memoriesList) {
-                    memoriesList.innerHTML = '<div class="empty-message">🔐 Please sign in to see your memories</div>';
-                }
+                if (avatarImg) avatarImg.style.display = 'none';
+                if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">🔐 Please sign in to see your memories</div>';
             }
         });
     });
 
-    // ========== LOGIN ==========
     async function login() {
         if (!window.auth || !window.GoogleAuthProvider) {
-            showToast('Firebase not ready. Please refresh the page.', true);
+            showToast('Firebase not ready. Please refresh.', true);
             return;
         }
         const provider = new window.GoogleAuthProvider();
         try {
-            console.log('Attempting login...');
             await window.signInWithPopup(window.auth, provider);
         } catch (error) {
-            console.error('Login error:', error);
             if (error.code !== 'auth/cancelled-popup-request') {
                 showToast("Login failed: " + error.message, true);
             }
         }
     }
 
-    // ========== LOGOUT ==========
     async function logout() {
         if (!window.auth) return;
         try {
-            console.log('Logging out...');
             await window.auth.signOut();
-            showToast('Logged out successfully');
+            showToast('Logged out');
         } catch (error) {
-            console.error('Logout error:', error);
             showToast("Logout failed", true);
         }
     }
 
-    // ========== LOAD MEMORIES ==========
     async function loadMemories() {
-        if (!currentUser || !window.db) {
-            console.log('Cannot load memories - user or db not available');
-            return;
-        }
+        if (!currentUser || !window.db) return;
         try {
-            console.log('Loading memories for user:', currentUser.uid);
             const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
             const q = window.query(memoriesRef, window.orderBy("timestamp", "desc"));
             const querySnapshot = await window.getDocs(q);
@@ -236,19 +203,14 @@ document.addEventListener('DOMContentLoaded', function() {
             querySnapshot.forEach((doc) => {
                 memories.push({ id: doc.id, ...doc.data() });
             });
-            console.log('Loaded', memories.length, 'memories');
             renderMemories();
             updateMemoryCounter();
         } catch (error) {
             console.error("Load error:", error);
-            if (memoriesList) {
-                memoriesList.innerHTML = '<div class="empty-message">❌ Error loading memories</div>';
-            }
-            showToast("Failed to load memories", true);
+            if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">❌ Error loading</div>';
         }
     }
 
-    // ========== UPDATE COUNTER ==========
     function updateMemoryCounter() {
         const counterSpan = document.getElementById('memoryCount');
         if (counterSpan) {
@@ -257,7 +219,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ========== GET FILTERED MEMORIES ==========
     function getFilteredMemories(filterText = '') {
         let filtered = memories;
         if (currentFilter !== 'all') {
@@ -271,7 +232,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return filtered;
     }
 
-    // ========== DELETE MEMORY ==========
     async function deleteMemory(id) {
         if (!currentUser || !window.db) return;
         try {
@@ -279,12 +239,10 @@ document.addEventListener('DOMContentLoaded', function() {
             showToast('🗑️ Memory deleted');
             await loadMemories();
         } catch (error) {
-            console.error('Delete error:', error);
             showToast("Failed to delete", true);
         }
     }
 
-    // ========== EDIT MEMORY ==========
     async function editMemory(id, newContent) {
         if (!currentUser || !window.db) return;
         if (!newContent || !newContent.trim()) {
@@ -294,42 +252,30 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const memoryRef = window.doc(window.db, `users/${currentUser.uid}/memories`, id);
             await window.updateDoc(memoryRef, { content: newContent.trim() });
-            showToast('✏️ Memory updated');
+            showToast('✏️ Updated');
             await loadMemories();
         } catch (error) {
-            console.error('Edit error:', error);
             showToast("Failed to edit", true);
         }
     }
 
-    // ========== DELETE ALL MEMORIES ==========
     async function deleteAllMemories() {
-        if (!currentUser) {
-            showToast('Please sign in first!', true);
-            return;
-        }
-        if (memories.length === 0) {
-            showToast('No memories to clear', true);
-            return;
-        }
-        if (!confirm('⚠️ Are you sure? This will delete ALL your memories permanently!')) {
-            return;
-        }
+        if (!currentUser) { showToast('Please sign in!', true); return; }
+        if (memories.length === 0) { showToast('No memories', true); return; }
+        if (!confirm('⚠️ Delete ALL memories permanently?')) return;
         try {
             const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
             const querySnapshot = await window.getDocs(memoriesRef);
             for (const doc of querySnapshot.docs) {
                 await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, doc.id));
             }
-            showToast('🧹 All memories cleared!');
+            showToast('🧹 Cleared!');
             await loadMemories();
         } catch (error) {
-            console.error("Clear all error:", error);
-            showToast('Failed to clear memories', true);
+            showToast('Failed to clear', true);
         }
     }
 
-    // ========== FETCH LINK PREVIEW ==========
     async function fetchLinkPreview(url) {
         try {
             const response = await fetch('/api/preview', {
@@ -337,55 +283,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url })
             });
-            const data = await response.json();
-            return data;
+            return await response.json();
         } catch (error) {
-            console.error('Preview fetch error:', error);
             return null;
         }
     }
 
-    // ========== RENDER MEMORIES ==========
     function renderMemories(filterText = '') {
         if (!currentUser) return;
-
         if (memories.length === 0) {
-            if (memoriesList) {
-                memoriesList.innerHTML = '<div class="empty-message">📭 No memories yet. Save your first one!</div>';
-            }
+            if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">📭 No memories yet!</div>';
             return;
         }
-
         const filtered = getFilteredMemories(filterText);
-
         if (filtered.length === 0) {
-            if (memoriesList) {
-                memoriesList.innerHTML = '<div class="empty-message">🔍 No memories found</div>';
-            }
+            if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">🔍 No memories found</div>';
             return;
         }
-
         if (memoriesList) {
             memoriesList.innerHTML = filtered.map((memory) => {
                 let contentHtml = '';
                 if (memory.type === 'link') {
-                    contentHtml = `
-                        <a href="${escapeHtml(memory.content)}" target="_blank" class="memory-link">${escapeHtml(memory.content)}</a>
-                        <div class="link-preview-container" data-url="${escapeHtml(memory.content)}">
-                            <div class="loading-preview">Loading preview...</div>
-                        </div>
-                    `;
+                    contentHtml = `<a href="${escapeHtml(memory.content)}" target="_blank" class="memory-link">${escapeHtml(memory.content)}</a>`;
                 } else if (memory.type === 'image') {
-                    contentHtml = `
-                        <div style="position: relative;">
-                            <img src="${escapeHtml(memory.content)}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${escapeHtml(memory.content)}')">
-                            <button class="download-btn" onclick="downloadImage('${escapeHtml(memory.content)}')">⬇️ Download</button>
-                        </div>
-                    `;
+                    contentHtml = `<div style="position: relative;"><img src="${escapeHtml(memory.content)}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${escapeHtml(memory.content)}')"><button class="download-btn" onclick="downloadImage('${escapeHtml(memory.content)}')">⬇️ Download</button></div>`;
                 } else {
                     contentHtml = `<div class="note-content">${escapeHtml(memory.content)}</div>`;
                 }
-
                 return `
                     <div class="memory-card">
                         <div class="memory-header">
@@ -399,18 +323,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                         </div>
-                        <div class="memory-content">
-                            ${contentHtml}
-                        </div>
+                        <div class="memory-content">${contentHtml}</div>
                         <div class="memory-time">${formatTime(memory.timestamp)}</div>
                     </div>
                 `;
             }).join('');
         }
 
-        // ===== ATTACH EVENTS =====
-
-        // Three dots menu toggle
         document.querySelectorAll('.three-dots').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -421,91 +340,57 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Edit
         document.querySelectorAll('.edit-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 const id = this.getAttribute('data-id');
                 const memory = memories.find(m => m.id === id);
                 if (memory) {
-                    const newContent = prompt('✏️ Edit your memory:', memory.content);
-                    if (newContent !== null && newContent.trim()) {
-                        editMemory(id, newContent.trim());
-                    }
+                    const newContent = prompt('✏️ Edit:', memory.content);
+                    if (newContent !== null && newContent.trim()) editMemory(id, newContent.trim());
                 }
                 document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
             });
         });
 
-        // Delete
         document.querySelectorAll('.delete-btn-menu').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 const id = this.getAttribute('data-id');
-                if (confirm('Delete this memory?')) {
-                    deleteMemory(id);
-                }
+                if (confirm('Delete this memory?')) deleteMemory(id);
                 document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
             });
         });
 
-        // Share
         document.querySelectorAll('.share-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 const id = this.getAttribute('data-id');
                 const memory = memories.find(m => m.id === id);
-                if (memory) {
-                    shareMemory(memory.content, memory.type);
-                }
+                if (memory) shareMemory(memory.content, memory.type);
                 document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
             });
         });
 
-        // Close dropdown on outside click
         document.addEventListener('click', function() {
             document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
         });
-
-        // ===== LOAD LINK PREVIEWS =====
-        document.querySelectorAll('.link-preview-container').forEach(async (container) => {
-            const url = container.getAttribute('data-url');
-            const preview = await fetchLinkPreview(url);
-            if (preview && preview.title) {
-                container.innerHTML = `
-                    <a href="${escapeHtml(url)}" target="_blank" class="link-preview">
-                        ${preview.image ? `<img src="${escapeHtml(preview.image)}" class="link-preview-img" onerror="this.style.display='none'">` : ''}
-                        <div class="link-preview-content">
-                            <div class="link-preview-title">${escapeHtml(preview.title.substring(0, 60))}</div>
-                            <div class="link-preview-desc">${preview.description ? escapeHtml(preview.description.substring(0, 80)) : 'No description'}</div>
-                        </div>
-                    </a>
-                `;
-            } else {
-                container.innerHTML = '';
-            }
-        });
     }
 
-    // ========== ADD MEMORY ==========
     async function addMemory() {
         if (!currentUser) {
             showToast('Please sign in first!', true);
             login();
             return;
         }
-
         const note = noteInput ? noteInput.value.trim() : '';
         const link = linkInput ? linkInput.value.trim() : '';
-
         if (!note && !link) {
             showToast('Please write a note or paste a link', true);
             return;
         }
-
         let type = '';
         let content = '';
-
         if (note) {
             type = 'note';
             content = note;
@@ -514,13 +399,130 @@ document.addEventListener('DOMContentLoaded', function() {
             type = 'link';
             content = link;
             if (linkInput) linkInput.value = '';
-            if (saveBtn) {
-                saveBtn.disabled = true;
-                saveBtn.innerHTML = '⏳ Saving...';
-                saveBtn.classList.add('btn-loading');
-            }
         }
-
         try {
-            console.log('Saving memory:', type);
-            const memoriesRef = window.collec
+            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+            await window.addDoc(memoriesRef, {
+                type: type,
+                content: content,
+                timestamp: Date.now()
+            });
+            showToast('💾 Saved!');
+            await loadMemories();
+        } catch (error) {
+            console.error('Save error:', error);
+            showToast("Failed to save", true);
+        }
+    }
+
+    async function uploadScreenshot(file) {
+        if (!currentUser) { showToast('Please sign in!', true); return; }
+        try {
+            showToast('⏳ Compressing image...');
+            const compressed = await compressImage(file);
+            const reader = new FileReader();
+            reader.readAsDataURL(compressed);
+            reader.onload = async (e) => {
+                const dataUrl = e.target.result;
+                try {
+                    const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+                    await window.addDoc(memoriesRef, {
+                        type: 'image',
+                        content: dataUrl,
+                        timestamp: Date.now()
+                    });
+                    showToast('📸 Image saved!');
+                    await loadMemories();
+                } catch (error) {
+                    showToast('Failed to save image', true);
+                }
+            };
+        } catch (error) {
+            showToast('Image upload failed', true);
+        }
+    }
+
+    // ========== EVENT LISTENERS ==========
+    if (saveBtn) saveBtn.addEventListener('click', addMemory);
+    if (loginBtn) loginBtn.addEventListener('click', login);
+    if (logoutBtn) logoutBtn.addEventListener('click', logout);
+    if (getStartedBtn) getStartedBtn.addEventListener('click', () => {
+        if (!currentUser) login();
+        else if (noteInput) noteInput.focus();
+    });
+    if (clearAllBtn) clearAllBtn.addEventListener('click', deleteAllMemories);
+
+    if (uploadBtn) uploadBtn.addEventListener('click', () => {
+        if (screenshotInput) screenshotInput.click();
+    });
+
+    if (uploadArea) uploadArea.addEventListener('click', () => {
+        if (screenshotInput) screenshotInput.click();
+    });
+
+    if (screenshotInput) {
+        screenshotInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                uploadScreenshot(e.target.files[0]);
+                this.value = '';
+            }
+        });
+    }
+
+    if (noteInput) {
+        noteInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addMemory();
+        });
+    }
+
+    if (linkInput) {
+        linkInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addMemory();
+        });
+    }
+
+    if (searchBtn) {
+        searchBtn.addEventListener('click', () => {
+            const filterText = searchInput ? searchInput.value.trim() : '';
+            renderMemories(filterText);
+            updateMemoryCounter();
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                renderMemories(searchInput.value.trim());
+                updateMemoryCounter();
+            }
+        });
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = this.getAttribute('data-filter');
+            renderMemories();
+            updateMemoryCounter();
+        });
+    });
+
+      if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            if (memories.length === 0) { showToast('No memories to export', true); return; }
+            const dataStr = JSON.stringify(memories, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `vaenorix-backup-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('📥 Exported!');
+        });
+    }
+
+});
