@@ -266,12 +266,10 @@
             appId: "1:935840989114:web:607fc547721a6efdbc6783",
             measurementId: "G-1QHMX1R51N"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
         const GoogleAuthProvider = new firebase.auth.GoogleAuthProvider();
-
         console.log("✅ Firebase initialized!");
 
         const noteInput = document.getElementById('noteInput');

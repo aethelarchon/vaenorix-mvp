@@ -45,7 +45,7 @@ function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
 
 function escapeHtml(str) {
     if (!str) return '';
-    return str.replace(/[&<>\"]/g, function(m) {
+    return str.replace(/[&<>"]/g, function(m) {
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
@@ -91,9 +91,6 @@ const firebaseConfig = {
     messagingSenderId: "935840989114",
     appId: "1:935840989114:web:607fc547721a6efdbc6783"
 };
-
-// Initialize Firebase when the page loads via main HTML
-let app, db, auth, googleProvider;
 
 // ===== STATE =====
 let memories = [];
@@ -174,6 +171,7 @@ function renderMemories() {
     `).join('');
 }
 
+// ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
     firebase.auth().onAuthStateChanged((user) => {
         currentUser = user;
