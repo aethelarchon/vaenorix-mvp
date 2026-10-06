@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const noteInput = document.getElementById('noteInput');
     const linkInput = document.getElementById('linkInput');
     const saveBtn = document.getElementById('saveBtn');
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
+    const aiSearchInput = document.getElementById('aiSearchInput');
+    const aiSearchBtn = document.getElementById('aiSearchBtn');
     const memoriesList = document.getElementById('memoriesList');
     const getStartedBtn = document.getElementById('getStartedBtn');
     const loginBtn = document.getElementById('loginBtn');
@@ -375,7 +375,9 @@ document.querySelectorAll('.share-btn').forEach(btn => {
     }
 
     function searchMemories() {
-        renderMemories(searchInput.value.trim());
+        if (aiSearchInput) {
+            renderMemories(aiSearchInput.value.trim());
+        }
     }
 
     function scrollToSave() {
@@ -391,7 +393,11 @@ document.querySelectorAll('.share-btn').forEach(btn => {
                 filterBtns.forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 currentFilter = this.getAttribute('data-filter');
-                renderMemories(searchInput.value.trim());
+                if (aiSearchInput) {
+                    renderMemories(aiSearchInput.value.trim());
+                } else {
+                    renderMemories();
+                }
             });
         });
     }
@@ -449,16 +455,18 @@ document.querySelectorAll('.share-btn').forEach(btn => {
     }
 
     saveBtn.addEventListener('click', addMemory);
-    searchBtn.addEventListener('click', searchMemories);
+    if (aiSearchBtn) aiSearchBtn.addEventListener('click', searchMemories);
     getStartedBtn.addEventListener('click', scrollToSave);
     loginBtn.addEventListener('click', login);
     logoutBtn.addEventListener('click', logout);
     
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            searchMemories();
-        }
-    });
+    if (aiSearchInput) {
+        aiSearchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchMemories();
+            }
+        });
+    }
     
     setTimeout(initFilters, 100);
 });
@@ -503,6 +511,16 @@ window.downloadImage = async function(imageUrl) {
         showToast('Failed to download image', true);
     }
 };
+
+// Copy to Clipboard Function
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Copied to clipboard!');
+    }).catch(() => {
+        showToast('Failed to copy', true);
+    });
+}
+
 // Share Function
 window.shareMemory = function(content, type) {
     let shareText = '';
@@ -528,4 +546,9 @@ window.shareMemory = function(content, type) {
             text: shareText,
             url: shareUrl
         }).catch(() => {
-            copyToClipbo
+            copyToClipboard(fullText);
+        });
+    } else {
+        copyToClipboard(fullText);
+    }
+};
