@@ -35,174 +35,46 @@
     <link rel="stylesheet" href="style.css">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK - Fixed to version 10.7.1 -->
     <script type="module">
-      // 👇 এখানে ভুল ভার্সন (11.0.0) ঠিক করে সঠিক ভার্সন (10.7.1) বসানো হয়েছে
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
       import { getFirestore, collection, addDoc, getDocs, deleteDoc, updateDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-      import { getAuth, signInWithPopup, signInWithRedirect, GoogleAuthProvider, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-      
-      const firebaseConfig = {
-        apiKey: "AIzaSyBFsjAzJU6CaCxz_NK3BU0ct5kGN91uqpc",
-        authDomain: "vaenorix.firebaseapp.com",
-        projectId: "vaenorix",
-        storageBucket: "vaenorix.firebasestorage.app",
-        messagingSenderId: "729849613491",
-        appId: "1:729849613491:web:aec60b0b4e51129b8734c6",
-        measurementId: "G-PCRQMNP32M"
-      };
-      
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      const auth = getAuth(app);
-      
-      window.db = db;
-      window.auth = auth;
-      window.signInWithPopup = signInWithPopup;
-      window.signInWithRedirect = signInWithRedirect;
-      window.GoogleAuthProvider = GoogleAuthProvider;
-      window.onAuthStateChanged = onAuthStateChanged;
-      window.collection = collection;
-      window.addDoc = addDoc;
-      window.getDocs = getDocs;
-      window.deleteDoc = deleteDoc;
-      window.doc = doc;
-      window.query = query;
-      window.orderBy = orderBy;
-      window.updateDoc = updateDoc;  
+      import { getAuth, signInWithPopup, signInWithRedirect, GoogleAuthProvider, onAuthStateChan
     </script>
 </head>
 <body>
-
-    <div class="container">
-        <!-- Navbar -->
-        <nav class="navbar">
-            <div class="logo">
-                <i class="fas fa-brain logo-icon"></i>
-                <span class="logo-text">Vaenorix</span>
-            </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <div class="nav-badge">AI Beta</div>
-                <img id="userAvatar" class="user-avatar" src="" alt="Profile" style="display:none;">
-                <button id="loginBtn" class="login-btn"><i class="fas fa-sign-in-alt"></i> Sign in</button>
-                <button id="logoutBtn" class="logout-btn" style="display:none;"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
-            </div>
-        </nav>
-
-        <!-- Hero Section -->
-        <section class="hero">
-            <h1 class="hero-title">
-                Your <span class="glow-text">AI Second Brain</span>
-            </h1>
-            <p class="hero-desc">
-                Save anything from the internet. Find everything later.<br>
-                Your digital memory, forever organized.
-            </p>
-            <button class="btn-primary" id="getStartedBtn">
-                <i class="fas fa-rocket"></i> Start Saving Memories
-            </button>
-             <a href="/waitlist.html" class="btn-waitlist"><i class="fas fa-envelope"></i> Join Waitlist for Early Access</a>
-        </section>
-
-        <!-- Save Memory Section -->
-        <section class="save-section">
-            <h2 class="section-title"><i class="fas fa-database"></i> Save Memory</h2>
-            <div class="input-group">
-                <input type="text" id="noteInput" placeholder="Write a note... e.g., 'Startup idea: AI bookmark manager'">
-                <input type="text" id="linkInput" placeholder="Or paste a link... e.g., https://example.com">
-                <button class="btn-save" id="saveBtn">
-                    <i class="fas fa-save"></i> Save to Second Brain
-                </button>
-            </div>
-            <!-- Screenshot Upload -->
-            <div class="upload-section">
-                <div class="upload-area" id="uploadArea">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <p>Click or drag & drop screenshot</p>
-                    <input type="file" id="screenshotInput" accept="image/*" style="display:none;">
-                </div>
-                <button class="btn-upload" id="uploadBtn">
-                    <i class="fas fa-camera"></i> Upload Screenshot
-                </button>
-            </div>
-        </section>
-
-        <!-- AI Search Section -->
-<section class="search-section">
-    <h2 class="section-title"><i class="fas fa-microchip"></i> AI Memory Recall</h2>
-    <div class="search-box">
-        <input type="text" id="aiSearchInput" placeholder='Example: "Show me links from last week" or "Find my note from yesterday"'>
-        <button class="btn-search" id="aiSearchBtn">
-            <i class="fas fa-brain"></i> Ask AI
-        </button>
-    </div>
-    <div id="aiSearchResult" class="ai-result"></div>
-</section>
-
-        <!-- Saved Memories Section -->
-        <section class="memories-section">
-            <h2 class="section-title"><i class="fas fa-folder-open"></i> Saved Memories<span id="memoryCount" class="memory-count">(0)</span></h2>
-            <!-- Filter Buttons -->
-            <div class="filter-buttons">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="note">Notes</button>
-                <button class="filter-btn" data-filter="link">Links</button>
-                <button class="filter-btn" data-filter="image">Images</button>
-                <button id="clearAllBtn" class="clear-all-btn">🗑️ Clear All</button>
-                <button id="exportBtn" class="export-btn">📥 Export Data</button>
-            </div>
-            <div id="memoriesList" class="memories-list">
-                <!-- Cards will show here -->
-            </div>
-        </section>
-    </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-logo">
-                <i class="fas fa-brain"></i> Vaenorix
-            </div>
-            <div class="footer-links">
-                <a href="https://x.com/VaenorixAI" target="_blank" class="social-link">
-                    <i class="fab fa-twitter"></i> Twitter
-                </a>
-                <a href="https://github.com/vaenorix/vaenorix" target="_blank" class="social-link">
-                    <i class="fab fa-github"></i> GitHub
-                </a>
-                <a href="mailto:aethelarchon@gmail.com" class="social-link">
-                    <i class="fas fa-envelope"></i> Contact
-                </a>
-            </div>
-            <p class="footer-copyright">© 2026 Vaenorix — Your AI Second Brain</p>
-            <p class="footer-small">Save anything. Find everything later.</p>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-icon">🧠</span>
+            <span class="logo-text">Vaenorix</span>
         </div>
-    </footer>
+        <div class="nav-badge">Welcome Back</div>
+        <div class="nav-actions">
+            <button id="loginBtn" class="btn-primary">Login</button>
+            <button id="logoutBtn" class="btn-save">Export</button>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <h1 class="hero-title">Your AI Second Brain</h1>
+            <p class="hero-desc">Save anything from the internet. Find everything later.</p>
+        </section>
+
+        <section class="memories-section">
+            <h2>Memories</h2>
+            <div id="memories-container"></div>
+        </section>
+
+        <section class="actions-section">
+            <button id="saveBtn" class="btn-primary">Add Memory</button>
+            <button id="searchBtn" class="btn-search">Search</button>
+            <button id="clearAllBtn" class="btn-primary">Clear All</button>
+            <button id="exportBtn" class="btn-primary">Export Data</button>
+        </section>
+    </main>
 
     <script src="script.js"></script>
-        <script src="script.js"></script>
-    
-    <!-- 🩺 DIAGNOSTIC TOOL -->
-    <script>
-    window.addEventListener('error', function(e) {
-        const errDiv = document.createElement('div');
-        errDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ff0000;color:#fff;padding:12px;font-size:11px;z-index:99999;font-family:monospace;word-break:break-all;';
-        errDiv.textContent = '❌ ERROR: ' + e.message + ' | File: ' + (e.filename||'').split('/').pop() + ' | Line: ' + e.lineno;
-        document.body.appendChild(errDiv);
-    });
-    window.addEventListener('unhandledrejection', function(e) {
-        const errDiv = document.createElement('div');
-        errDiv.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#ff8800;color:#fff;padding:12px;font-size:11px;z-index:99999;font-family:monospace;word-break:break-all;';
-        errDiv.textContent = '⚠️ PROMISE ERROR: ' + (e.reason ? (e.reason.message||e.reason) : 'unknown');
-        document.body.appendChild(errDiv);
-    });
-    setTimeout(function(){
-        const info = document.createElement('div');
-        info.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#00bcd4;color:#000;padding:10px;font-size:11px;z-index:99998;font-family:monospace;';
-        info.textContent = '🩺 DIAG: script.js=' + (typeof window.compressImage !== 'undefined' ? '✅' : '❌') + ' | Firebase=' + (window.db ? '✅' : '❌') + ' | Auth=' + (window.auth ? '✅' : '❌');
-        document.body.appendChild(info);
-    }, 3000);
-    </script>
 </body>
-</body>
-    </html>
+</html>
