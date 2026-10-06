@@ -13,37 +13,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Vaenorix - Your AI Second Brain</title>
-    <!-- Favicon -->
-    <!-- PWA Manifest -->
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0a0a0f">
-<link rel="icon" type="image/png" href="https://img.icons8.com/fluency/48/brain.png">
-<link rel="apple-touch-icon" href="https://img.icons8.com/fluency/48/brain.png">
-    <!-- Open Graph / Social Media Meta Tags -->
-<meta property="og:title" content="Vaenorix - Your AI Second Brain">
-<meta property="og:description" content="Save anything from the internet. Find everything later. Your digital memory, forever organized.">
-<meta property="og:image" content="https://vaenorix-mvp.vercel.app/og-image.png">
-<meta property="og:url" content="https://vaenorix-mvp.vercel.app">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Vaenorix">
-
-<!-- Twitter Card Meta Tags -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Vaenorix - Your AI Second Brain">
-<meta name="twitter:description" content="Save anything from the internet. Find everything later. Your digital memory, forever organized.">
-<meta name="twitter:image" content="https://vaenorix-mvp.vercel.app/og-image.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0a0a0f">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/48/brain.png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/48/brain.png">
+    <meta property="og:title" content="Vaenorix - Your AI Second Brain">
+    <meta property="og:description" content="Save anything from the internet. Find everything later. Your digital memory, forever organized.">
+    <meta property="og:image" content="https://vaenorix-mvp.vercel.app/og-image.png">
+    <meta property="og:url" content="https://vaenorix-mvp.vercel.app">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Vaenorix">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vaenorix - Your AI Second Brain">
+    <meta name="twitter:description" content="Save anything from the internet. Find everything later. Your digital memory, forever organized.">
+    <meta name="twitter:image" content="https://vaenorix-mvp.vercel.app/og-image.png">
     <link rel="stylesheet" href="style.css">
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Firebase SDK - Fixed to version 10.7.1 -->
-    <script type="module">
-      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-      import { getFirestore, collection, addDoc, getDocs, deleteDoc, updateDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-      import { getAuth, signInWithPopup, signInWithRedirect, GoogleAuthProvider, onAuthStateChan
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="logo">
             <span class="logo-icon">🧠</span>
@@ -52,7 +42,7 @@
         <div class="nav-badge">Welcome Back</div>
         <div class="nav-actions">
             <button id="loginBtn" class="btn-primary">Login</button>
-            <button id="logoutBtn" class="btn-save">Export</button>
+            <button id="logoutBtn" class="btn-save" style="display: none;">Logout</button>
         </div>
     </nav>
 
@@ -76,5 +66,19 @@
     </main>
 
     <script src="script.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4SxkLnozpPFv7O_jGljLvNXQW-Lbnapc",
+            authDomain: "veanorix.firebaseapp.com",
+            projectId: "veanorix",
+            storageBucket: "veanorix.firebasestorage.app",
+            messagingSenderId: "935840989114",
+            appId: "1:935840989114:web:607fc547721a6efdbc6783",
+            measurementId: "G-1QHMX1R51N"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        console.log("✅ Firebase initialized!");
+    </script>
 </body>
 </html>
