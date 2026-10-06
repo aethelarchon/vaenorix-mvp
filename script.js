@@ -1,4 +1,6 @@
-// ===== VAENORIX - PART 1 =====
+// ============================================
+// VAENORIX - Full Working Script (Complete)
+// ============================================
 
 async function compressImage(file) {
     return new Promise((resolve) => {
@@ -11,10 +13,7 @@ async function compressImage(file) {
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
-                if (width > 1200) {
-                    height = (height * 1200) / width;
-                    width = 1200;
-                }
+                if (width > 1200) { height = (height * 1200) / width; width = 1200; }
                 canvas.width = width;
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
@@ -34,10 +33,7 @@ function showToast(message, isError = false) {
     toast.textContent = message;
     document.body.appendChild(toast);
     setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 2500);
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 2500);
 }
 
 function getTypeIcon(type) {
@@ -45,9 +41,7 @@ function getTypeIcon(type) {
     return icons[type] || '📄';
 }
 
-function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
+function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
 
 function escapeHtml(str) {
     if (!str) return '';
@@ -89,8 +83,7 @@ function shareMemory(content) {
     } else {
         showToast('Share not supported', true);
     }
-            }
-// ===== VAENORIX - PART 2 =====
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const noteInput = document.getElementById('noteInput');
@@ -125,6 +118,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     waitForFirebase().then(() => {
         if (!window.auth) return;
+        if (window.getRedirectResult) {
+            window.getRedirectResult(window.auth).catch((e) => console.log('Redirect error:', e));
+        }
         window.onAuthStateChanged(window.auth, async (user) => {
             const avatarImg = document.getElementById('userAvatar');
             if (user) {
@@ -145,16 +141,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     async function login() {
-        if (!window.auth || !window.GoogleAuthProvider) {
-            showToast('Firebase not ready', true);
-            return;
-        }
+        if (!window.auth || !window.GoogleAuthProvider) { showToast('Firebase not ready', true); return; }
         const provider = new window.GoogleAuthProvider();
-        try {
-            await window.signInWithRedirect(window.auth, provider);
-        } catch (error) {
-            showToast('Login failed: ' + error.message, true);
-        }
+        try { await window.signInWithRedirect(window.auth, provider); }
+        catch (error) { showToast('Login failed: ' + error.message, true); }
     }
 
     async function logout() {
@@ -173,9 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
             snap.forEach((d) => memories.push({ id: d.id, ...d.data() }));
             renderMemories();
             updateMemoryCounter();
-        } catch (e) {
-            if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">❌ Error loading</div>';
-        }
+        } catch (e) { if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">❌ Error loading</div>'; }
     }
 
     function updateMemoryCounter() {
@@ -192,20 +180,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function deleteMemory(id) {
         if (!currentUser || !window.db) return;
-        try {
-            await window.deleteDoc(window.doc(window.db, 'users/' + currentUser.uid + '/memories', id));
-            showToast('🗑️ Deleted');
-            await loadMemories();
-        } catch (e) { showToast('Failed to delete', true); }
+        try { await window.deleteDoc(window.doc(window.db, 'users/' + currentUser.uid + '/memories', id)); showToast('🗑️ Deleted'); await loadMemories(); }
+        catch (e) { showToast('Failed to delete', true); }
     }
 
     async function editMemory(id, newContent) {
         if (!currentUser || !window.db) return;
-        try {
-            await window.updateDoc(window.doc(window.db, 'users/' + currentUser.uid + '/memories', id), { content: newContent.trim() });
-            showToast('✏️ Updated');
-            await loadMemories();
-        } catch (e) { showToast('Failed', true); }
+        try { await window.updateDoc(window.doc(window.db, 'users/' + currentUser.uid + '/memories', id), { content: newContent.trim() }); showToast('✏️ Updated'); await loadMemories(); }
+        catch (e) { showToast('Failed', true); }
     }
 
     async function deleteAllMemories() {
@@ -215,75 +197,48 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const ref = window.collection(window.db, 'users/' + currentUser.uid + '/memories');
             const snap = await window.getDocs(ref);
-            for (const d of snap.docs) {
-                await window.deleteDoc(window.doc(window.db, 'users/' + currentUser.uid + '/memories', d.id));
-            }
-            showToast('🧹 Cleared');
-            await loadMemories();
+            for (const d of snap.docs) { await window.deleteDoc(window.doc(window.db, 'users/' + currentUser.uid + '/memories', d.id)); }
+            showToast('🧹 Cleared'); await loadMemories();
         } catch (e) { showToast('Failed', true); }
-                }
-    // ===== VAENORIX - PART 3 =====
+    }
 
     function renderMemories(filterText = '') {
         if (!currentUser) return;
-        if (memories.length === 0) {
-            if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">📭 No memories yet!</div>';
-            return;
-        }
+        if (memories.length === 0) { if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">📭 No memories yet!</div>'; return; }
         const filtered = getFilteredMemories(filterText);
-        if (filtered.length === 0) {
-            if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">🔍 Nothing found</div>';
-            return;
-        }
+        if (filtered.length === 0) { if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">🔍 Nothing found</div>'; return; }
         if (memoriesList) {
             memoriesList.innerHTML = filtered.map((m) => {
                 let html = '';
-                if (m.type === 'link') {
-                    html = '<a href="' + escapeHtml(m.content) + '" target="_blank" class="memory-link">' + escapeHtml(m.content) + '</a>';
-                } else if (m.type === 'image') {
-                    html = '<div><img src="' + escapeHtml(m.content) + '" class="clickable-image" onclick="showImageModal(\'' + escapeHtml(m.content) + '\')"><button class="download-btn" onclick="downloadImage(\'' + escapeHtml(m.content) + '\')">⬇️ Download</button></div>';
-                } else {
-                    html = '<div class="note-content">' + escapeHtml(m.content) + '</div>';
-                }
+                if (m.type === 'link') { html = '<a href="' + escapeHtml(m.content) + '" target="_blank" class="memory-link">' + escapeHtml(m.content) + '</a>'; }
+                else if (m.type === 'image') { html = '<div><img src="' + escapeHtml(m.content) + '" class="clickable-image" onclick="showImageModal(\'' + escapeHtml(m.content) + '\')"><button class="download-btn" onclick="downloadImage(\'' + escapeHtml(m.content) + '\')">⬇️ Download</button></div>'; }
+                else { html = '<div class="note-content">' + escapeHtml(m.content) + '</div>'; }
                 return '<div class="memory-card"><div class="memory-header"><div class="memory-type">' + getTypeIcon(m.type) + ' ' + capitalize(m.type) + '</div><div class="menu-container"><button class="three-dots" data-id="' + m.id + '">⋯</button><div class="dropdown-menu" id="menu-' + m.id + '"><button class="edit-btn" data-id="' + m.id + '">✏️ Edit</button><button class="delete-btn-menu" data-id="' + m.id + '">🗑️ Delete</button></div></div></div><div class="memory-content">' + html + '</div><div class="memory-time">' + formatTime(m.timestamp) + '</div></div>';
             }).join('');
         }
-
         document.querySelectorAll('.three-dots').forEach(btn => {
             btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const id = this.getAttribute('data-id');
+                e.stopPropagation(); const id = this.getAttribute('data-id');
                 document.querySelectorAll('.dropdown-menu').forEach(x => x.classList.remove('show'));
-                const menu = document.getElementById('menu-' + id);
-                if (menu) menu.classList.toggle('show');
+                const menu = document.getElementById('menu-' + id); if (menu) menu.classList.toggle('show');
             });
         });
-
         document.querySelectorAll('.edit-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const id = this.getAttribute('data-id');
+                e.stopPropagation(); const id = this.getAttribute('data-id');
                 const m = memories.find(x => x.id === id);
-                if (m) {
-                    const nc = prompt('✏️ Edit:', m.content);
-                    if (nc !== null && nc.trim()) editMemory(id, nc.trim());
-                }
+                if (m) { const nc = prompt('✏️ Edit:', m.content); if (nc !== null && nc.trim()) editMemory(id, nc.trim()); }
                 document.querySelectorAll('.dropdown-menu').forEach(x => x.classList.remove('show'));
             });
         });
-
         document.querySelectorAll('.delete-btn-menu').forEach(btn => {
             btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const id = this.getAttribute('data-id');
+                e.stopPropagation(); const id = this.getAttribute('data-id');
                 if (confirm('Delete?')) deleteMemory(id);
                 document.querySelectorAll('.dropdown-menu').forEach(x => x.classList.remove('show'));
             });
         });
-
-        document.addEventListener('click', function() {
-            document.querySelectorAll('.dropdown-menu').forEach(x => x.classList.remove('show'));
-        });
+        document.addEventListener('click', function() { document.querySelectorAll('.dropdown-menu').forEach(x => x.classList.remove('show')); });
     }
 
     async function addMemory() {
@@ -297,8 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const ref = window.collection(window.db, 'users/' + currentUser.uid + '/memories');
             await window.addDoc(ref, { type: type, content: content, timestamp: Date.now() });
-            showToast('💾 Saved!');
-            await loadMemories();
+            showToast('💾 Saved!'); await loadMemories();
         } catch (e) { showToast('Failed to save', true); }
     }
 
@@ -313,8 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 try {
                     const ref = window.collection(window.db, 'users/' + currentUser.uid + '/memories');
                     await window.addDoc(ref, { type: 'image', content: e.target.result, timestamp: Date.now() });
-                    showToast('📸 Saved!');
-                    await loadMemories();
+                    showToast('📸 Saved!'); await loadMemories();
                 } catch (err) { showToast('Failed', true); }
             };
         } catch (e) { showToast('Upload failed', true); }
@@ -337,23 +290,16 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            currentFilter = this.getAttribute('data-filter');
-            renderMemories();
-            updateMemoryCounter();
+            this.classList.add('active'); currentFilter = this.getAttribute('data-filter');
+            renderMemories(); updateMemoryCounter();
         });
     });
     if (exportBtn) exportBtn.addEventListener('click', () => {
         if (memories.length === 0) { showToast('No data', true); return; }
         const blob = new Blob([JSON.stringify(memories, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'vaenorix-backup.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        const a = document.createElement('a'); a.href = url; a.download = 'vaenorix-backup.json';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
         showToast('📥 Exported!');
     });
 });
