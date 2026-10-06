@@ -34,39 +34,24 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <script type="module">
-      import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
-      import { getFirestore, collection, addDoc, getDocs, deleteDoc, updateDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js';
-      import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
+    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js"></script>
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyBFsjAzJU6CaCxz_NK3BU0ct5kGN91uqpc",
+          authDomain: "vaenorix.firebaseapp.com",
+          projectId: "vaenorix",
+          storageBucket: "vaenorix.firebasestorage.app",
+          messagingSenderId: "729849613491",
+          appId: "1:729849613491:web:aec60b0b4e51129b8734c6",
+          measurementId: "G-PCRQMNP32M"
+        };
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyBFsjAzJU6CaCxz_NK3BU0ct5kGN91uqpc",
-        authDomain: "vaenorix.firebaseapp.com",
-        projectId: "vaenorix",
-        storageBucket: "vaenorix.firebasestorage.app",
-        messagingSenderId: "729849613491",
-        appId: "1:729849613491:web:aec60b0b4e51129b8734c6",
-        measurementId: "G-PCRQMNP32M"
-      };
-
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      const auth = getAuth(app);
-
-      window.db = db;
-      window.auth = auth;
-      window.signInWithPopup = signInWithPopup;
-      window.GoogleAuthProvider = GoogleAuthProvider;
-      window.onAuthStateChanged = onAuthStateChanged;
-      window.collection = collection;
-      window.addDoc = addDoc;
-      window.getDocs = getDocs;
-      window.deleteDoc = deleteDoc;
-      window.doc = doc;
-      window.query = query;
-      window.orderBy = orderBy;
-      window.updateDoc = updateDoc;
-      window.firebaseReady = true;
+        firebase.initializeApp(firebaseConfig);
+        window.db = firebase.firestore();
+        window.auth = firebase.auth();
+        window.firebaseReady = true;
     </script>
 </head>
 <body>
