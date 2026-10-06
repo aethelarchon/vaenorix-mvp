@@ -4,12 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
     <title>Vaenorix - Second Brain</title>
-    
-    <!-- Font Awesome (CDN) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    
     <style>
-        /* ===== গোটা সাইটের ডিজাইন (মোবাইল-ফ্রেন্ডলি) ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0a0a0f;
@@ -19,8 +15,6 @@
             padding: 16px;
         }
         .container { max-width: 800px; margin: 0 auto; }
-        
-        /* ন্যাভবার */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -61,8 +55,6 @@
             padding: 5px 12px;
             border-radius: 50px;
         }
-        
-        /* সেভ সেকশন */
         .save-section {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.06);
@@ -117,8 +109,6 @@
         }
         .btn-primary:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(0,255,255,0.2); }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-        /* ফিল্টার */
         .filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 15px 0; }
         .filter-btn {
             padding: 6px 18px;
@@ -132,8 +122,6 @@
         }
         .filter-btn.active { background: rgba(0,255,255,0.15); border-color: #00ffff; color: #00ffff; }
         .filter-btn:hover { border-color: #00ffff; color: #fff; }
-        
-        /* মেমোরি কার্ড */
         #memoriesList {
             display: flex;
             flex-direction: column;
@@ -165,8 +153,6 @@
         .memory-content { color: #ddd; font-size: 15px; word-break: break-word; }
         .memory-content a { color: #00ffff; text-decoration: none; }
         .empty-message { text-align: center; color: #666; padding: 30px 0; font-size: 15px; }
-        
-        /* ড্রপডাউন */
         .menu-container { position: relative; }
         .three-dots {
             background: none;
@@ -201,8 +187,6 @@
         }
         .dropdown-menu button:hover { background: rgba(255,255,255,0.05); }
         .dropdown-menu .delete-btn-menu { color: #ff6666; }
-        
-        /* টোস্ট */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -223,9 +207,7 @@
         }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .toast.error { border-color: #ff4444; background: #2a0a0a; }
-        
         .footer { text-align: center; padding: 30px 0 10px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 20px; color: #555; font-size: 13px; }
-        
         @media (max-width: 500px) {
             .input-row { flex-direction: column; }
             .btn-primary { width: 100%; justify-content: center; }
@@ -236,7 +218,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- ন্যাভবার -->
         <nav class="navbar">
             <div class="logo">
                 <i class="fas fa-brain logo-icon"></i>
@@ -249,7 +230,6 @@
             </div>
         </nav>
         
-        <!-- সেভ সেকশন -->
         <div class="save-section">
             <h2><i class="fas fa-pen"></i> Save a Memory</h2>
             <textarea id="noteInput" placeholder="Write a note..."></textarea>
@@ -259,14 +239,12 @@
             </div>
         </div>
         
-        <!-- ফিল্টার -->
         <div class="filters">
             <button class="filter-btn active" data-filter="all">All</button>
             <button class="filter-btn" data-filter="note">Notes</button>
             <button class="filter-btn" data-filter="link">Links</button>
         </div>
         
-        <!-- মেমোরি লিস্ট -->
         <div id="memoriesList">
             <div class="empty-message">⏳ Loading...</div>
         </div>
@@ -275,18 +253,10 @@
     </div>
     
     <div id="toast" class="toast"></div>
-
-    <!-- ============================================================ -->
-    <!--  Firebase SDK লোড (আপডেটেড ভার্সন) -->
-    <!-- ============================================================ -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
     <script>
-        // ============================================================
-        //  কনফিগারেশন (আপনার দেওয়া ডেটা)
-        // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyB4SxkLnozpPFv7O_jGljLvNXQW-Lbnapc",
             authDomain: "veanorix.firebaseapp.com",
@@ -297,7 +267,6 @@
             measurementId: "G-1QHMX1R51N"
         };
 
-        // Firebase Initialize
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -305,9 +274,6 @@
 
         console.log("✅ Firebase initialized!");
 
-        // ============================================================
-        //  ডম এলিমেন্ট
-        // ============================================================
         const noteInput = document.getElementById('noteInput');
         const linkInput = document.getElementById('linkInput');
         const saveBtn = document.getElementById('saveBtn');
@@ -321,9 +287,6 @@
         let currentUser = null;
         let currentFilter = 'all';
 
-        // ============================================================
-        //  টোস্ট ফাংশন
-        // ============================================================
         function showToast(msg, isError = false) {
             toast.textContent = msg;
             toast.className = 'toast';
@@ -333,9 +296,6 @@
             toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // ============================================================
-        //  অথ স্টেট চেক
-        // ============================================================
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
@@ -354,9 +314,6 @@
             }
         });
 
-        // ============================================================
-        //  লগইন/লগআউট
-        // ============================================================
         loginBtn.onclick = () => {
             auth.signInWithPopup(GoogleAuthProvider)
                 .then(() => showToast('Welcome! 🚀'))
@@ -367,9 +324,6 @@
             auth.signOut().then(() => showToast('Signed out'));
         };
 
-        // ============================================================
-        //  ডাটা লোড
-        // ============================================================
         async function loadMemories() {
             if (!currentUser) return;
             try {
@@ -385,9 +339,6 @@
             }
         }
 
-        // ============================================================
-        //  রেন্ডার
-        // ============================================================
         function renderMemories() {
             if (!currentUser) return;
             if (memories.length === 0) {
@@ -423,7 +374,6 @@
                 </div>
             `).join('');
 
-            // ড্রপডাউন
             document.querySelectorAll('.three-dots').forEach(btn => {
                 btn.onclick = (e) => {
                     e.stopPropagation();
@@ -458,9 +408,6 @@
             document.onclick = () => document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
         }
 
-        // ============================================================
-        //  CRUD অপারেশন
-        // ============================================================
         async function addMemory() {
             if (!currentUser) { showToast('Sign in first!', true); return; }
             const note = noteInput.value.trim();
@@ -500,12 +447,17 @@
             } catch (e) { showToast('❌ Delete failed', true); }
         }
 
-        // ============================================================
-        //  ইভেন্ট & ফিল্টার
-        // ============================================================
         saveBtn.onclick = addMemory;
         linkInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addMemory(); });
 
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.onclick = () => {
-                document.querySelectorAll('.filter-btn').forEa
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderMemories();
+            };
+        });
+    </script>
+</body>
+</html>
