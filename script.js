@@ -33,7 +33,7 @@ function showToast(message, isError = false) {
     toast.textContent = message;
     document.body.appendChild(toast);
     setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => totoast.remove(), 300); }, 2500);
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 2500);
 }
 
 function getTypeIcon(type) {
@@ -45,7 +45,7 @@ function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
 
 function escapeHtml(str) {
     if (!str) return '';
-    return str.replace(/[&<>"]/g, function(m) {
+    return str.replace(/[&<>\"]/g, function(m) {
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
@@ -84,17 +84,16 @@ function showImageModal(imageUrl) {
 
 // ===== FIREBASE CONFIG =====
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyB4SxkLnozpPFv7O_jGljLvNXQW-Lbnapc",
+    authDomain: "veanorix.firebaseapp.com",
+    projectId: "veanorix",
+    storageBucket: "veanorix.firebasestorage.app",
+    messagingSenderId: "935840989114",
+    appId: "1:935840989114:web:607fc547721a6efdbc6783"
 };
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
+
+// Initialize Firebase when the page loads via main HTML
+let app, db, auth, googleProvider;
 
 // ===== STATE =====
 let memories = [];
@@ -103,7 +102,7 @@ let currentUser = null;
 // ===== AUTH =====
 async function login() {
     try {
-        const result = await signInWithPopup(auth, googleProvider);
+        const result = await firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider());
         showToast('Logged in successfully!');
     } catch (error) {
         showToast('Login failed: ' + error.message, true);
@@ -112,7 +111,7 @@ async function login() {
 
 async function logout() {
     try {
-        await signOut(auth);
+        await firebase.auth().signOut();
         showToast('Logged out!');
     } catch (error) {
         showToast('Logout failed', true);
@@ -123,7 +122,7 @@ async function logout() {
 async function saveMemory(type, content) {
     if (!currentUser) { showToast('Please login first!', true); return; }
     try {
-        await addDoc(collection(db, 'memories'), {
+        await firebase.firestore().collection('memories').add({
             uid: currentUser.uid,
             type,
             content,
@@ -138,7 +137,7 @@ async function saveMemory(type, content) {
 
 async function deleteMemory(id) {
     try {
-        await deleteDoc(doc(db, 'memories', id));
+        await firebase.firestore().collection('memories').doc(id).delete();
         showToast('Deleted!');
         loadMemories();
     } catch (error) {
@@ -149,11 +148,11 @@ async function deleteMemory(id) {
 async function loadMemories() {
     if (!currentUser) return;
     try {
-        const q = query(collection(db, 'memories'),
-            where('uid', '==', currentUser.uid),
-            orderBy('createdAt', 'desc'));
-        const snap = await getDocs(q);
-        memories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const snapshot = await firebase.firestore().collection('memories')
+            .where('uid', '==', currentUser.uid)
+            .orderBy('createdAt', 'desc')
+            .get();
+        memories = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         renderMemories();
     } catch (error) {
         console.error('Load error:', error);
@@ -175,12 +174,23 @@ function renderMemories() {
     `).join('');
 }
 
-// ===== INIT =====
-onAuthStateChanged(auth, (user) => {
-    currentUser = user;
-    if (user) loadMemories();
-});
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Add your UI event listeners here
+    firebase.auth().onAuthStateChanged((user) => {
+        currentUser = user;
+        if (user) loadMemories();
+    });
+
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    
+    if (loginBtn) loginBtn.addEventListener('click', login);
+    if (logoutBtn) logoutBtn.addEventListener('click', logout);
+    if (saveBtn) saveBtn.addEventListener('click', () => {
+        const noteInput = document.querySelector('textarea');
+        if (noteInput && noteInput.value) {
+            saveMemory('note', noteInput.value);
+            noteInput.value = '';
+        }
+    });
 });
