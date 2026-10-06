@@ -1,3 +1,19 @@
+// Toast Notification Function
+function showToast(message, isError = false) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    if (isError) toast.classList.add('error');
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 2500);
+}
+
 // Image compression function before upload
 async function compressImage(file) {
     return new Promise((resolve) => {
@@ -11,7 +27,6 @@ async function compressImage(file) {
                 let width = img.width;
                 let height = img.height;
                 
-                // Max width 1200px
                 if (width > 1200) {
                     height = (height * 1200) / width;
                     width = 1200;
@@ -29,23 +44,37 @@ async function compressImage(file) {
         };
     });
 }
-// Toast Notification Function
-function showToast(message, isError = false) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    if (isError) toast.classList.add('error');
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => toast.classList.add('show'), 10);
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 2500);
+
+// Function to wait for Firebase to be ready
+function waitForFirebase() {
+    return new Promise((resolve) => {
+        if (window.firebaseReady && window.auth && window.db) {
+            resolve();
+        } else {
+            const checkInterval = setInterval(() => {
+                if (window.firebaseReady && window.auth && window.db) {
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, 50);
+            
+            setTimeout(() => {
+                clearInterval(checkInterval);
+                console.error('Firebase failed to initialize');
+                resolve();
+            }, 5000);
+        }
+    });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+// Main initialization function
+async function initializeApp() {
+    await waitForFirebase();
+    
+    if (!window.auth || !window.db) {
+        console.error('Firebase not available');
+        return;
+    }
     
     const noteInput = document.getElementById('noteInput');
     const linkInput = document.getElementById('linkInput');
@@ -61,28 +90,30 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentUser = null;
     let currentFilter = 'all';
 
+    // Auth state listener
     window.onAuthStateChanged(window.auth, async (user) => {
-    const avatarImg = document.getElementById('userAvatar');
-    if (user) {
-        currentUser = user;
-        loginBtn.style.display = 'none';
-        logoutBtn.style.display = 'inline-block';
-        if (avatarImg && user.photoURL) {
-            avatarImg.src = user.photoURL;
-            avatarImg.style.display = 'block';
+        const avatarImg = document.getElementById('userAvatar');
+        if (user) {
+            currentUser = user;
+            loginBtn.style.display = 'none';
+            logoutBtn.style.display = 'inline-block';
+            if (avatarImg && user.photoURL) {
+                avatarImg.src = user.photoURL;
+                avatarImg.style.display = 'block';
+            }
+            await loadMemories();
+        } else {
+            currentUser = null;
+            loginBtn.style.display = 'inline-block';
+            logoutBtn.style.display = 'none';
+            if (avatarImg) {
+                avatarImg.style.display = 'none';
+            }
+            memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
         }
-        await loadMemories();
-    } else {
-        currentUser = null;
-        loginBtn.style.display = 'inline-block';
-        logoutBtn.style.display = 'none';
-        if (avatarImg) {
-            avatarImg.style.display = 'none';
-        }
-        memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
-    }
-});
+    });
 
+    // Login function
     async function login() {
         const provider = new window.GoogleAuthProvider();
         try {
@@ -90,18 +121,22 @@ document.addEventListener('DOMContentLoaded', function() {
             showToast('Welcome back!');
         } catch (error) {
             showToast("Login failed: " + error.message, true);
+            console.error('Login error:', error);
         }
     }
 
+    // Logout function
     async function logout() {
         try {
             await window.auth.signOut();
             showToast('Logged out successfully');
         } catch (error) {
             showToast("Logout failed", true);
+            console.error('Logout error:', error);
         }
     }
 
+    // Load memories
     async function loadMemories() {
         if (!currentUser) return;
         try {
@@ -116,9 +151,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             memoriesList.innerHTML = '<div class="empty-message">Error loading memories</div>';
             showToast("Failed to load memories", true);
+            console.error('Load memories error:', error);
         }
     }
 
+    // Delete memory
     async function deleteMemory(id) {
         if (!currentUser) return;
         try {
@@ -130,6 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Edit memory
     async function editMemory(id, newContent) {
         if (!currentUser) return;
         try {
@@ -142,6 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Fetch link preview
     async function fetchLinkPreview(url) {
         try {
             const response = await fetch('/api/preview', {
@@ -156,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Delete all memories function
+    // Delete all memories
     async function deleteAllMemories() {
         if (!currentUser) {
             showToast('Please sign in first!', true);
@@ -177,6 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Render memories
     function renderMemories(filterText = '') {
         if (!currentUser) return;
         
@@ -195,7 +235,6 @@ document.addEventListener('DOMContentLoaded', function() {
             );
         }
         
-        // Update memory counter
         const counterSpan = document.getElementById('memoryCount');
         if (counterSpan) {
             counterSpan.textContent = `(${filteredMemories.length})`;
@@ -236,7 +275,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `).join('');
 
-        // Load link previews
         document.querySelectorAll('.link-preview-container').forEach(async (container) => {
             const url = container.getAttribute('data-url');
             const preview = await fetchLinkPreview(url);
@@ -255,7 +293,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Three dots menu
         document.querySelectorAll('.three-dots').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -289,16 +326,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
             });
         });
-document.querySelectorAll('.share-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const id = this.getAttribute('data-id');
-        const memory = memories.find(m => m.id === id);
-        if(memory) window.shareMemory(memory.content, memory.type);
-        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-    });
-});
-        // Clear All Button
+
+        document.querySelectorAll('.share-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const id = this.getAttribute('data-id');
+                const memory = memories.find(m => m.id === id);
+                if(memory) window.shareMemory(memory.content, memory.type);
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+            });
+        });
+
         const clearAllBtn = document.getElementById('clearAllBtn');
         if (clearAllBtn) {
             clearAllBtn.onclick = null;
@@ -322,6 +360,7 @@ document.querySelectorAll('.share-btn').forEach(btn => {
         });
     }
 
+    // Add memory
     async function addMemory() {
         if (!currentUser) {
             showToast('Please sign in first!', true);
@@ -365,6 +404,7 @@ document.querySelectorAll('.share-btn').forEach(btn => {
             await loadMemories();
         } catch (error) {
             showToast("Failed to save", true);
+            console.error('Add memory error:', error);
         } finally {
             if (type === 'link') {
                 saveBtn.disabled = false;
@@ -374,17 +414,19 @@ document.querySelectorAll('.share-btn').forEach(btn => {
         }
     }
 
+    // Search memories
     function searchMemories() {
         if (aiSearchInput) {
             renderMemories(aiSearchInput.value.trim());
         }
     }
 
+    // Scroll to save
     function scrollToSave() {
         document.querySelector('.save-section').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Filter buttons
+    // Initialize filters
     function initFilters() {
         const filterBtns = document.querySelectorAll('.filter-btn');
         if (filterBtns.length === 0) return;
@@ -402,7 +444,7 @@ document.querySelectorAll('.share-btn').forEach(btn => {
         });
     }
 
-    // Screenshot Upload
+    // Screenshot upload
     const uploadArea = document.getElementById('uploadArea');
     const screenshotInput = document.getElementById('screenshotInput');
     const uploadBtn = document.getElementById('uploadBtn');
@@ -445,6 +487,7 @@ document.querySelectorAll('.share-btn').forEach(btn => {
                 await loadMemories();
             } catch (error) {
                 showToast('Failed: ' + error.message, true);
+                console.error('Upload error:', error);
             } finally {
                 uploadBtn.disabled = false;
                 uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
@@ -454,6 +497,7 @@ document.querySelectorAll('.share-btn').forEach(btn => {
         });
     }
 
+    // Attach event listeners
     saveBtn.addEventListener('click', addMemory);
     if (aiSearchBtn) aiSearchBtn.addEventListener('click', searchMemories);
     getStartedBtn.addEventListener('click', scrollToSave);
@@ -469,7 +513,7 @@ document.querySelectorAll('.share-btn').forEach(btn => {
     }
     
     setTimeout(initFilters, 100);
-});
+}
 
 // Image Modal
 window.showImageModal = function(imageUrl) {
@@ -486,7 +530,7 @@ window.showImageModal = function(imageUrl) {
     modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
 };
 
-// Register Service Worker for PWA
+// Register Service Worker
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
         .then(reg => console.log('SW registered:', reg))
@@ -508,7 +552,7 @@ window.downloadImage = async function(imageUrl) {
         URL.revokeObjectURL(url);
         showToast('Image downloaded!');
     } catch (error) {
-        showToast('Failed to download image', true);
+        console.error('Download error:', error);
     }
 };
 
@@ -539,7 +583,6 @@ window.shareMemory = function(content, type) {
     
     const fullText = `${shareText}\n\n${shareUrl}\n\nShared from Vaenorix - Your AI Second Brain`;
     
-    // Try native share first (mobile)
     if (navigator.share) {
         navigator.share({
             title: 'Vaenorix Memory',
@@ -552,3 +595,10 @@ window.shareMemory = function(content, type) {
         copyToClipboard(fullText);
     }
 };
+
+// Start app when document is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    initializeApp();
+}
