@@ -36,7 +36,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Firebase SDK -->
-    <script type="module">
+    <script type="module" defer>
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
       import { getFirestore, collection, addDoc, getDocs, deleteDoc, updateDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js';
       import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
@@ -67,7 +67,11 @@
       window.doc = doc;
       window.query = query;
       window.orderBy = orderBy;
-      window.updateDoc = updateDoc;  
+      window.updateDoc = updateDoc;
+      
+      // Signal that Firebase is ready
+      window.firebaseReady = true;
+      console.log('Firebase initialized successfully');
     </script>
 </head>
 <body>
@@ -177,6 +181,6 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
