@@ -39,10 +39,15 @@ window.onerror = function(msg) {
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js"></script>
-    <script>
+        <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+        import { 
+            getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy 
+        } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+        import { 
+            getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut 
+        } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+
         const firebaseConfig = {
           apiKey: "AIzaSyBFsjAzJU6CaCxz_NK3BU0ct5kGN91uqpc",
           authDomain: "vaenorix.firebaseapp.com",
@@ -53,11 +58,26 @@ window.onerror = function(msg) {
           measurementId: "G-PCRQMNP32M"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        window.db = firebase.firestore();
-        window.auth = firebase.auth();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        auth.signOut = () => signOut(auth);
+
+        window.db = getFirestore(app);
+        window.auth = auth;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.getDocs = getDocs;
+        window.doc = doc;
+        window.deleteDoc = deleteDoc;
+        window.updateDoc = updateDoc;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.onAuthStateChanged = onAuthStateChanged;
+        window.GoogleAuthProvider = GoogleAuthProvider;
+        window.signInWithPopup = signInWithPopup;
         window.firebaseReady = true;
-    </script>
+        </script>
+    
 </head>
 <body>
 
