@@ -1,4 +1,4 @@
-// Toast Notification Function
+// ==================== Toast Notification ====================
 function showToast(message, isError = false) {
     const toast = document.createElement('div');
     toast.className = 'toast';
@@ -14,7 +14,7 @@ function showToast(message, isError = false) {
     }, 2500);
 }
 
-// Image compression function before upload
+// ==================== Image Compression ====================
 async function compressImage(file) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -45,7 +45,7 @@ async function compressImage(file) {
     });
 }
 
-// Function to wait for Firebase to be ready
+// ==================== Wait for Firebase ====================
 function waitForFirebase() {
     return new Promise((resolve) => {
         if (window.firebaseReady && window.auth && window.db) {
@@ -67,15 +67,9 @@ function waitForFirebase() {
     });
 }
 
-// Main initialization function
+// ==================== Main App ====================
 async function initializeApp() {
-    await waitForFirebase();
-    
-    if (!window.auth || !window.db) {
-        console.error('Firebase not available');
-        return;
-    }
-    
+    // ----- Element references -----
     const noteInput = document.getElementById('noteInput');
     const linkInput = document.getElementById('linkInput');
     const saveBtn = document.getElementById('saveBtn');
@@ -85,38 +79,19 @@ async function initializeApp() {
     const getStartedBtn = document.getElementById('getStartedBtn');
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
+    const uploadArea = document.getElementById('uploadArea');
+    const screenshotInput = document.getElementById('screenshotInput');
+    const uploadBtn = document.getElementById('uploadBtn');
 
     let memories = [];
     let currentUser = null;
     let currentFilter = 'all';
 
-    // Auth state listener
-    window.onAuthStateChanged(window.auth, async (user) => {
-        const avatarImg = document.getElementById('userAvatar');
-        if (user) {
-            currentUser = user;
-            loginBtn.style.display = 'none';
-            logoutBtn.style.display = 'inline-block';
-            if (avatarImg && user.photoURL) {
-                avatarImg.src = user.photoURL;
-                avatarImg.style.display = 'block';
-            }
-            await loadMemories();
-        } else {
-            currentUser = null;
-            loginBtn.style.display = 'inline-block';
-            logoutBtn.style.display = 'none';
-            if (avatarImg) {
-                avatarImg.style.display = 'none';
-            }
-            memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
-        }
-    });
+    // ==================== ALL FUNCTIONS (defined first) ====================
 
-    // Login function
     async function login() {
-        const provider = new window.GoogleAuthProvider();
         try {
+            const provider = new window.GoogleAuthProvider();
             await window.signInWithPopup(window.auth, provider);
             showToast('Welcome back!');
         } catch (error) {
@@ -125,10 +100,9 @@ async function initializeApp() {
         }
     }
 
-    // Logout function
     async function logout() {
         try {
-            await window.auth.signOut();
+            await window.signOut(window.auth);
             showToast('Logged out successfully');
         } catch (error) {
             showToast("Logout failed", true);
@@ -136,7 +110,6 @@ async function initializeApp() {
         }
     }
 
-    // Load memories
     async function loadMemories() {
         if (!currentUser) return;
         try {
@@ -155,7 +128,6 @@ async function initializeApp() {
         }
     }
 
-    // Delete memory
     async function deleteMemory(id) {
         if (!currentUser) return;
         try {
@@ -167,7 +139,6 @@ async function initializeApp() {
         }
     }
 
-    // Edit memory
     async function editMemory(id, newContent) {
         if (!currentUser) return;
         try {
@@ -180,7 +151,6 @@ async function initializeApp() {
         }
     }
 
-    // Fetch link preview
     async function fetchLinkPreview(url) {
         try {
             const response = await fetch('/api/preview', {
@@ -195,7 +165,6 @@ async function initializeApp() {
         }
     }
 
-    // Delete all memories
     async function deleteAllMemories() {
         if (!currentUser) {
             showToast('Please sign in first!', true);
@@ -216,7 +185,6 @@ async function initializeApp() {
         }
     }
 
-    // Render memories
     function renderMemories(filterText = '') {
         if (!currentUser) return;
         
@@ -339,7 +307,6 @@ async function initializeApp() {
 
         const clearAllBtn = document.getElementById('clearAllBtn');
         if (clearAllBtn) {
-            clearAllBtn.onclick = null;
             clearAllBtn.onclick = () => {
                 if (!currentUser) {
                     showToast('Please sign in first!', true);
@@ -360,7 +327,6 @@ async function initializeApp() {
         });
     }
 
-    // Add memory
     async function addMemory() {
         if (!currentUser) {
             showToast('Please sign in first!', true);
@@ -414,19 +380,17 @@ async function initializeApp() {
         }
     }
 
-    // Search memories
     function searchMemories() {
         if (aiSearchInput) {
             renderMemories(aiSearchInput.value.trim());
         }
     }
 
-    // Scroll to save
     function scrollToSave() {
-        document.querySelector('.save-section').scrollIntoView({ behavior: 'smooth' });
+        const saveSection = document.querySelector('.save-section');
+        if (saveSection) saveSection.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Initialize filters
     function initFilters() {
         const filterBtns = document.querySelectorAll('.filter-btn');
         if (filterBtns.length === 0) return;
@@ -444,65 +408,62 @@ async function initializeApp() {
         });
     }
 
-    // Screenshot upload
-    const uploadArea = document.getElementById('uploadArea');
-    const screenshotInput = document.getElementById('screenshotInput');
-    const uploadBtn = document.getElementById('uploadBtn');
+    async function handleScreenshotUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!currentUser) {
+            showToast('Please sign in first!', true);
+            screenshotInput.value = '';
+            return;
+        }
 
-    if(uploadArea) uploadArea.addEventListener('click', () => screenshotInput.click());
-    if(uploadBtn) uploadBtn.addEventListener('click', () => screenshotInput.click());
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
+        uploadBtn.classList.add('btn-loading');
 
-    if(screenshotInput) {
-        screenshotInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
+        try {
             const compressedFile = await compressImage(file);
-            if (!file) return;
-            if (!currentUser) return showToast('Please sign in first!', true);
-
-            uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
-            uploadBtn.classList.add('btn-loading');
 
             const formData = new FormData();
             formData.append('image', compressedFile);
 
-            try {
-                const response = await fetch('https://api.imgbb.com/1/upload?key=e27afa0854f1728a1445914cdd2f5304', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await response.json();
-                if(!data.success) throw new Error(data.error.message);
+            const response = await fetch('https://api.imgbb.com/1/upload?key=e27afa0854f1728a1445914cdd2f5304', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if(!data.success) throw new Error(data.error.message);
 
-                const imageUrl = data.data.url;
+            const imageUrl = data.data.url;
 
-                const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-                await window.addDoc(memoriesRef, {
-                    type: 'image',
-                    content: imageUrl,
-                    timestamp: new Date().toISOString()
-                });
+            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+            await window.addDoc(memoriesRef, {
+                type: 'image',
+                content: imageUrl,
+                timestamp: new Date().toISOString()
+            });
 
-                showToast('Screenshot saved!');
-                await loadMemories();
-            } catch (error) {
-                showToast('Failed: ' + error.message, true);
-                console.error('Upload error:', error);
-            } finally {
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
-                uploadBtn.classList.remove('btn-loading');
-                screenshotInput.value = '';
-            }
-        });
+            showToast('Screenshot saved!');
+            await loadMemories();
+        } catch (error) {
+            showToast('Failed: ' + error.message, true);
+            console.error('Upload error:', error);
+        } finally {
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
+            uploadBtn.classList.remove('btn-loading');
+            screenshotInput.value = '';
+        }
     }
 
-    // Attach event listeners
-    saveBtn.addEventListener('click', addMemory);
+    // ==================== ATTACH EVENT LISTENERS FIRST ====================
+    // (সবার আগে — যাতে Firebase fail করলেও বাটন কাজ করে)
+
+    if (saveBtn) saveBtn.addEventListener('click', addMemory);
     if (aiSearchBtn) aiSearchBtn.addEventListener('click', searchMemories);
-    getStartedBtn.addEventListener('click', scrollToSave);
-    loginBtn.addEventListener('click', login);
-    logoutBtn.addEventListener('click', logout);
+    if (getStartedBtn) getStartedBtn.addEventListener('click', scrollToSave);
+    if (loginBtn) loginBtn.addEventListener('click', login);
+    if (logoutBtn) logoutBtn.addEventListener('click', logout);
     
     if (aiSearchInput) {
         aiSearchInput.addEventListener('keypress', function(e) {
@@ -511,94 +472,47 @@ async function initializeApp() {
             }
         });
     }
-    
-    setTimeout(initFilters, 100);
-}
 
-// Image Modal
-window.showImageModal = function(imageUrl) {
-    const modal = document.createElement('div');
-    modal.className = 'image-modal';
-    modal.innerHTML = `
-        <div class="image-modal-content">
-            <span class="image-modal-close">&times;</span>
-            <img src="${imageUrl}" alt="Full size">
-        </div>
-    `;
-    document.body.appendChild(modal);
-    modal.querySelector('.image-modal-close').onclick = () => modal.remove();
-    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
-};
+    if (uploadArea) uploadArea.addEventListener('click', () => screenshotInput && screenshotInput.click());
+    if (uploadBtn) uploadBtn.addEventListener('click', () => screenshotInput && screenshotInput.click());
+    if (screenshotInput) screenshotInput.addEventListener('change', handleScreenshotUpload);
 
-// Register Service Worker
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('SW registered:', reg))
-        .catch(err => console.log('SW error:', err));
-}
+    // Filters চালু
+    initFilters();
 
-// Download Image Function
-window.downloadImage = async function(imageUrl) {
-    try {
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `vaenorix-${Date.now()}.jpg`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('Image downloaded!');
-    } catch (error) {
-        console.error('Download error:', error);
+    // ==================== NOW WAIT FOR FIREBASE ====================
+    await waitForFirebase();
+
+    if (!window.auth || !window.db) {
+        console.error('Firebase not available - auth features disabled');
+        memoriesList.innerHTML = '<div class="empty-message">Firebase load হয়নি। পেজ রিফ্রেশ করুন।</div>';
+        return;
     }
-};
 
-// Copy to Clipboard Function
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        showToast('Copied to clipboard!');
-    }).catch(() => {
-        showToast('Failed to copy', true);
+    // ==================== AUTH LISTENER ====================
+    window.onAuthStateChanged(window.auth, async (user) => {
+        const avatarImg = document.getElementById('userAvatar');
+        if (user) {
+            currentUser = user;
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (logoutBtn) logoutBtn.style.display = 'inline-block';
+            if (avatarImg && user.photoURL) {
+                avatarImg.src = user.photoURL;
+                avatarImg.style.display = 'block';
+            }
+            await loadMemories();
+        } else {
+            currentUser = null;
+            if (loginBtn) loginBtn.style.display = 'inline-block';
+            if (logoutBtn) logoutBtn.style.display = 'none';
+            if (avatarImg) {
+                avatarImg.style.display = 'none';
+            }
+            memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
+        }
     });
 }
 
-// Share Function
-window.shareMemory = function(content, type) {
-    let shareText = '';
-    let shareUrl = '';
-    
-    if (type === 'note') {
-        shareText = `📝 Note: ${content}`;
-        shareUrl = 'https://vaenorix-mvp.vercel.app';
-    } else if (type === 'link') {
-        shareText = `🔗 Check out this link:`;
-        shareUrl = content;
-    } else if (type === 'image') {
-        shareText = `📸 Check out this image:`;
-        shareUrl = content;
-    }
-    
-    const fullText = `${shareText}\n\n${shareUrl}\n\nShared from Vaenorix - Your AI Second Brain`;
-    
-    if (navigator.share) {
-        navigator.share({
-            title: 'Vaenorix Memory',
-            text: shareText,
-            url: shareUrl
-        }).catch(() => {
-            copyToClipboard(fullText);
-        });
-    } else {
-        copyToClipboard(fullText);
-    }
-};
-
-// Start app when document is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeApp);
-} else {
-    initializeApp();
-}
+// ==================== Image Modal ====================
+window.showImageModal = function(imageUrl) {
+    const modal = docume
