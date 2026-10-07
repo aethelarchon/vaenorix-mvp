@@ -403,7 +403,6 @@ async function initializeApp() {
     }
 
     async function handleScreenshotUpload(e) {
-    async function handleScreenshotUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
     if (!currentUser) {
@@ -446,7 +445,7 @@ async function initializeApp() {
         }
         if (screenshotInput) screenshotInput.value = '';
     }
-    }
+}
                                                 }
 
     // ==================== ATTACH EVENT LISTENERS ====================
