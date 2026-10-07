@@ -34,38 +34,69 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">
-            <span class="logo-icon">🧠</span>
-            <span class="logo-text">Vaenorix</span>
-        </div>
-        <div class="nav-badge">Welcome Back</div>
-        <div class="nav-actions">
-            <button id="loginBtn" class="btn-primary">Login</button>
-            <button id="logoutBtn" class="btn-save" style="display: none;">Logout</button>
-        </div>
-    </nav>
+    <div class="container">
+        <nav class="navbar">
+            <a class="logo" href="/" aria-label="Vaenorix home">
+                <span class="logo-icon" aria-hidden="true">🧠</span>
+                <span class="logo-text">Vaenorix</span>
+            </a>
+            <div class="nav-actions">
+                <span id="accountStatus" class="account-status" role="status">Checking sign-in…</span>
+                <button id="loginBtn" class="login-btn" type="button">Sign in with Google</button>
+                <button id="logoutBtn" class="logout-btn" type="button" hidden>Sign out</button>
+            </div>
+        </nav>
 
-    <main>
-        <section class="hero">
-            <h1 class="hero-title">Your AI Second Brain</h1>
-            <p class="hero-desc">Save anything from the internet. Find everything later.</p>
-        </section>
+        <main>
+            <section class="hero">
+                <h1 class="hero-title">Your <span class="glow-text">AI Second Brain</span></h1>
+                <p class="hero-desc">Save notes and links. Find them again when you need them.</p>
+                <button id="getStartedBtn" class="btn-primary" type="button">Save a memory</button>
+            </section>
 
-        <section class="memories-section">
-            <h2>Memories</h2>
-            <div id="memories-container"></div>
-        </section>
+            <section id="save-section" class="save-section">
+                <h2 class="section-title">Save a memory</h2>
+                <form id="memoryForm" class="input-group">
+                    <label class="field-label" for="noteInput">Note</label>
+                    <textarea id="noteInput" name="note" rows="4" placeholder="Write down an idea, detail, or reminder…"></textarea>
+                    <label class="field-label" for="linkInput">Link <span>(optional)</span></label>
+                    <input id="linkInput" name="link" type="url" placeholder="https://example.com">
+                    <button id="saveBtn" class="btn-primary" type="submit">Save to Second Brain</button>
+                </form>
+            </section>
 
-        <section class="actions-section">
-            <button id="saveBtn" class="btn-primary">Add Memory</button>
-            <button id="searchBtn" class="btn-search">Search</button>
-            <button id="clearAllBtn" class="btn-primary">Clear All</button>
-            <button id="exportBtn" class="btn-primary">Export Data</button>
-        </section>
-    </main>
+            <section class="search-section">
+                <h2 class="section-title">Search memories</h2>
+                <form id="searchForm" class="search-box" role="search">
+                    <input id="searchInput" type="search" placeholder="Search notes and links…" aria-label="Search saved memories">
+                    <button id="searchBtn" class="btn-search" type="submit">Search</button>
+                </form>
+            </section>
 
-    <script src="script.js"></script>
+            <section class="memories-section">
+                <div class="memories-heading">
+                    <h2 class="section-title">Saved memories <span id="memoryCount" class="memory-count">(0)</span></h2>
+                </div>
+                <div class="filter-buttons" role="group" aria-label="Filter memories">
+                    <button class="filter-btn active" type="button" data-filter="all" aria-pressed="true">All</button>
+                    <button class="filter-btn" type="button" data-filter="note" aria-pressed="false">Notes</button>
+                    <button class="filter-btn" type="button" data-filter="link" aria-pressed="false">Links</button>
+                    <button class="filter-btn" type="button" data-filter="image" aria-pressed="false">Images</button>
+                    <button id="clearAllBtn" class="clear-all-btn" type="button">Clear all</button>
+                    <button id="exportBtn" class="export-btn" type="button">Export data</button>
+                </div>
+                <div id="memories-container" class="memories-list" aria-live="polite">
+                    <p class="empty-message">Sign in to see your memories.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>Vaenorix — Your AI Second Brain</p>
+        <p class="footer-small">Save anything. Find everything later.</p>
+    </footer>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyB4SxkLnozpPFv7O_jGljLvNXQW-Lbnapc",
@@ -77,7 +108,7 @@
             measurementId: "G-1QHMX1R51N"
         };
         firebase.initializeApp(firebaseConfig);
-        console.log("✅ Firebase initialized!");
     </script>
+    <script src="script.js"></script>
 </body>
 </html>
