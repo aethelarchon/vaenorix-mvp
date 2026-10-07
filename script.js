@@ -403,6 +403,7 @@ async function initializeApp() {
     }
 
     async function handleScreenshotUpload(e) {
+    async function handleScreenshotUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
     if (!currentUser) {
@@ -417,7 +418,6 @@ async function initializeApp() {
     try {
         const base64Image = await compressImage(file);
         
-        // Vercel API-তে পাঠানো হচ্ছে
         const response = await fetch('/api/upload', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -445,6 +445,7 @@ async function initializeApp() {
             uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
         }
         if (screenshotInput) screenshotInput.value = '';
+    }
     }
                                                 }
 
