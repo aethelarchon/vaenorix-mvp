@@ -1,3 +1,4 @@
+alert("script.js লোড হয়েছে");
 // ==================== Toast Notification ====================
 function showToast(message, isError = false) {
     const toast = document.createElement('div');
