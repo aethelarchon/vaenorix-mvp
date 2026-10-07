@@ -114,8 +114,8 @@ async function initializeApp() {
     const screenshotInput = document.getElementById('screenshotInput');
     const uploadBtn = document.getElementById('uploadBtn');
 
-    let currentUser = null;
     let memories = [];
+    let currentUser = null;
     let currentFilter = 'all';
 
     async function login() {
@@ -129,7 +129,7 @@ async function initializeApp() {
         }
     }
 
-    function parseWebUrl(value) {
+    async function logout() {
         try {
             await window.signOut(window.auth);
             showToast('Logged out successfully');
@@ -156,56 +156,27 @@ async function initializeApp() {
         }
     }
 
-    function createMemoryCard(memory) {
-        const card = document.createElement('article');
-        card.className = 'memory-card';
-
-        const header = document.createElement('div');
-        header.className = 'memory-header';
-
-        const type = document.createElement('span');
-        type.className = 'memory-type';
-        type.textContent = {
-            note: '📝 Note',
-            link: '🔗 Link',
-            image: '🖼️ Image'
-        }[memory.type] || '📄 Memory';
-
-        const date = document.createElement('time');
-        date.textContent = formatDate(memory.createdAt);
-        header.append(type, date);
-
-        const content = document.createElement('div');
-        content.className = 'memory-content';
-        if (memory.type === 'link' && parseWebUrl(memory.content)) {
-            const link = document.createElement('a');
-            link.className = 'memory-link';
-            link.href = parseWebUrl(memory.content).href;
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
-            link.textContent = memory.content;
-            content.appendChild(link);
-        } else if (memory.type === 'image' && parseWebUrl(memory.content)) {
-            const image = document.createElement('img');
-            image.src = parseWebUrl(memory.content).href;
-            image.alt = 'Saved memory';
-            image.loading = 'lazy';
-            content.appendChild(image);
-        } else {
-            content.textContent = memory.content || '';
+    async function deleteMemory(id) {
+        if (!currentUser) return;
+        try {
+            await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, id));
+            showToast('Memory deleted');
+            await loadMemories();
+        } catch (error) {
+            showToast("Failed to delete", true);
         }
+    }
 
-        const actions = document.createElement('div');
-        actions.className = 'memory-actions';
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-btn';
-        deleteBtn.type = 'button';
-        deleteBtn.textContent = 'Delete';
-        deleteBtn.addEventListener('click', () => deleteMemory(memory.id));
-        actions.appendChild(deleteBtn);
-
-        card.append(header, content, actions);
-        return card;
+    async function editMemory(id, newContent) {
+        if (!currentUser) return;
+        try {
+            const memoryRef = window.doc(window.db, `users/${currentUser.uid}/memories`, id);
+            await window.updateDoc(memoryRef, { content: newContent });
+            showToast('Memory updated');
+            await loadMemories();
+        } catch (error) {
+            showToast("Failed to edit", true);
+        }
     }
 
     async function fetchLinkPreview(url) {
@@ -223,10 +194,7 @@ async function initializeApp() {
 
     async function deleteAllMemories() {
         if (!currentUser) {
-            const message = document.createElement('p');
-            message.className = 'empty-message';
-            message.textContent = 'Sign in to see your memories.';
-            memoriesContainer.appendChild(message);
+            showToast('Please sign in first!', true);
             return;
         }
         try {
@@ -268,7 +236,7 @@ async function initializeApp() {
                 <div class="memory-header">
                     <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
                     <div class="menu-container">
-                        <button class="three-dots" data-id="${memory.id}">⋯</button>
+                        <button class="three-dots" data-id="${memory.id}">â‹¯</button>
                         <div class="dropdown-menu" id="menu-${memory.id}">
                             <button class="edit-btn" data-id="${memory.id}">Edit</button>
                             <button class="share-btn" data-id="${memory.id}">Share</button>
@@ -285,7 +253,7 @@ async function initializeApp() {
                         memory.type === 'image' ?
                         `<div style="position: relative;">
                             <img src="${memory.content}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${memory.content}')">
-                            <button class="download-btn" onclick="downloadImage('${memory.content}')">⬇️ Download</button>
+                            <button class="download-btn" onclick="downloadImage('${memory.content}')">â¬‡ï¸ Download</button>
                         </div>` :
                         memory.content
                     }
@@ -320,7 +288,6 @@ async function initializeApp() {
                 if (menu) menu.classList.toggle('show');
             });
         });
-    }
 
         document.querySelectorAll('.edit-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
@@ -359,17 +326,17 @@ async function initializeApp() {
             clearAllBtn.onclick = () => {
                 if (!currentUser) { showToast('Please sign in first!', true); return; }
                 if (memories.length === 0) { showToast('No memories to clear', true); return; }
-                if (confirm('⚠️ Are you sure? This will delete ALL your memories permanently!')) {
+                if (confirm('âš ï¸ Are you sure? This will delete ALL your memories permanently!')) {
                     deleteAllMemories();
                 }
             };
         }
     }
 
-    async function saveMemory(event) {
-        event.preventDefault();
+    async function addMemory() {
         if (!currentUser) {
-            showToast('Sign in before saving a memory.', true);
+            showToast('Please sign in first!', true);
+            login();
             return;
         }
         const note = noteInput ? noteInput.value.trim() : '';
@@ -394,23 +361,16 @@ async function initializeApp() {
             }
         }
         try {
-            const firestore = firebase.firestore();
-            const collection = firestore.collection('memories');
-            const batch = firestore.batch();
-            entries.forEach((entry) => {
-                batch.set(collection.doc(), {
-                    uid: currentUser.uid,
-                    ...entry,
-                    createdAt: Date.now()
-                });
+            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+            await window.addDoc(memoriesRef, {
+                type: type,
+                content: content,
+                timestamp: new Date().toISOString()
             });
-            await batch.commit();
-            memoryForm.reset();
+            showToast('Memory saved!');
             await loadMemories();
-            showToast(entries.length === 1 ? 'Memory saved.' : 'Memories saved.');
         } catch (error) {
-            console.error('Could not save memory:', error);
-            showToast('Could not save your memory. Please try again.', true);
+            showToast("Failed to save", true);
         } finally {
             if (saveBtn) {
                 saveBtn.disabled = false;
@@ -572,4 +532,4 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
     initializeApp();
-                    }
+}
