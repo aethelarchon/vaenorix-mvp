@@ -88,18 +88,16 @@
 <script>eruda.init();</script>
     
 <body>
-
     <div class="container">
         <nav class="navbar">
-            <div class="logo">
-                <i class="fas fa-brain logo-icon"></i>
+            <a class="logo" href="/" aria-label="Vaenorix home">
+                <span class="logo-icon" aria-hidden="true">🧠</span>
                 <span class="logo-text">Vaenorix</span>
-            </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <div class="nav-badge">AI Beta</div>
-                <img id="userAvatar" class="user-avatar" src="" alt="Profile" style="display:none;">
-                <button id="loginBtn" class="login-btn"><i class="fas fa-sign-in-alt"></i> Sign in</button>
-                <button id="logoutBtn" class="logout-btn" style="display:none;"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+            </a>
+            <div class="nav-actions">
+                <span id="accountStatus" class="account-status" role="status">Checking sign-in…</span>
+                <button id="loginBtn" class="login-btn" type="button">Sign in with Google</button>
+                <button id="logoutBtn" class="logout-btn" type="button" hidden>Sign out</button>
             </div>
         </nav>
 
@@ -166,26 +164,13 @@
     </div>
 
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-logo">
-                <i class="fas fa-brain"></i> Vaenorix
-            </div>
-            <div class="footer-links">
-                <a href="https://x.com/VaenorixAI" target="_blank" class="social-link">
-                    <i class="fab fa-twitter"></i> Twitter
-                </a>
-                <a href="https://github.com/vaenorix/vaenorix" target="_blank" class="social-link">
-                    <i class="fab fa-github"></i> GitHub
-                </a>
-                <a href="mailto:aethelarchon@gmail.com" class="social-link">
-                    <i class="fas fa-envelope"></i> Contact
-                </a>
-            </div>
-            <p class="footer-copyright">© 2026 Vaenorix — Your AI Second Brain</p>
-            <p class="footer-small">Save anything. Find everything later.</p>
-        </div>
+        <p>Vaenorix — Your AI Second Brain</p>
+        <p class="footer-small">Save anything. Find everything later.</p>
     </footer>
 
+    <script>
+        
+    </script>
     <script src="script.js"></script>
     <script>
         // Register Service Worker for PWA
