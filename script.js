@@ -69,6 +69,7 @@ async function compressImage(file) {
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
+                // Base64 স্ট্রিং রিটার্ন করবে
                 const base64Image = canvas.toDataURL('image/jpeg', 0.8);
                 resolve(base64Image);
             };
@@ -235,7 +236,7 @@ async function initializeApp() {
                 <div class="memory-header">
                     <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
                     <div class="menu-container">
-                        <button class="three-dots" data-id="${memory.id}">⋯</button>
+                        <button class="three-dots" data-id="${memory.id}">⋮</button>
                         <div class="dropdown-menu" id="menu-${memory.id}">
                             <button class="edit-btn" data-id="${memory.id}">Edit</button>
                             <button class="share-btn" data-id="${memory.id}">Share</button>
@@ -401,7 +402,7 @@ async function initializeApp() {
         });
     }
 
-            async function handleScreenshotUpload(e) {
+    async function handleScreenshotUpload(e) {
         const file = e.target.files[0];
         if (!file) return;
         if (!currentUser) {
@@ -444,7 +445,7 @@ async function initializeApp() {
             }
             if (screenshotInput) screenshotInput.value = '';
         }
-    } // <--- এখানে ফাংশনটি শেষ হচ্ছে (আগের কোডে এখানে ভুলবশত একটা ব্র্যাকেট বেশি ছিল)
+    }
 
     // ==================== ATTACH EVENT LISTENERS ====================
     if (saveBtn) saveBtn.addEventListener('click', addMemory);
@@ -534,4 +535,4 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
     initializeApp();
-}
+                    }
