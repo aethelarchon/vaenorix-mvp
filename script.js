@@ -12,6 +12,43 @@ function showToast(message, isError = false) {
     }, 2500);
 }
 
+// ==================== Copy to Clipboard ====================
+function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Copied to clipboard!');
+        }).catch((err) => {
+            showToast('Failed to copy', true);
+            console.error('Copy error:', err);
+        });
+    } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            showToast('Copied to clipboard!');
+        } catch (e) {
+            showToast('Failed to copy', true);
+        }
+        document.body.removeChild(textarea);
+    }
+}
+
+// ==================== Share Memory ====================
+window.shareMemory = function(content, type) {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Memory',
+            text: content,
+            url: type === 'link' ? content : undefined
+        }).catch(console.error);
+    } else {
+        copyToClipboard(content);
+    }
+};
+
 // ==================== Image Compression ====================
 async function compressImage(file) {
     return new Promise((resolve) => {
@@ -114,7 +151,7 @@ async function initializeApp() {
             });
             renderMemories();
         } catch (error) {
-            memoriesList.innerHTML = '<div class="empty-message">Error loading memories</div>';
+            if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">Error loading memories</div>';
             showToast("Failed to load memories", true);
         }
     }
@@ -174,7 +211,7 @@ async function initializeApp() {
     }
 
     function renderMemories(filterText = '') {
-        if (!currentUser) return;
+        if (!currentUser || !memoriesList) return;
         if (memories.length === 0) {
             memoriesList.innerHTML = '<div class="empty-message">No memories yet. Save your first one!</div>';
             return;
@@ -294,10 +331,6 @@ async function initializeApp() {
                 }
             };
         }
-
-        document.addEventListener('click', function() {
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-        });
     }
 
     async function addMemory() {
@@ -306,8 +339,8 @@ async function initializeApp() {
             login();
             return;
         }
-        const note = noteInput.value.trim();
-        const link = linkInput.value.trim();
+        const note = noteInput ? noteInput.value.trim() : '';
+        const link = linkInput ? linkInput.value.trim() : '';
         if (!note && !link) {
             showToast('Please write a note or paste a link', true);
             return;
@@ -317,13 +350,15 @@ async function initializeApp() {
         if (note) {
             type = 'note';
             content = note;
-            noteInput.value = '';
+            if (noteInput) noteInput.value = '';
         } else if (link) {
             type = 'link';
             content = link;
-            linkInput.value = '';
-            saveBtn.disabled = true;
-            saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
+            if (linkInput) linkInput.value = '';
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
+            }
         }
         try {
             const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
@@ -337,7 +372,7 @@ async function initializeApp() {
         } catch (error) {
             showToast("Failed to save", true);
         } finally {
-            if (type === 'link') {
+            if (saveBtn) {
                 saveBtn.disabled = false;
                 saveBtn.innerHTML = '<i class="fas fa-save"></i> Save to Second Brain';
             }
@@ -372,11 +407,13 @@ async function initializeApp() {
         if (!file) return;
         if (!currentUser) {
             showToast('Please sign in first!', true);
-            screenshotInput.value = '';
+            if (screenshotInput) screenshotInput.value = '';
             return;
         }
-        uploadBtn.disabled = true;
-        uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
+        if (uploadBtn) {
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
+        }
         try {
             const compressedFile = await compressImage(file);
             const formData = new FormData();
@@ -399,13 +436,15 @@ async function initializeApp() {
         } catch (error) {
             showToast('Failed: ' + error.message, true);
         } finally {
-            uploadBtn.disabled = false;
-            uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
-            screenshotInput.value = '';
+            if (uploadBtn) {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
+            }
+            if (screenshotInput) screenshotInput.value = '';
         }
     }
 
-    // ==================== ATTACH EVENT LISTENERS FIRST ====================
+    // ==================== ATTACH EVENT LISTENERS ====================
     if (saveBtn) saveBtn.addEventListener('click', addMemory);
     if (aiSearchBtn) aiSearchBtn.addEventListener('click', searchMemories);
     if (getStartedBtn) getStartedBtn.addEventListener('click', scrollToSave);
@@ -421,7 +460,12 @@ async function initializeApp() {
     if (screenshotInput) screenshotInput.addEventListener('change', handleScreenshotUpload);
     initFilters();
 
-    // ==================== NOW WAIT FOR FIREBASE ====================
+    // Hide open dropdown menus on outside click
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+    });
+
+    // ==================== WAIT FOR FIREBASE ====================
     await waitForFirebase();
     if (!window.auth || !window.db) {
         console.error('Firebase not available');
@@ -444,7 +488,7 @@ async function initializeApp() {
             if (loginBtn) loginBtn.style.display = 'inline-block';
             if (logoutBtn) logoutBtn.style.display = 'none';
             if (avatarImg) avatarImg.style.display = 'none';
-            memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
+            if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
         }
     });
 }
@@ -483,44 +527,9 @@ window.downloadImage = async function(imageUrl) {
     }
 };
 
-// ==================== Copy to Clipboard ====================
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        showToast('Copied to clipboard!');
-    }).catch(() => {
-       showToast('Failed to copy', true);
-    });
-}
-
-// ==================== Share Memory ====================
-window.shareMemory = function(content, type) {
-    let shareText = '';
-    let shareUrl = '';
-    if (type === 'note') {
-        shareText = `📝 Note: ${content}`;
-        shareUrl = 'https://vaenorix-mvp.vercel.app';
-    } else if (type === 'link') {
-        shareText = `🔗 Check out this link:`;
-        shareUrl = content;
-    } else if (type === 'image') {
-        shareText = `📸 Check out this image:`;
-        shareUrl = content;
-    }
-    const fullText = `${shareText}\n\n${shareUrl}\n\nShared from Vaenorix - Your AI Second Brain`;
-    if (navigator.share) {
-        navigator.share({
-            title: 'Vaenorix Memory',
-            text: shareText,
-            url: shareUrl
-        }).catch(() => copyToClipboard(fullText));
-    } else {
-        copyToClipboard(fullText);
-    }
-};
-
 // ==================== START APP ====================
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
     initializeApp();
-    }
+                    }
