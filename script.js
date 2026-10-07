@@ -70,6 +70,7 @@ function waitForFirebase() {
 
 // ==================== Main App ====================
 async function initializeApp() {
+    alert("App শুরু হয়েছে");
     // ----- Element references -----
     const noteInput = document.getElementById('noteInput');
     const linkInput = document.getElementById('linkInput');
