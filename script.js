@@ -69,9 +69,9 @@ async function compressImage(file) {
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-                canvas.toBlob((blob) => {
-                    resolve(new File([blob], file.name, { type: 'image/jpeg' }));
-                }, 'image/jpeg', 0.8);
+                // Base64 স্ট্রিং রিটার্ন করবে
+                const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+                resolve(base64Image);
             };
         };
     });
@@ -403,46 +403,50 @@ async function initializeApp() {
     }
 
     async function handleScreenshotUpload(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        if (!currentUser) {
-            showToast('Please sign in first!', true);
-            if (screenshotInput) screenshotInput.value = '';
-            return;
-        }
-        if (uploadBtn) {
-            uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
-        }
-        try {
-            const compressedFile = await compressImage(file);
-            const formData = new FormData();
-            formData.append('image', compressedFile);
-            const response = await fetch('https://api.imgbb.com/1/upload?key=e27afa0854f1728a1445914cdd2f5304', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
-            if (!data.success) throw new Error(data.error.message);
-            const imageUrl = data.data.url;
-            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-            await window.addDoc(memoriesRef, {
-                type: 'image',
-                content: imageUrl,
-                timestamp: new Date().toISOString()
-            });
-            showToast('Screenshot saved!');
-            await loadMemories();
-        } catch (error) {
-            showToast('Failed: ' + error.message, true);
-        } finally {
-            if (uploadBtn) {
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
-            }
-            if (screenshotInput) screenshotInput.value = '';
-        }
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!currentUser) {
+        showToast('Please sign in first!', true);
+        if (screenshotInput) screenshotInput.value = '';
+        return;
     }
+    if (uploadBtn) {
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
+    }
+    try {
+        const base64Image = await compressImage(file);
+        
+        // Vercel API-তে পাঠানো হচ্ছে
+        const response = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: base64Image.split(',')[1] })
+        });
+        
+        const data = await response.json();
+        if (!data.success) throw new Error(data.error.message || 'Upload failed');
+        
+        const imageUrl = data.data.url;
+        const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+        await window.addDoc(memoriesRef, {
+            type: 'image',
+            content: imageUrl,
+            timestamp: new Date().toISOString()
+        });
+        showToast('Screenshot saved!');
+        await loadMemories();
+    } catch (error) {
+        showToast('Failed: ' + error.message, true);
+        console.error(error);
+    } finally {
+        if (uploadBtn) {
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
+        }
+        if (screenshotInput) screenshotInput.value = '';
+    }
+                                                }
 
     // ==================== ATTACH EVENT LISTENERS ====================
     if (saveBtn) saveBtn.addEventListener('click', addMemory);
