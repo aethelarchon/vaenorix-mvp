@@ -69,7 +69,6 @@ async function compressImage(file) {
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-                // Base64 স্ট্রিং রিটার্ন করবে
                 const base64Image = canvas.toDataURL('image/jpeg', 0.8);
                 resolve(base64Image);
             };
@@ -236,7 +235,7 @@ async function initializeApp() {
                 <div class="memory-header">
                     <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
                     <div class="menu-container">
-                        <button class="three-dots" data-id="${memory.id}">â‹¯</button>
+                        <button class="three-dots" data-id="${memory.id}">⋯</button>
                         <div class="dropdown-menu" id="menu-${memory.id}">
                             <button class="edit-btn" data-id="${memory.id}">Edit</button>
                             <button class="share-btn" data-id="${memory.id}">Share</button>
@@ -253,7 +252,7 @@ async function initializeApp() {
                         memory.type === 'image' ?
                         `<div style="position: relative;">
                             <img src="${memory.content}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${memory.content}')">
-                            <button class="download-btn" onclick="downloadImage('${memory.content}')">â¬‡ï¸ Download</button>
+                            <button class="download-btn" onclick="downloadImage('${memory.content}')">⬇️ Download</button>
                         </div>` :
                         memory.content
                     }
@@ -326,7 +325,7 @@ async function initializeApp() {
             clearAllBtn.onclick = () => {
                 if (!currentUser) { showToast('Please sign in first!', true); return; }
                 if (memories.length === 0) { showToast('No memories to clear', true); return; }
-                if (confirm('âš ï¸ Are you sure? This will delete ALL your memories permanently!')) {
+                if (confirm('⚠️ Are you sure? This will delete ALL your memories permanently!')) {
                     deleteAllMemories();
                 }
             };
@@ -403,50 +402,49 @@ async function initializeApp() {
     }
 
     async function handleScreenshotUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (!currentUser) {
-        showToast('Please sign in first!', true);
-        if (screenshotInput) screenshotInput.value = '';
-        return;
-    }
-    if (uploadBtn) {
-        uploadBtn.disabled = true;
-        uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
-    }
-    try {
-        const base64Image = await compressImage(file);
-        
-        const response = await fetch('/api/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: base64Image.split(',')[1] })
-        });
-        
-        const data = await response.json();
-        if (!data.success) throw new Error(data.error.message || 'Upload failed');
-        
-        const imageUrl = data.data.url;
-        const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-        await window.addDoc(memoriesRef, {
-            type: 'image',
-            content: imageUrl,
-            timestamp: new Date().toISOString()
-        });
-        showToast('Screenshot saved!');
-        await loadMemories();
-    } catch (error) {
-        showToast('Failed: ' + error.message, true);
-        console.error(error);
-    } finally {
-        if (uploadBtn) {
-            uploadBtn.disabled = false;
-            uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!currentUser) {
+            showToast('Please sign in first!', true);
+            if (screenshotInput) screenshotInput.value = '';
+            return;
         }
-        if (screenshotInput) screenshotInput.value = '';
+        if (uploadBtn) {
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<span class="spinner"></span> Uploading...';
+        }
+        try {
+            const base64Image = await compressImage(file);
+            
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: base64Image.split(',')[1] })
+            });
+            
+            const data = await response.json();
+            if (!data.success) throw new Error(data.error.message || 'Upload failed');
+            
+            const imageUrl = data.data.url;
+            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+            await window.addDoc(memoriesRef, {
+                type: 'image',
+                content: imageUrl,
+                timestamp: new Date().toISOString()
+            });
+            showToast('Screenshot saved!');
+            await loadMemories();
+        } catch (error) {
+            showToast('Failed: ' + error.message, true);
+            console.error(error);
+        } finally {
+            if (uploadBtn) {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-camera"></i> Upload Screenshot';
+            }
+            if (screenshotInput) screenshotInput.value = '';
+        }
     }
-}
-                                                }
 
     // ==================== ATTACH EVENT LISTENERS ====================
     if (saveBtn) saveBtn.addEventListener('click', addMemory);
@@ -536,4 +534,4 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
     initializeApp();
-}
+                    }
