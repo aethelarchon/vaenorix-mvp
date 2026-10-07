@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <script>
-window.onerror = function(msg) {
-  alert("ERROR: " + msg);
-};
+        window.onerror = function(msg) {
+            alert("ERROR: " + msg);
+        };
     </script>
     <meta name="google-site-verification" content="jd5nrMC2HAkXVGKAH2h5v84_N7FyyKMFAzCLiV4Stxg" />
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZCNV92D19B"></script>
@@ -39,7 +39,12 @@ window.onerror = function(msg) {
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-        <script type="module">
+    <!-- Mobile Console Debugger -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
+
+    <!-- Firebase Script -->
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
         import { 
             getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy 
@@ -60,7 +65,6 @@ window.onerror = function(msg) {
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        auth.signOut = () => signOut(auth);
 
         window.db = getFirestore(app);
         window.auth = auth;
@@ -77,11 +81,8 @@ window.onerror = function(msg) {
         window.signInWithPopup = signInWithPopup;
         window.signOut = signOut;
         window.firebaseReady = true;
-        </script>
-    
+    </script>
 </head>
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
 <body>
 
     <div class="container">
@@ -182,5 +183,14 @@ window.onerror = function(msg) {
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .catch(err => console.log('SW reg error: ', err));
+            });
+        }
+    </script>
 </body>
 </html>
