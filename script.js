@@ -1004,6 +1004,7 @@ document.addEventListener('keydown', function(e) {
         if (loginBtn) loginBtn.style.display = 'inline-block';
         if (profileContainer) profileContainer.style.display = 'none';
         if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
+        if (topSearchBar) topSearchBar.style.display = 'none';
     }
 });
 }
