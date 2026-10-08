@@ -620,6 +620,85 @@ function renderMemoriesWithData(data) {
             if (screenshotInput) screenshotInput.value = '';
         }
     }
+    // ==================== PROFILE MENU ====================
+const profileContainer = document.getElementById('profileContainer');
+const profileMenu = document.getElementById('profileMenu');
+const menuSettings = document.getElementById('menuSettings');
+const menuExport = document.getElementById('menuExport');
+const menuSignOut = document.getElementById('menuSignOut');
+
+if (profileContainer && profileMenu) {
+    profileContainer.addEventListener('click', function(e) {
+        if (e.target.closest('.profile-menu')) return;
+        e.stopPropagation();
+        profileMenu.classList.toggle('open');
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!profileContainer.contains(e.target)) {
+            profileMenu.classList.remove('open');
+        }
+    });
+}
+
+// Settings modal তৈরি
+function openSettings() {
+    if (!currentUser) return;
+    
+    let modal = document.getElementById('settingsModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'settingsModal';
+        modal.className = 'settings-modal';
+        modal.innerHTML = `
+            <div class="settings-content">
+                <h3><i class="fas fa-cog"></i> Settings</h3>
+                <div class="settings-row">
+                    <span>Name</span>
+                    <span>${currentUser.displayName || 'User'}</span>
+                </div>
+                <div class="settings-row">
+                    <span>Email</span>
+                    <span>${currentUser.email}</span>
+                </div>
+                <div class="settings-row">
+                    <span>Total Memories</span>
+                    <span>${memories.length}</span>
+                </div>
+                <div class="settings-row">
+                    <span>Member Since</span>
+                    <span>${currentUser.metadata.creationTime ? new Date(currentUser.metadata.creationTime).toLocaleDateString() : 'N/A'}</span>
+                </div>
+                <button class="settings-close-btn" id="settingsClose">Close</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.querySelector('#settingsClose').onclick = () => modal.classList.remove('open');
+        modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('open'); };
+    }
+    modal.classList.add('open');
+    profileMenu.classList.remove('open');
+}
+
+if (menuSettings) {
+    menuSettings.addEventListener('click', openSettings);
+}
+
+if (menuExport) {
+    menuExport.addEventListener('click', () => {
+        profileMenu.classList.remove('open');
+        const exportBtn = document.getElementById('exportBtn');
+        if (exportBtn) exportBtn.click();
+    });
+}
+
+if (menuSignOut) {
+    menuSignOut.addEventListener('click', () => {
+        profileMenu.classList.remove('open');
+        logout();
+    });
+            }
+    
 // ==================== MEMORY BROWSER (FAB + Folder View) ====================
 const fabMain = document.getElementById('fabMain');
 const fabMenu = document.getElementById('fabMenu');
