@@ -620,7 +620,187 @@ function renderMemoriesWithData(data) {
             if (screenshotInput) screenshotInput.value = '';
         }
     }
+// ==================== MEMORY BROWSER (FAB + Folder View) ====================
+const fabMain = document.getElementById('fabMain');
+const fabMenu = document.getElementById('fabMenu');
+const folderView = document.getElementById('folderView');
+const folderClose = document.getElementById('folderClose');
+const folderTitle = document.getElementById('folderTitle');
+const folderCount = document.getElementById('folderCount');
+const folderContent = document.getElementById('folderContent');
+const detailView = document.getElementById('detailView');
+const detailClose = document.getElementById('detailClose');
+const detailType = document.getElementById('detailType');
+const detailActions = document.getElementById('detailActions');
+const detailContent = document.getElementById('detailContent');
 
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// FAB toggle
+if (fabMain && fabMenu) {
+    fabMain.addEventListener('click', function(e) {
+        e.stopPropagation();
+        fabMenu.classList.toggle('open');
+        fabMain.classList.toggle('rotated');
+    });
+    
+    document.querySelectorAll('.fab-item').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const folder = this.getAttribute('data-folder');
+            openFolderView(folder);
+            fabMenu.classList.remove('open');
+            fabMain.classList.remove('rotated');
+        });
+    });
+}
+
+// Folder View খোলা
+function openFolderView(type) {
+    if (!currentUser) {
+        showToast('Please sign in first!', true);
+        return;
+    }
+
+    const filtered = type === 'all' ? memories : memories.filter(m => m.type === type);
+    
+    const titles = {
+        'all': 'All Memories',
+        'image': 'Images',
+        'note': 'Notes',
+        'link': 'Links'
+    };
+    
+    folderTitle.textContent = titles[type] || 'Memories';
+    folderCount.textContent = `(${filtered.length})`;
+    
+    if (filtered.length === 0) {
+        folderContent.className = 'folder-content list-view';
+        folderContent.innerHTML = '<div class="empty-message">No ' + (type === 'all' ? 'memories' : type + 's') + ' yet.</div>';
+    } else if (type === 'image') {
+        folderContent.className = 'folder-content grid-view';
+        folderContent.innerHTML = filtered.map(m => `
+            <div class="memory-card" data-memory-id="${m.id}">
+                <img src="${m.content}" alt="Screenshot">
+            </div>
+        `).join('');
+    } else {
+        folderContent.className = 'folder-content list-view';
+        folderContent.innerHTML = filtered.map(m => `
+            <div class="memory-card" data-memory-id="${m.id}">
+                <div class="memory-header">
+                    <div class="memory-type">${m.type === 'note' ? 'Note' : m.type === 'link' ? 'Link' : 'Image'}</div>
+                </div>
+                <div class="memory-content">
+                    ${m.type === 'link' ? 
+                        `<a href="${m.content}" target="_blank" class="memory-link">${m.content}</a>` : 
+                        escapeHtml(m.content)
+                    }
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // কার্ডে ক্লিক করলে ডিটেইল খুলবে
+    folderContent.querySelectorAll('.memory-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') return;
+            const id = this.getAttribute('data-memory-id');
+            const memory = memories.find(m => m.id === id);
+            if (memory) openDetailView(memory);
+        });
+    });
+    
+    folderView.classList.add('open');
+}
+
+// Detail View খোলা
+function openDetailView(memory) {
+    detailType.textContent = memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image';
+    
+    detailActions.innerHTML = `
+        <button class="edit-action" title="Edit"><i class="fas fa-edit"></i></button>
+        <button class="download-action" title="Download"><i class="fas fa-download"></i></button>
+        <button class="delete-action danger" title="Delete"><i class="fas fa-trash"></i></button>
+    `;
+    
+    if (memory.type === 'image') {
+        detailContent.innerHTML = `<img src="${memory.content}" alt="Memory">`;
+    } else if (memory.type === 'note') {
+        detailContent.innerHTML = `<div class="note-text">${escapeHtml(memory.content)}</div>`;
+    } else if (memory.type === 'link') {
+        detailContent.innerHTML = `
+            <div class="link-preview-full">
+                <a href="${memory.content}" target="_blank">${memory.content}</a>
+            </div>
+        `;
+    }
+    
+    detailActions.querySelector('.edit-action').onclick = () => {
+        const newContent = prompt('Edit:', memory.content);
+        if (newContent && newContent.trim()) {
+            editMemory(memory.id, newContent.trim());
+            detailView.classList.remove('open');
+        }
+    };
+    
+    detailActions.querySelector('.download-action').onclick = () => {
+        if (memory.type === 'image') {
+            window.downloadImage(memory.content);
+        } else {
+            const blob = new Blob([memory.content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'vaenorix-' + memory.id + '.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Downloaded!');
+        }
+    };
+    
+    detailActions.querySelector('.delete-action').onclick = () => {
+        if (confirm('Delete this memory permanently?')) {
+            deleteMemory(memory.id);
+            detailView.classList.remove('open');
+        }
+    };
+    
+    detailView.classList.add('open');
+}
+
+// Folder বন্ধ
+if (folderClose) {
+    folderClose.addEventListener('click', () => {
+        folderView.classList.remove('open');
+    });
+}
+
+// Detail বন্ধ
+if (detailClose) {
+    detailClose.addEventListener('click', () => {
+        detailView.classList.remove('open');
+    });
+}
+
+// Escape key দিয়ে বন্ধ
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        if (detailView && detailView.classList.contains('open')) {
+            detailView.classList.remove('open');
+        } else if (folderView && folderView.classList.contains('open')) {
+            folderView.classList.remove('open');
+        } else if (fabMenu && fabMenu.classList.contains('open')) {
+            fabMenu.classList.remove('open');
+            fabMain.classList.remove('rotated');
+        }
+    }
+});
+                
     // ==================== ATTACH EVENT LISTENERS ====================
     if (saveBtn) saveBtn.addEventListener('click', addMemory);
     if (aiSearchBtn) aiSearchBtn.addEventListener('click', searchMemories);
