@@ -253,7 +253,7 @@ async function initializeApp() {
                         memory.type === 'image' ?
                         `<div style="position: relative;">
                             <img src="${memory.content}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${memory.content}')">
-                            <button class="download-btn" onclick="downloadImage('${memory.content}')">⬇️ Download</button>
+                            <button class="download-btn" onclick="downloadImage('${memory.content}')"><i class="fas fa-download"></i> Download</button>
                         </div>` :
                         memory.content
                     }
