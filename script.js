@@ -332,6 +332,47 @@ async function initializeApp() {
             };
         }
     }
+    
+// ==================== EXPORT DATA ====================
+const exportBtn = document.getElementById('exportBtn');
+if (exportBtn) {
+    exportBtn.onclick = () => {
+        if (!currentUser) { 
+            showToast('Please sign in first!', true); 
+            return; 
+        }
+        if (memories.length === 0) { 
+            showToast('No memories to export', true); 
+            return; 
+        }
+        
+        try {
+            // JSON ফাইল তৈরি
+            const dataStr = JSON.stringify({
+                exported_at: new Date().toISOString(),
+                user: currentUser.email,
+                total_memories: memories.length,
+                memories: memories
+            }, null, 2);
+            
+            // ডাউনলোড লিংক তৈরি
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `vaenorix-backup-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('✅ Exported ' + memories.length + ' memories!');
+        } catch (error) {
+            showToast('Export failed: ' + error.message, true);
+            console.error(error);
+        }
+    };
+}
 function renderMemoriesWithData(data) {
     if (!memoriesList) return;
     
