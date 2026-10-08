@@ -1927,3 +1927,149 @@ input:focus, textarea:focus {
 .three-dots {
     color: #a855f7 !important;
     }
+/* ==================== ADDITIONAL VIOLET OVERRIDES ==================== */
+
+/* Join Waitlist Button */
+.btn-waitlist {
+    border: 1.5px solid #a855f7 !important;
+    color: #c084fc !important;
+    background: transparent !important;
+}
+
+.btn-waitlist:hover {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5) !important;
+    border-color: transparent !important;
+}
+
+/* Upload Area */
+.upload-area {
+    border: 2px dashed rgba(139, 92, 246, 0.35) !important;
+    background: rgba(139, 92, 246, 0.03) !important;
+}
+
+.upload-area:hover {
+    border-color: #a855f7 !important;
+    background: rgba(139, 92, 246, 0.08) !important;
+}
+
+.upload-area i {
+    color: #a855f7 !important;
+}
+
+.upload-area p {
+    color: #c084fc !important;
+}
+
+/* Filter buttons (non-active) */
+.filter-btn {
+    color: #c084fc !important;
+    border-color: rgba(139, 92, 246, 0.3) !important;
+    background: rgba(139, 92, 246, 0.08) !important;
+}
+
+.filter-btn:hover {
+    color: #ffffff !important;
+    border-color: #a855f7 !important;
+    background: rgba(139, 92, 246, 0.2) !important;
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+}
+
+/* Navbar border accent */
+.navbar {
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2) !important;
+}
+
+/* Hero start button */
+.btn-primary {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899) !important;
+    color: #ffffff !important;
+}
+
+/* Section title icons */
+h1 i, h2 i, h3 i {
+    color: #a855f7 !important;
+}
+
+/* Empty message */
+.empty-message {
+    color: #c084fc !important;
+}
+
+/* Loading preview */
+.loading-preview {
+    color: #c084fc !important;
+}
+
+/* Search results badge */
+.search-results-badge {
+    background: rgba(139, 92, 246, 0.15) !important;
+    color: #c084fc !important;
+}
+
+/* Any leftover cyan borders on focus */
+input:focus, textarea:focus {
+    border-color: #a855f7 !important;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.25) !important;
+}
+
+/* Link color within memories */
+.memory-content a, a {
+    color: #c084fc !important;
+}
+
+.memory-content a:hover, a:hover {
+    color: #ec4899 !important;
+}
+
+/* Back link */
+.back-link {
+    color: #c084fc !important;
+}
+
+/* Waitlist page specific */
+.waitlist-title i, .waitlist-desc {
+    color: #c084fc !important;
+}
+
+.email-input, .name-input {
+    border-color: rgba(139, 92, 246, 0.3) !important;
+}
+
+.email-input:focus, .name-input:focus {
+    border-color: #a855f7 !important;
+}
+
+/* Memory counter badge */
+.memory-count {
+    background: rgba(139, 92, 246, 0.15) !important;
+    color: #c084fc !important;
+}
+
+/* Icons in section titles */
+.section-title i {
+    color: #a855f7 !important;
+}
+
+/* FAB item icons */
+.fab-icon {
+    background: rgba(139, 92, 246, 0.15) !important;
+}
+
+/* Add memory button icon hover */
+.btn-save i, .btn-search i, .btn-primary i {
+    color: inherit !important;
+}
+
+/* Nav badge */
+.nav-badge {
+    background: rgba(139, 92, 246, 0.15) !important;
+    color: #c084fc !important;
+    border: 1px solid rgba(139, 92, 246, 0.3) !important;
+}
