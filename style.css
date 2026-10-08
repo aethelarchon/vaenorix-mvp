@@ -2073,3 +2073,67 @@ input:focus, textarea:focus {
     color: #c084fc !important;
     border: 1px solid rgba(139, 92, 246, 0.3) !important;
 }
+/* ==================== NEW TYPOGRAPHY (Inter + Space Grotesk) ==================== */
+
+/* Body font - Inter */
+body, input, textarea, button, .btn-primary, .btn-save, .btn-search, .filter-btn, 
+.join-btn, .email-input, .name-input, .memory-content, .memory-link, 
+.profile-menu-item, .dropdown-menu button, .fab-item, .folder-content, 
+.detail-content, .top-search-input, .settings-content {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* Heading font - Space Grotesk */
+h1, h2, h3, h4, h5, h6,
+.hero-title, .section-title, .waitlist-title, .folder-title, 
+.logo-text, .profile-menu-name, .settings-content h3 {
+    font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    letter-spacing: -0.02em;
+}
+
+/* Hero title spacing */
+.hero-title {
+    font-weight: 700 !important;
+    letter-spacing: -0.03em !important;
+}
+
+/* Section title weight */
+.section-title {
+    font-weight: 600 !important;
+    letter-spacing: -0.01em !important;
+}
+
+/* Logo text weight */
+.logo-text {
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+}
+
+/* Button weights */
+.btn-primary, .btn-save, .btn-search, .join-btn, .login-btn, .logout-btn {
+    font-weight: 600 !important;
+    letter-spacing: 0.01em !important;
+}
+
+/* Input placeholder and text */
+input, textarea {
+    letter-spacing: 0 !important;
+}
+
+/* Memory card content readability */
+.memory-content {
+    line-height: 1.6 !important;
+    letter-spacing: 0 !important;
+}
+
+/* Folder and detail view text */
+.folder-count, .detail-type {
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+}
+
+/* FAB label */
+.fab-label {
+    font-weight: 500 !important;
+    letter-spacing: 0.01em !important;
+}
