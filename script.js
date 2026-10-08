@@ -380,7 +380,65 @@ async function initializeApp() {
     }
 
     function searchMemories() {
-        if (aiSearchInput) renderMemories(aiSearchInput.value.trim());
+    if (!aiSearchInput || !currentUser) return;
+    
+    const query = aiSearchInput.value.trim().toLowerCase();
+    const resultBox = document.getElementById('aiSearchResult');
+    
+    if (!query) {
+        renderMemories();
+        if (resultBox) { resultBox.classList.remove('show'); resultBox.innerHTML = ''; }
+        return;
+    }
+    
+    let detectedType = 'all';
+    if (query.includes('link') || query.includes('লিংক') || query.includes('url')) detectedType = 'link';
+    else if (query.includes('note') || query.includes('নোট') || query.includes('লেখা')) detectedType = 'note';
+    else if (query.includes('image') || query.includes('ছবি') || query.includes('photo')) detectedType = 'image';
+    
+    const now = new Date();
+    let dateFilter = null;
+    let dateLabel = '';
+    
+    if (query.includes('today') || query.includes('আজ')) {
+        dateFilter = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        dateLabel = 'today';
+    } else if (query.includes('yesterday') || query.includes('গতকাল')) {
+        dateFilter = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        dateLabel = 'yesterday';
+    } else if (query.includes('last week')) {
+        dateFilter = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        dateLabel = 'this week';
+    } else if (query.includes('last month')) {
+        dateFilter = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        dateLabel = 'this month';
+    }
+    
+    let results = memories;
+    if (detectedType !== 'all') results = results.filter(m => m.type === detectedType);
+    if (dateFilter) results = results.filter(m => new Date(m.timestamp) >= dateFilter);
+    
+    if (detectedType === 'all' && !dateFilter) {
+        const cleanQuery = query.replace(/show me|find|get|from|last|this|week|month|today|yesterday/g, '').trim();
+        if (cleanQuery) results = results.filter(m => m.content.toLowerCase().includes(cleanQuery));
+    }
+    
+    const counterSpan = document.getElementById('memoryCount');
+    if (counterSpan) counterSpan.textContent = `(${results.length})`;
+    
+    if (results.length === 0) {
+        memoriesList.innerHTML = '<div class="empty-message">🔍 No memories found</div>';
+    } else {
+        renderMemoriesWithData(results);
+    }
+    
+    if (resultBox) {
+        let msg = `🤖 Found <span class="ai-result-count">${results.length}</span> ${detectedType === 'all' ? 'memories' : detectedType + 's'}`;
+        if (dateLabel) msg += ` from ${dateLabel}`;
+        resultBox.innerHTML = `<div class="ai-result-text">${msg}</div>`;
+        resultBox.classList.add('show');
+        setTimeout(() => resultBox.classList.remove('show'), 4000);
+    }
     }
 
     function scrollToSave() {
