@@ -2163,3 +2163,117 @@ input, textarea {
 .download-btn i {
     font-size: 13px;
 }
+/* ==================== PROFESSIONAL FOOTER ==================== */
+.footer {
+    padding: 50px 20px 30px !important;
+    margin-top: 60px !important;
+    border-top: 1px solid rgba(139, 92, 246, 0.15) !important;
+    text-align: center !important;
+    background: linear-gradient(180deg, transparent 0%, rgba(139, 92, 246, 0.03) 100%);
+}
+
+.footer-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.footer-logo {
+    font-family: 'Space Grotesk', 'Inter', sans-serif !important;
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.footer-logo i {
+    color: #a855f7;
+    font-size: 22px;
+    -webkit-text-fill-color: #a855f7;
+}
+
+.footer-tagline {
+    color: #9ca3af;
+    font-size: 13px;
+    margin-bottom: 28px;
+    font-style: italic;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: 50px;
+    color: #c084fc;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.25s;
+    white-space: nowrap;
+}
+
+.footer-link:hover {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    color: #ffffff;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
+}
+
+.footer-link i {
+    font-size: 15px;
+}
+
+.footer-link span {
+    font-family: 'Inter', sans-serif;
+}
+
+.footer-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+    margin: 0 auto 20px;
+    max-width: 200px;
+}
+
+.footer-copyright {
+    color: #666;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+}
+
+.footer-small {
+    display: none;
+}
+
+@media (max-width: 500px) {
+    .footer-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .footer-link {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+    .footer-logo {
+        font-size: 20px;
+    }
+}
