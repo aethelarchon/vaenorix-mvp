@@ -1287,3 +1287,42 @@ html {
         font-size: 12px;
     }
     }
+/* ==================== FADE-IN ANIMATION ==================== */
+@keyframes memoryFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.memory-card {
+    animation: memoryFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    opacity: 0;
+}
+
+/* Sequential delay for cards */
+.memory-card:nth-child(1) { animation-delay: 0.05s; }
+.memory-card:nth-child(2) { animation-delay: 0.1s; }
+.memory-card:nth-child(3) { animation-delay: 0.15s; }
+.memory-card:nth-child(4) { animation-delay: 0.2s; }
+.memory-card:nth-child(5) { animation-delay: 0.25s; }
+.memory-card:nth-child(6) { animation-delay: 0.3s; }
+.memory-card:nth-child(7) { animation-delay: 0.35s; }
+.memory-card:nth-child(8) { animation-delay: 0.4s; }
+.memory-card:nth-child(9) { animation-delay: 0.45s; }
+.memory-card:nth-child(n+10) { animation-delay: 0.5s; }
+
+/* Folder view এর জন্য আলাদা animation */
+.folder-content .memory-card {
+    animation: memoryFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Hover effect আরও প্রিমিয়াম */
+.memory-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 255, 255, 0.15);
+    }
