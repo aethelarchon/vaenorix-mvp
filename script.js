@@ -938,7 +938,7 @@ document.addEventListener('keydown', function(e) {
         if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
     }
 });
-
+}
 // ==================== Image Modal ====================
 window.showImageModal = function(imageUrl) {
     const modal = document.createElement('div');
