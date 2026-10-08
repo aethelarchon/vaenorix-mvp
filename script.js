@@ -997,7 +997,7 @@ document.addEventListener('keydown', function(e) {
         if (menuAvatar) menuAvatar.src = photoURL;
         if (menuName) menuName.textContent = user.displayName || 'User';
         if (menuEmail) menuEmail.textContent = user.email || '';
-        
+        if (topSearchBar) topSearchBar.style.display = 'block';
         await loadMemories();
     } else {
         currentUser = null;
