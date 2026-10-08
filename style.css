@@ -1604,3 +1604,326 @@ html {
     border-radius: 50px;
     font-weight: 600;
 }
+/* ==================== NEW COLOR OVERRIDE (Violet-Purple Theme) ==================== */
+:root {
+    --primary: #8b5cf6;
+    --primary-light: #a855f7;
+    --primary-dark: #7c3aed;
+    --accent: #c084fc;
+    --pink: #ec4899;
+    --bg: #0a0a0f;
+    --card-bg: rgba(139, 92, 246, 0.05);
+    --border: rgba(139, 92, 246, 0.2);
+    --border-strong: rgba(139, 92, 246, 0.4);
+    --text: #ffffff;
+    --text-muted: #9ca3af;
+}
+
+/* ---- Button Primary ---- */
+.btn-primary, .login-btn, .logout-btn, .join-btn, .btn-upload, .settings-close-btn {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35) !important;
+}
+
+.btn-primary:hover, .login-btn:hover, .logout-btn:hover, .btn-upload:hover {
+    box-shadow: 0 6px 25px rgba(168, 85, 247, 0.5) !important;
+    transform: translateY(-1px) !important;
+}
+
+.btn-save, .btn-search {
+    background: rgba(139, 92, 246, 0.1) !important;
+    border: 1.5px solid rgba(139, 92, 246, 0.4) !important;
+    color: #c084fc !important;
+}
+
+.btn-save:hover, .btn-search:hover {
+    background: rgba(139, 92, 246, 0.2) !important;
+    border-color: #a855f7 !important;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.3) !important;
+}
+
+/* ---- Logo ---- */
+.logo-text, .glow-text {
+    background: linear-gradient(135deg, #a855f7, #ec4899) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important;
+    text-shadow: none !important;
+}
+
+.logo-icon {
+    color: #a855f7 !important;
+}
+
+/* ---- Navbar ---- */
+.navbar {
+    border-bottom: 1px solid rgba(139, 92, 246, 0.15) !important;
+}
+
+.nav-badge, .memory-count, .folder-count {
+    background: rgba(139, 92, 246, 0.15) !important;
+    color: #c084fc !important;
+    border: 1px solid rgba(139, 92, 246, 0.3) !important;
+}
+
+/* ---- Section Titles ---- */
+.section-title {
+    color: #c084fc !important;
+}
+
+.section-title i {
+    color: #a855f7 !important;
+}
+
+/* ---- Inputs ---- */
+input, textarea {
+    border-color: rgba(139, 92, 246, 0.2) !important;
+    background: rgba(139, 92, 246, 0.04) !important;
+}
+
+input:focus, textarea:focus {
+    border-color: #a855f7 !important;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.2) !important;
+}
+
+/* ---- Memory Cards ---- */
+.memory-card {
+    border: 1px solid rgba(139, 92, 246, 0.15) !important;
+    background: rgba(139, 92, 246, 0.03) !important;
+}
+
+.memory-card:hover {
+    border-color: rgba(168, 85, 247, 0.4) !important;
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15) !important;
+}
+
+.memory-type {
+    background: rgba(139, 92, 246, 0.15) !important;
+    color: #c084fc !important;
+}
+
+.memory-link {
+    color: #c084fc !important;
+}
+
+/* ---- Filter Buttons ---- */
+.filter-btn {
+    border-color: rgba(139, 92, 246, 0.2) !important;
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+}
+
+.filter-btn:hover {
+    border-color: #a855f7 !important;
+}
+
+/* ---- FAB ---- */
+.fab-main {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899) !important;
+    box-shadow: 0 6px 25px rgba(139, 92, 246, 0.5) !important;
+    animation: fabPulseViolet 2.5s infinite !important;
+}
+
+@keyframes fabPulseViolet {
+    0%, 100% { box-shadow: 0 6px 25px rgba(139, 92, 246, 0.5); }
+    50% { box-shadow: 0 6px 35px rgba(168, 85, 247, 0.8); }
+}
+
+.fab-item {
+    border: 1.5px solid rgba(139, 92, 246, 0.3) !important;
+    background: rgba(20, 20, 35, 0.95) !important;
+}
+
+.fab-item:hover, .fab-item:active {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4) !important;
+}
+
+.fab-icon {
+    background: rgba(139, 92, 246, 0.15) !important;
+}
+
+/* ---- Folder View ---- */
+.folder-header {
+    border-bottom: 1px solid rgba(139, 92, 246, 0.15) !important;
+}
+
+.folder-close {
+    background: rgba(139, 92, 246, 0.1) !important;
+    border: 1px solid rgba(139, 92, 246, 0.3) !important;
+    color: #c084fc !important;
+}
+
+.folder-close:hover {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
+    color: #ffffff !important;
+}
+
+/* ---- Detail View ---- */
+.detail-type {
+    background: rgba(139, 92, 246, 0.15) !important;
+    color: #c084fc !important;
+}
+
+.detail-actions button {
+    background: rgba(139, 92, 246, 0.08) !important;
+    border: 1px solid rgba(139, 92, 246, 0.25) !important;
+    color: #c084fc !important;
+}
+
+.detail-actions button:hover {
+    background: rgba(139, 92, 246, 0.2) !important;
+}
+
+.detail-content .note-text {
+    border: 1px solid rgba(139, 92, 246, 0.15) !important;
+}
+
+.detail-content .link-preview-full {
+    border: 1px solid rgba(139, 92, 246, 0.15) !important;
+}
+
+.detail-content .link-preview-full a {
+    color: #c084fc !important;
+}
+
+/* ---- Profile Menu ---- */
+.profile-menu {
+    border: 1px solid rgba(139, 92, 246, 0.25) !important;
+    background: rgba(20, 18, 35, 0.98) !important;
+}
+
+.profile-menu-avatar {
+    border: 2px solid #a855f7 !important;
+}
+
+.profile-menu-item i {
+    color: #c084fc !important;
+}
+
+.profile-menu-item:hover {
+    background: rgba(139, 92, 246, 0.1) !important;
+}
+
+.profile-menu-divider {
+    background: rgba(139, 92, 246, 0.1) !important;
+}
+
+/* ---- Top Search Bar ---- */
+.top-search-wrapper {
+    border: 1.5px solid rgba(139, 92, 246, 0.25) !important;
+    background: rgba(139, 92, 246, 0.04) !important;
+}
+
+.top-search-wrapper:focus-within {
+    border-color: #a855f7 !important;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.25) !important;
+    background: rgba(139, 92, 246, 0.08) !important;
+}
+
+.top-search-icon {
+    color: #a855f7 !important;
+}
+
+/* ---- FAB Pinned / Other ---- */
+.clear-all-btn, .export-btn {
+    background: rgba(139, 92, 246, 0.08) !important;
+    border: 1px solid rgba(139, 92, 246, 0.25) !important;
+    color: #c084fc !important;
+}
+
+.clear-all-btn:hover, .export-btn:hover {
+    background: rgba(139, 92, 246, 0.2) !important;
+    border-color: #a855f7 !important;
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.3) !important;
+}
+
+/* ---- User Avatar ---- */
+.user-avatar {
+    border: 2px solid #a855f7 !important;
+}
+
+.user-avatar:hover {
+    border-color: #ec4899 !important;
+}
+
+/* ---- Toast ---- */
+.toast {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4) !important;
+}
+
+.toast.error {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+}
+
+/* ---- Link Preview ---- */
+.link-preview {
+    background: rgba(139, 92, 246, 0.04) !important;
+}
+
+.link-preview:hover {
+    background: rgba(139, 92, 246, 0.08) !important;
+}
+
+/* ---- AI Result ---- */
+.ai-result {
+    background: rgba(139, 92, 246, 0.05) !important;
+    border-left: 3px solid #a855f7 !important;
+}
+
+.ai-result-count {
+    color: #c084fc !important;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a855f7 !important;
+}
+
+/* ---- Footer ---- */
+.footer {
+    border-top: 1px solid rgba(139, 92, 246, 0.1) !important;
+}
+
+/* ---- Search Match Highlight ---- */
+.memory-card.search-match {
+    border-color: #a855f7 !important;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.3) !important;
+}
+
+.search-results-badge {
+    background: rgba(139, 92, 246, 0.15) !important;
+    color: #c084fc !important;
+}
+
+/* ---- Loader ---- */
+.spinner {
+    border-top-color: #a855f7 !important;
+}
+
+/* ---- Dropdown Menu ---- */
+.dropdown-menu {
+    background: #1a1428 !important;
+    border: 1px solid rgba(139, 92, 246, 0.2) !important;
+}
+
+.dropdown-menu button:hover {
+    background: rgba(139, 92, 246, 0.15) !important;
+}
+
+.three-dots {
+    color: #a855f7 !important;
+    }
