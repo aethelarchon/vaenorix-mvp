@@ -332,7 +332,82 @@ async function initializeApp() {
             };
         }
     }
-
+function renderMemoriesWithData(data) {
+    if (!memoriesList) return;
+    
+    if (data.length === 0) {
+        memoriesList.innerHTML = '<div class="empty-message">No memories found</div>';
+        return;
+    }
+    
+    memoriesList.innerHTML = data.map((memory) => `
+        <div class="memory-card">
+            <div class="memory-header">
+                <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
+                <div class="menu-container">
+                    <button class="three-dots" data-id="${memory.id}">⋯</button>
+                    <div class="dropdown-menu" id="menu-${memory.id}">
+                        <button class="edit-btn" data-id="${memory.id}">Edit</button>
+                        <button class="share-btn" data-id="${memory.id}">Share</button>
+                        <button class="delete-btn-menu" data-id="${memory.id}">Delete</button>
+                    </div>
+                </div>
+            </div>
+            <div class="memory-content">
+                ${memory.type === 'link' ?
+                    `<a href="${memory.content}" target="_blank" class="memory-link">${memory.content}</a>` :
+                    memory.type === 'image' ?
+                    `<div style="position: relative;">
+                        <img src="${memory.content}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${memory.content}')">
+                    </div>` :
+                    memory.content
+                }
+            </div>
+        </div>
+    `).join('');
+    
+    document.querySelectorAll('.three-dots').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.getAttribute('data-id');
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+            const menu = document.getElementById(`menu-${id}`);
+            if (menu) menu.classList.toggle('show');
+        });
+    });
+    
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.getAttribute('data-id');
+            const memory = memories.find(m => m.id === id);
+            if (memory) {
+                const newContent = prompt('Edit:', memory.content);
+                if (newContent && newContent.trim()) editMemory(id, newContent.trim());
+            }
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+        });
+    });
+    
+    document.querySelectorAll('.delete-btn-menu').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.getAttribute('data-id');
+            deleteMemory(id);
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+        });
+    });
+    
+    document.querySelectorAll('.share-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.getAttribute('data-id');
+            const memory = memories.find(m => m.id === id);
+            if (memory) window.shareMemory(memory.content, memory.type);
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+        });
+    });
+            }
     async function addMemory() {
         if (!currentUser) {
             showToast('Please sign in first!', true);
