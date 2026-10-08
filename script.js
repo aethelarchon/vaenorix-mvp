@@ -650,24 +650,33 @@ function renderMemoriesWithData(data) {
     }
 
     window.onAuthStateChanged(window.auth, async (user) => {
-        const avatarImg = document.getElementById('userAvatar');
-        if (user) {
-            currentUser = user;
-            if (loginBtn) loginBtn.style.display = 'none';
-            if (logoutBtn) logoutBtn.style.display = 'inline-block';
-            if (avatarImg && user.photoURL) {
+    const avatarImg = document.getElementById('userAvatar');
+    if (user) {
+        currentUser = user;
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+        if (avatarImg) {
+            if (user.photoURL) {
                 avatarImg.src = user.photoURL;
-                avatarImg.style.display = 'block';
+            } else {
+                // ছবি না থাকলে প্রথম অক্ষর দিয়ে avatar বানাবে
+                avatarImg.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || user.email) + '&background=00ffff&color=0a0a0f';
             }
-            await loadMemories();
-        } else {
-            currentUser = null;
-            if (loginBtn) loginBtn.style.display = 'inline-block';
-            if (logoutBtn) logoutBtn.style.display = 'none';
-            if (avatarImg) avatarImg.style.display = 'none';
-            if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
+            avatarImg.style.display = 'block';
+            avatarImg.title = user.displayName || user.email;
         }
-    });
+        await loadMemories();
+    } else {
+        currentUser = null;
+        if (loginBtn) loginBtn.style.display = 'inline-block';
+        if (logoutBtn) logoutBtn.style.display = 'none';
+        if (avatarImg) {
+            avatarImg.style.display = 'none';
+            avatarImg.src = '';
+        }
+        if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
+    }
+});
 }
 
 // ==================== Image Modal ====================
