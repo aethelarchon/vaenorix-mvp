@@ -2137,3 +2137,29 @@ input, textarea {
     font-weight: 500 !important;
     letter-spacing: 0.01em !important;
 }
+/* ==================== DOWNLOAD BUTTON FONT FIX ==================== */
+.download-btn {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    color: #c084fc !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 20px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.download-btn:hover {
+    background: rgba(139, 92, 246, 0.15) !important;
+    color: #ec4899 !important;
+}
+
+.download-btn i {
+    font-size: 13px;
+}
