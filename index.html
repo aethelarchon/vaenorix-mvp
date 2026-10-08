@@ -145,9 +145,29 @@ const firebaseConfig = {
                 <span class="logo-text">Vaenorix</span>
             </a>
             <div class="nav-actions">
-    <img id="userAvatar" class="user-avatar" src="" alt="Profile" style="display:none;">
     <button id="loginBtn" class="login-btn" type="button">Sign in with Google</button>
-    <button id="logoutBtn" class="logout-btn" type="button" hidden>Sign out</button>
+    <div class="profile-container" id="profileContainer" style="display:none;">
+        <img id="userAvatar" class="user-avatar" src="" alt="Profile">
+        <div class="profile-menu" id="profileMenu">
+            <div class="profile-menu-header">
+                <img id="menuAvatar" class="profile-menu-avatar" src="" alt="Profile">
+                <div class="profile-menu-info">
+                    <div class="profile-menu-name" id="menuName">User</div>
+                    <div class="profile-menu-email" id="menuEmail">user@email.com</div>
+                </div>
+            </div>
+            <div class="profile-menu-divider"></div>
+            <button class="profile-menu-item" id="menuSettings">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+            <button class="profile-menu-item" id="menuExport">
+                <i class="fas fa-download"></i> Export Data
+            </button>
+            <button class="profile-menu-item danger" id="menuSignOut">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
+        </div>
+    </div>
             </div>
         </nav>
 
