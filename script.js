@@ -620,6 +620,74 @@ function renderMemoriesWithData(data) {
             if (screenshotInput) screenshotInput.value = '';
         }
     }
+    // ==================== TOP SEARCH BAR ====================
+const topSearchBar = document.getElementById('topSearchBar');
+const topSearchInput = document.getElementById('topSearchInput');
+const topSearchClear = document.getElementById('topSearchClear');
+let searchTimeout = null;
+
+function performTopSearch(query) {
+    const q = query.trim().toLowerCase();
+    
+    if (!q) {
+        topSearchClear.style.display = 'none';
+        renderMemories();
+        return;
+    }
+    
+    topSearchClear.style.display = 'flex';
+    
+    // memories লিস্ট থেকে টেক্সট সার্চ
+    const results = memories.filter(m => 
+        m.content.toLowerCase().includes(q)
+    );
+    
+    const counterSpan = document.getElementById('memoryCount');
+    if (counterSpan) counterSpan.textContent = `(${results.length})`;
+    
+    if (results.length === 0) {
+        memoriesList.innerHTML = '<div class="empty-message">🔍 No memories match "' + query + '"</div>';
+    } else {
+        renderMemoriesWithData(results);
+    }
+}
+
+if (topSearchInput) {
+    topSearchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const value = this.value;
+        searchTimeout = setTimeout(() => {
+            performTopSearch(value);
+            // রেজাল্ট সেকশনে স্ক্রল করি
+            if (value.trim()) {
+                const section = document.querySelector('.memories-section');
+                if (section) {
+                    const rect = section.getBoundingClientRect();
+                    if (rect.top > window.innerHeight) {
+                        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            }
+        }, 250);
+    });
+    
+    // Enter চাপলে সাথে সাথে সার্চ
+    topSearchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            clearTimeout(searchTimeout);
+            performTopSearch(this.value);
+        }
+    });
+}
+
+if (topSearchClear) {
+    topSearchClear.addEventListener('click', function() {
+        topSearchInput.value = '';
+        topSearchClear.style.display = 'none';
+        renderMemories();
+    });
+}
+    
     // ==================== PROFILE MENU ====================
 const profileContainer = document.getElementById('profileContainer');
 const profileMenu = document.getElementById('profileMenu');
