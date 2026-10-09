@@ -960,7 +960,25 @@ function openSettings() {
     modal.classList.add('open');
     profileMenu.classList.remove('open');
                                                                                  }
-    
+    if (menuSettings) {
+    menuSettings.addEventListener('click', openSettings);
+}
+
+if (menuExport) {
+    menuExport.addEventListener('click', () => {
+        profileMenu.classList.remove('open');
+        const exportBtn = document.getElementById('exportBtn');
+        if (exportBtn) exportBtn.click();
+    });
+}
+
+if (menuSignOut) {
+    menuSignOut.addEventListener('click', () => {
+        profileMenu.classList.remove('open');
+        logout();
+    });
+                    }
+                                
 // ==================== MEMORY BROWSER (FAB + Folder View) ====================
 const fabMain = document.getElementById('fabMain');
 const fabMenu = document.getElementById('fabMenu');
