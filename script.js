@@ -324,16 +324,13 @@ if (memory) {
         });
 
         const clearAllBtn = document.getElementById('clearAllBtn');
-        if (clearAllBtn) {
-            clearAllBtn.onclick = () => {
-                if (!currentUser) { showToast('Please sign in first!', true); return; }
-                if (memories.length === 0) { showToast('No memories to clear', true); return; }
-                if (confirm('⚠️ Are you sure? This will delete ALL your memories permanently!')) {
-                    deleteAllMemories();
-                }
-            };
-        }
-    }
+if (clearAllBtn) {
+    clearAllBtn.onclick = () => {
+        if (!currentUser) { showToast('Please sign in first!', true); return; }
+        if (memories.length === 0) { showToast('No memories to clear', true); return; }
+        window.openClearAllModal();
+    };
+}
     
 // ==================== EXPORT DATA ====================
 const exportBtn = document.getElementById('exportBtn');
