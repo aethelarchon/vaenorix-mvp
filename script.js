@@ -1147,3 +1147,116 @@ if (window.matchMedia('(display-mode: standalone)').matches) {
     const installBtn = document.getElementById('installBtn');
     if (installBtn) installBtn.style.display = 'none';
 }
+// ==================== EDIT MEMORY MODAL ====================
+let editingMemoryId = null;
+
+function openEditModal(memoryId, currentContent) {
+    const modal = document.getElementById('editModal');
+    const input = document.getElementById('editModalInput');
+    if (!modal || !input) return;
+    
+    editingMemoryId = memoryId;
+    input.value = currentContent || '';
+    modal.classList.add('open');
+    
+    // ফোকাস করি এবং কার্সর শেষে রাখি
+    setTimeout(() => {
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+    }, 300);
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('editModal');
+    if (modal) modal.classList.remove('open');
+    editingMemoryId = null;
+}
+
+async function saveEditModal() {
+    const input = document.getElementById('editModalInput');
+    const saveBtn = document.getElementById('editModalSave');
+    
+    if (!editingMemoryId || !input) return;
+    
+    const newContent = input.value.trim();
+    if (!newContent) {
+        if (typeof showToast === 'function') showToast('Memory cannot be empty', true);
+        return;
+    }
+    
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Saving...';
+    
+    try {
+        // global editMemory ফাংশন কল করি
+        if (typeof window.editMemory === 'function' || typeof editMemory === 'function') {
+            // editMemory আগে থেকেই initializeApp-এর ভেতরে আছে
+            // তাই আমরা সরাসরি window থেকে কল করতে পারি না
+        }
+        
+        // সরাসরি Firebase update
+        if (currentUser && window.db && window.doc && window.updateDoc) {
+            const memoryRef = window.doc(window.db, `users/${currentUser.uid}/memories`, editingMemoryId);
+            await window.updateDoc(memoryRef, { content: newContent });
+            
+            if (typeof showToast === 'function') showToast('✅ Memory updated!');
+            closeEditModal();
+            
+            // memories reload করি
+            if (typeof loadMemories === 'function') {
+                await loadMemories();
+            } else if (typeof window.loadMemories === 'function') {
+                await window.loadMemories();
+            }
+        } else {
+            throw new Error('Firebase not ready');
+        }
+    } catch (error) {
+        console.error('Edit save error:', error);
+        if (typeof showToast === 'function') showToast('Failed to update: ' + error.message, true);
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fas fa-check"></i> Save Changes';
+    }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('editModal');
+    const closeBtn = document.getElementById('editModalClose');
+    const cancelBtn = document.getElementById('editModalCancel');
+    const saveBtn = document.getElementById('editModalSave');
+    
+    if (closeBtn) closeBtn.addEventListener('click', closeEditModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeEditModal);
+    if (saveBtn) saveBtn.addEventListener('click', saveEditModal);
+    
+    // বাইরে ক্লিক করলে বন্ধ হবে
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) closeEditModal();
+        });
+    }
+    
+    // Escape key দিয়ে বন্ধ
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
+            closeEditModal();
+        }
+    });
+    
+    // Ctrl+Enter বা Cmd+Enter দিয়ে সেভ
+    const input = document.getElementById('editModalInput');
+    if (input) {
+        input.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                saveEditModal();
+            }
+        });
+    }
+});
+
+// Global function হিসেবে এক্সপোর্ট করি
+window.openEditModal = openEditModal;
+window.closeEditModal = closeEditModal;
