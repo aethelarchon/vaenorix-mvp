@@ -399,27 +399,25 @@ if (memory) {
             });
         });
 
-        document.querySelectorAll('.delete-btn-menu').forEach(btn => {
+        document.querySelectorAll('.share-btn').forEach(btn => {
     btn.addEventListener('click', function(e) {
         e.stopPropagation();
         const id = this.getAttribute('data-id');
         const memory = memories.find(m => m.id === id);
-        if (memory) {
-            window.openDeleteModal(id, memory.content, memory.type);
-        }
+        if (memory) window.shareMemoryPublic(memory);
         document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
     });
 });
 
         document.querySelectorAll('.share-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const id = this.getAttribute('data-id');
-                const memory = memories.find(m => m.id === id);
-                if (memory) window.shareMemory(memory.content, memory.type);
-                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-            });
-        });
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const id = this.getAttribute('data-id');
+        const memory = memories.find(m => m.id === id);
+        if (memory) window.shareMemoryPublic(memory);
+        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+    });
+});
 
 // ==================== PIN / STAR ====================
 document.querySelectorAll('.pin-btn').forEach(btn => {
