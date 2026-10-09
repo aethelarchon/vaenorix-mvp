@@ -209,7 +209,7 @@ window.loadMemories = loadMemories;
             showToast('Failed to clear memories', true);
         }
     }
-
+window.deleteAllMemories = deleteAllMemories;
     function renderMemories(filterText = '') {
         if (!currentUser || !memoriesList) return;
         if (memories.length === 0) {
