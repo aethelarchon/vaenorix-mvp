@@ -912,11 +912,8 @@ function openDetailView(memory) {
     };
     
     detailActions.querySelector('.delete-action').onclick = () => {
-        if (confirm('Delete this memory permanently?')) {
-            deleteMemory(memory.id);
-            detailView.classList.remove('open');
-        }
-    };
+    window.openDeleteModal(memory.id, memory.content, memory.type);
+};
     
     detailView.classList.add('open');
 }
