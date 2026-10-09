@@ -1298,8 +1298,8 @@ function closeDeleteModal() {
     const modal = document.getElementById('deleteModal');
     if (modal) modal.classList.remove('open');
     deletingMemoryId = null;
+    isClearAllMode = false;
 }
-
 async function confirmDelete() {
     if (!deletingMemoryId && !isClearAllMode) return;
     
@@ -1377,3 +1377,46 @@ document.addEventListener('DOMContentLoaded', function() {
 // Global export
 window.openDeleteModal = openDeleteModal;
 window.closeDeleteModal = closeDeleteModal;
+// ==================== CLEAR ALL MODAL ====================
+function openClearAllModal() {
+    const modal = document.getElementById('deleteModal');
+    if (!modal) return;
+    
+    isClearAllMode = true;
+    deletingMemoryId = null;
+    
+    // টাইটেল ও টেক্সট পরিবর্তন
+    const title = modal.querySelector('.delete-modal-title');
+    const text = modal.querySelector('.delete-modal-text');
+    const preview = document.getElementById('deleteModalPreview');
+    
+    if (title) title.textContent = 'Clear all memories?';
+    if (text) text.textContent = 'This will permanently delete ALL your memories (notes, links, and images). This action cannot be undone.';
+    if (preview) {
+        preview.innerHTML = `
+            <div class="delete-modal-preview-type">Warning</div>
+            <div class="delete-modal-preview-content" style="color: #ff8888;">
+                ${typeof memories !== 'undefined' ? memories.length : 0} memories will be permanently deleted
+            </div>
+        `;
+    }
+    
+    modal.classList.add('open');
+}
+
+// Reset modal on close (পরেরবার single delete modal ঠিকভাবে আসবে)
+const originalCloseDeleteModal = closeDeleteModal;
+window.closeDeleteModal = function() {
+    originalCloseDeleteModal();
+    // Reset title/text for next single delete
+    setTimeout(() => {
+        const modal = document.getElementById('deleteModal');
+        if (!modal) return;
+        const title = modal.querySelector('.delete-modal-title');
+        const text = modal.querySelector('.delete-modal-text');
+        if (title) title.textContent = 'Delete this memory?';
+        if (text) text.textContent = 'This action cannot be undone. This memory will be permanently removed from your account.';
+    }, 300);
+};
+
+window.openClearAllModal = openClearAllModal;
