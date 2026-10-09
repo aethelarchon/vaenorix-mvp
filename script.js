@@ -1621,26 +1621,34 @@ if (bulkDeleteBtn) {
         
         if (!confirm(`Delete ${selectedIds.length} memories permanently?`)) return;
         
+        const idsToDelete = [...selectedIds];
+        const count = idsToDelete.length;
+        
         try {
             bulkDeleteBtn.disabled = true;
-            for (const id of selectedIds) {
+            for (const id of idsToDelete) {
                 const ref = window.doc(window.db, `users/${user.uid}/memories`, id);
                 await window.deleteDoc(ref);
             }
             
+            // Local array থেকে সরিয়ে দিই (instant update)
+            memories = memories.filter(m => !idsToDelete.includes(m.id));
+            
+            // localStorage ক্যাশও আপডেট করি
+            if (user.uid) {
+                try {
+                    localStorage.setItem('vaenorix_memories_' + user.uid, JSON.stringify(memories));
+                } catch (e) {}
+            }
+            
             if (typeof showToast === 'function') {
-                showToast(`🗑️ Deleted ${selectedIds.length} memories`);
+                showToast(`🗑️ Deleted ${count} memories`);
             }
             
-            const count = selectedIds.length;
+            // Select mode বন্ধ করি (যা renderMemories কল করে)
             selectedIds = [];
+            toggleSelectMode();
             
-            // Select mode বন্ধ করি
-            if (isSelectMode) toggleSelectMode();
-            
-            if (typeof window.loadMemories === 'function') {
-                await window.loadMemories();
-            }
         } catch (error) {
             console.error('Bulk delete error:', error);
             if (typeof showToast === 'function') showToast('Failed to delete', true);
@@ -1648,7 +1656,7 @@ if (bulkDeleteBtn) {
             bulkDeleteBtn.disabled = false;
         }
     });
-            }
+                                     }
     
     // ==================== ATTACH EVENT LISTENERS ====================
     if (saveBtn) saveBtn.addEventListener('click', addMemory);
