@@ -1048,3 +1048,102 @@ if (document.readyState === 'loading') {
 } else {
     initializeApp();
                     }
+// ==================== PWA INSTALL ====================
+let deferredPrompt = null;
+let installBannerShown = false;
+
+// Install prompt available হলে বাটন দেখাই
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn && !window.matchMedia('(display-mode: standalone)').matches) {
+        installBtn.style.display = 'inline-flex';
+    }
+});
+
+// Install বাটনে ক্লিক
+document.addEventListener('click', async function(e) {
+    const installBtn = e.target.closest('#installBtn');
+    if (installBtn && deferredPrompt) {
+        installBtn.disabled = true;
+        installBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Installing...';
+        
+        try {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                if (typeof showToast === 'function') showToast('🎉 Installing Vaenorix...');
+            } else {
+                if (typeof showToast === 'function') showToast('Installation cancelled');
+            }
+        } catch (err) {
+            console.error('Install error:', err);
+        }
+        
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+        installBtn.disabled = false;
+        installBtn.innerHTML = '<i class="fas fa-download"></i> Install App';
+    }
+});
+
+// App install হলে বাটন লুকাই
+window.addEventListener('appinstalled', () => {
+    console.log('✅ Vaenorix installed');
+    deferredPrompt = null;
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) installBtn.style.display = 'none';
+    if (typeof showToast === 'function') {
+        showToast('🎉 Vaenorix installed! Check your home screen.');
+    }
+});
+
+// iOS-এর জন্য fallback (beforeinstallprompt কাজ করে না)
+function detectIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+if (detectIOS() && !window.matchMedia('(display-mode: standalone)').matches && !localStorage.getItem('iosInstallDismissed')) {
+    setTimeout(() => {
+        if (installBannerShown) return;
+        installBannerShown = true;
+        
+        const banner = document.createElement('div');
+        banner.className = 'install-banner';
+        banner.innerHTML = `
+            <div class="install-banner-title">
+                <i class="fas fa-mobile-alt"></i> Install Vaenorix
+            </div>
+            <div class="install-banner-text">
+                Safari-তে <strong>Share</strong> বাটনে ট্যাপ করে <strong>"Add to Home Screen"</strong> সিলেক্ট করুন।
+            </div>
+            <div class="install-banner-actions">
+                <button class="install-banner-primary" id="iosGotIt">Got it</button>
+                <button class="install-banner-secondary" id="iosLater">Later</button>
+            </div>
+        `;
+        document.body.appendChild(banner);
+        
+        setTimeout(() => banner.classList.add('show'), 100);
+        
+        banner.querySelector('#iosGotIt').onclick = () => {
+            banner.classList.remove('show');
+            localStorage.setItem('iosInstallDismissed', 'true');
+            setTimeout(() => banner.remove(), 400);
+        };
+        
+        banner.querySelector('#iosLater').onclick = () => {
+            banner.classList.remove('show');
+            setTimeout(() => banner.remove(), 400);
+        };
+    }, 3000);
+}
+
+// Standalone mode এ থাকলে install button লুকাই
+if (window.matchMedia('(display-mode: standalone)').matches) {
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) installBtn.style.display = 'none';
+}
