@@ -1420,7 +1420,195 @@ if (sortBtn && sortMenu) {
         setTimeout(() => applySort(currentSort), 100);
     }
                           }
+            // ==================== BULK ACTIONS ====================
+const selectBtn = document.getElementById('selectBtn');
+const bulkActionBar = document.getElementById('bulkActionBar');
+const bulkSelectedCount = document.getElementById('bulkSelectedCount');
+const bulkPinBtn = document.getElementById('bulkPinBtn');
+const bulkDownloadBtn = document.getElementById('bulkDownloadBtn');
+const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+const bulkCancelBtn = document.getElementById('bulkCancelBtn');
+let isSelectMode = false;
+let selectedIds = [];
+
+function toggleSelectMode() {
+    isSelectMode = !isSelectMode;
+    selectedIds = [];
+    
+    if (selectBtn) {
+        selectBtn.classList.toggle('active', isSelectMode);
+        selectBtn.innerHTML = isSelectMode 
+            ? '<i class="fas fa-times"></i> Cancel' 
+            : '<i class="fas fa-check-square"></i> Select';
+    }
+    
+    if (memoriesList) {
+        memoriesList.classList.toggle('select-mode', isSelectMode);
+    }
+    
+    if (isSelectMode) {
+        if (bulkActionBar) bulkActionBar.classList.add('show');
+    } else {
+        if (bulkActionBar) bulkActionBar.classList.remove('show');
+    }
+    
+    updateBulkCount();
+    renderMemories();
+}
+
+function updateBulkCount() {
+    if (bulkSelectedCount) bulkSelectedCount.textContent = selectedIds.length;
+    
+    // Pin button state
+    if (bulkPinBtn) {
+        const selectedMemories = memories.filter(m => selectedIds.includes(m.id));
+        const allPinned = selectedMemories.length > 0 && selectedMemories.every(m => m.pinned);
+        bulkPinBtn.classList.toggle('active', allPinned);
+    }
+}
+
+function toggleMemorySelection(id) {
+    const index = selectedIds.indexOf(id);
+    if (index > -1) {
+        selectedIds.splice(index, 1);
+    } else {
+        selectedIds.push(id);
+    }
+    updateBulkCount();
+    
+    // UI আপডেট করি
+    const checkbox = document.querySelector(`.memory-checkbox[data-id="${id}"]`);
+    const card = document.querySelector(`.memory-card[data-memory-id="${id}"]`);
+    if (checkbox) checkbox.classList.toggle('checked');
+    if (card) card.classList.toggle('selected');
+}
+
+if (selectBtn) {
+    selectBtn.addEventListener('click', toggleSelectMode);
+}
+
+if (bulkCancelBtn) {
+    bulkCancelBtn.addEventListener('click', () => {
+        if (isSelectMode) toggleSelectMode();
+    });
+}
+
+// Bulk Pin
+if (bulkPinBtn) {
+    bulkPinBtn.addEventListener('click', async () => {
+        if (selectedIds.length === 0) {
+            if (typeof showToast === 'function') showToast('Nothing selected', true);
+            return;
+        }
+        
+        const user = window.currentUser || currentUser;
+        if (!user) return;
+        
+        const selectedMemories = memories.filter(m => selectedIds.includes(m.id));
+        const allPinned = selectedMemories.every(m => m.pinned);
+        const newState = !allPinned;
+        
+        try {
+            bulkPinBtn.disabled = true;
+            for (const memory of selectedMemories) {
+                const ref = window.doc(window.db, `users/${user.uid}/memories`, memory.id);
+                await window.updateDoc(ref, { pinned: newState });
+            }
             
+            if (typeof showToast === 'function') {
+                showToast(newState ? `⭐ Pinned ${selectedMemories.length}` : `Unpinned ${selectedMemories.length}`);
+            }
+            
+            // Select mode বন্ধ করি
+            toggleSelectMode();
+            
+            if (typeof window.loadMemories === 'function') {
+                await window.loadMemories();
+            }
+        } catch (error) {
+            console.error('Bulk pin error:', error);
+            if (typeof showToast === 'function') showToast('Failed to pin', true);
+        } finally {
+            bulkPinBtn.disabled = false;
+        }
+    });
+}
+
+// Bulk Download
+if (bulkDownloadBtn) {
+    bulkDownloadBtn.addEventListener('click', () => {
+        if (selectedIds.length === 0) {
+            if (typeof showToast === 'function') showToast('Nothing selected', true);
+            return;
+        }
+        
+        const selectedMemories = memories.filter(m => selectedIds.includes(m.id));
+        
+        const dataStr = JSON.stringify({
+            exported_at: new Date().toISOString(),
+            user: (window.currentUser || currentUser).email,
+            total_memories: selectedMemories.length,
+            memories: selectedMemories
+        }, null, 2);
+        
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `vaenorix-selected-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        if (typeof showToast === 'function') {
+            showToast(`✅ Exported ${selectedMemories.length} memories`);
+        }
+    });
+}
+
+// Bulk Delete
+if (bulkDeleteBtn) {
+    bulkDeleteBtn.addEventListener('click', async () => {
+        if (selectedIds.length === 0) {
+            if (typeof showToast === 'function') showToast('Nothing selected', true);
+            return;
+        }
+        
+        const user = window.currentUser || currentUser;
+        if (!user) return;
+        
+        if (!confirm(`Delete ${selectedIds.length} memories permanently?`)) return;
+        
+        try {
+            bulkDeleteBtn.disabled = true;
+            for (const id of selectedIds) {
+                const ref = window.doc(window.db, `users/${user.uid}/memories`, id);
+                await window.deleteDoc(ref);
+            }
+            
+            if (typeof showToast === 'function') {
+                showToast(`🗑️ Deleted ${selectedIds.length} memories`);
+            }
+            
+            const count = selectedIds.length;
+            selectedIds = [];
+            
+            // Select mode বন্ধ করি
+            if (isSelectMode) toggleSelectMode();
+            
+            if (typeof window.loadMemories === 'function') {
+                await window.loadMemories();
+            }
+        } catch (error) {
+            console.error('Bulk delete error:', error);
+            if (typeof showToast === 'function') showToast('Failed to delete', true);
+        } finally {
+            bulkDeleteBtn.disabled = false;
+        }
+    });
+            }
+    
     // ==================== ATTACH EVENT LISTENERS ====================
     if (saveBtn) saveBtn.addEventListener('click', addMemory);
     if (aiSearchBtn) aiSearchBtn.addEventListener('click', searchMemories);
