@@ -283,7 +283,25 @@ const firebaseConfig = {
                 <button class="filter-btn" data-filter="image">Images</button>
                 <button id="clearAllBtn" class="clear-all-btn"><i class="fas fa-trash-alt"></i> Clear All</button>
                 <button id="exportBtn" class="export-btn"><i class="fas fa-download"></i> Export Data</button>
-                
+                <div class="sort-wrapper">
+    <button id="sortBtn" class="sort-btn">
+        <i class="fas fa-sort"></i> Sort
+    </button>
+    <div class="sort-menu" id="sortMenu">
+        <button class="sort-option active" data-sort="newest">
+            <i class="fas fa-clock"></i> Newest First
+        </button>
+        <button class="sort-option" data-sort="oldest">
+            <i class="fas fa-history"></i> Oldest First
+        </button>
+        <button class="sort-option" data-sort="alpha">
+            <i class="fas fa-font"></i> A to Z
+        </button>
+        <button class="sort-option" data-sort="pinned">
+            <i class="fas fa-star"></i> Pinned First
+        </button>
+    </div>
+        </div>
             </div>
             <div id="memoriesList" class="memories-list">
             </div>
