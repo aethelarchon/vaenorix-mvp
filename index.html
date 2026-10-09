@@ -159,6 +159,25 @@ const firebaseConfig = {
         </div>
     </div>
     </div>
+    <!-- Delete Confirmation Modal -->
+<div class="delete-modal" id="deleteModal">
+    <div class="delete-modal-content">
+        <div class="delete-modal-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3 class="delete-modal-title">Delete this memory?</h3>
+        <p class="delete-modal-text">
+            This action cannot be undone. This memory will be permanently removed from your account.
+        </p>
+        <div class="delete-modal-preview" id="deleteModalPreview"></div>
+        <div class="delete-modal-footer">
+            <button class="delete-modal-cancel" id="deleteModalCancel">Cancel</button>
+            <button class="delete-modal-confirm" id="deleteModalConfirm">
+                <i class="fas fa-trash-alt"></i> Delete
+            </button>
+        </div>
+    </div>
+</div>
     
 <body>
     <div class="container">
