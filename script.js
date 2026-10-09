@@ -983,6 +983,7 @@ document.addEventListener('keydown', function(e) {
     
     if (user) {
         currentUser = user;
+        window.currentUser = user;
         if (loginBtn) loginBtn.style.display = 'none';
         if (profileContainer) profileContainer.style.display = 'block';
         
@@ -999,6 +1000,7 @@ document.addEventListener('keydown', function(e) {
         await loadMemories();
     } else {
         currentUser = null;
+        window.currentUser = null;
         if (loginBtn) loginBtn.style.display = 'inline-block';
         if (profileContainer) profileContainer.style.display = 'none';
         if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
