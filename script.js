@@ -206,16 +206,21 @@ function showSkeletonLoader() {
     }
 
     async function fetchLinkPreview(url) {
-        try {
-            const response = await fetch('/api/preview', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url })
-            });
-            return await response.json();
-        } catch (error) {
-            return null;
-        }
+    // Cache এ থাকলে সরাসরি ফেরত দিই
+    if (previewCache[url]) return previewCache[url];
+    
+    try {
+        const response = await fetch('/api/preview', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+        });
+        const data = await response.json();
+        previewCache[url] = data; // Cache করে রাখি
+        return data;
+    } catch (error) {
+        return null;
+    }
     }
 
     async function deleteAllMemories() {
