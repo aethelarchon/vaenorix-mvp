@@ -317,8 +317,11 @@ window.deleteAllMemories = deleteAllMemories;
             return;
         }
         memoriesList.innerHTML = filteredMemories.map((memory) => `
-            <div class="memory-card ${memory.pinned ? 'pinned' : ''}">
-    <div class="memory-header">
+                    <div class="memory-card ${memory.pinned ? 'pinned' : ''} ${isSelectMode && selectedIds.includes(memory.id) ? 'selected' : ''}" data-memory-id="${memory.id}">
+<div class="memory-checkbox ${selectedIds.includes(memory.id) ? 'checked' : ''}" data-id="${memory.id}">
+    <i class="fas fa-check"></i>
+</div>
+<div class="memory-header">
     ${memory.pinned ? '<div class="pinned-badge"><i class="fas fa-star"></i> Pinned</div>' : ''}
     <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
     <div class="memory-header-actions">
