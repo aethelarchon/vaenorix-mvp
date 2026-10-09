@@ -3671,3 +3671,238 @@ input, textarea {
         min-width: 170px;
     }
 }
+/* ==================== BULK ACTIONS ==================== */
+
+/* Select Button */
+.select-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: 50px;
+    color: #c084fc;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s;
+    white-space: nowrap;
+}
+
+.select-btn:hover, .select-btn:active {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: #a855f7;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+}
+
+.select-btn.active {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.5);
+}
+
+.select-btn i {
+    font-size: 13px;
+}
+
+/* Selected Card State */
+.memory-card.selected {
+    border-color: #a855f7 !important;
+    background: rgba(139, 92, 246, 0.15) !important;
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.4), 0 8px 25px rgba(139, 92, 246, 0.25) !important;
+    transform: scale(1.01);
+}
+
+.memory-card.selected::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 20px;
+    pointer-events: none;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.05));
+}
+
+/* Selection Checkbox on Card */
+.memory-checkbox {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(139, 92, 246, 0.5);
+    background: rgba(10, 10, 15, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+}
+
+.memory-checkbox:hover {
+    border-color: #a855f7;
+    transform: scale(1.1);
+}
+
+.memory-checkbox.checked {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    border-color: transparent;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+}
+
+.memory-checkbox i {
+    color: #ffffff;
+    font-size: 11px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.memory-checkbox.checked i {
+    opacity: 1;
+}
+
+/* When in select mode, memory card needs padding-top for checkbox */
+.memories-list.select-mode .memory-card {
+    position: relative;
+    padding-top: 48px;
+    cursor: pointer;
+}
+
+/* Bulk Action Bar */
+.bulk-action-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(150px);
+    background: linear-gradient(135deg, rgba(26, 20, 40, 0.98), rgba(20, 16, 32, 0.98));
+    border: 1.5px solid rgba(139, 92, 246, 0.4);
+    border-radius: 24px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 40px rgba(139, 92, 246, 0.25);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    max-width: 95%;
+}
+
+.bulk-action-bar.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: all;
+}
+
+.bulk-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: 600;
+    padding-right: 14px;
+    border-right: 1px solid rgba(139, 92, 246, 0.25);
+    white-space: nowrap;
+}
+
+.bulk-count span {
+    color: #c084fc;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.bulk-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.bulk-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(139, 92, 246, 0.15);
+    color: #c084fc;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s;
+    position: relative;
+}
+
+.bulk-btn:hover {
+    transform: scale(1.1);
+}
+
+.bulk-btn:active {
+    transform: scale(0.95);
+}
+
+.bulk-pin:hover {
+    background: rgba(251, 191, 36, 0.25);
+    color: #fbbf24;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+}
+
+.bulk-pin.active {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #ffffff;
+}
+
+.bulk-download:hover {
+    background: rgba(59, 130, 246, 0.25);
+    color: #3b82f6;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+.bulk-delete:hover {
+    background: rgba(239, 68, 68, 0.25);
+    color: #ef4444;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+.bulk-cancel {
+    background: rgba(255, 255, 255, 0.08);
+    color: #9ca3af;
+}
+
+.bulk-cancel:hover {
+    background: rgba(255, 102, 102, 0.2);
+    color: #ff6666;
+}
+
+@media (max-width: 500px) {
+    .bulk-action-bar {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+    .bulk-count {
+        font-size: 13px;
+        padding-right: 10px;
+    }
+    .bulk-count span {
+        font-size: 15px;
+    }
+    .bulk-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 14px;
+    }
+    .select-btn {
+        padding: 7px 14px;
+        font-size: 13px;
+    }
+}
