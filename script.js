@@ -360,6 +360,43 @@ if (memory) {
             });
         });
 
+// ==================== TAG FILTER ====================
+document.querySelectorAll('.memory-tag').forEach(tagEl => {
+    tagEl.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const tag = this.getAttribute('data-tag');
+        const filtered = memories.filter(m => m.tags && m.tags.includes(tag));
+        
+        // Indicator দেখাই
+        const section = document.querySelector('.memories-section');
+        let indicator = document.getElementById('tagFilterIndicator');
+        if (indicator) indicator.remove();
+        indicator = document.createElement('div');
+        indicator.id = 'tagFilterIndicator';
+        indicator.className = 'tag-filter-active';
+        indicator.innerHTML = `<span>🏷️ #${tag} (${filtered.length})</span><button class="tag-filter-clear" id="tagClearBtn">✕</button>`;
+        const filterButtons = section.querySelector('.filter-buttons');
+        if (filterButtons) {
+            filterButtons.parentNode.insertBefore(indicator, filterButtons.nextSibling);
+        }
+        
+        document.getElementById('tagClearBtn').onclick = () => {
+            indicator.remove();
+            renderMemories();
+        };
+        
+        const counterSpan = document.getElementById('memoryCount');
+        if (counterSpan) counterSpan.textContent = `(${filtered.length})`;
+        
+        if (filtered.length === 0) {
+            memoriesList.innerHTML = '<div class="empty-message">No memories with #' + tag + '</div>';
+        } else {
+            renderMemoriesWithData(filtered);
+        }
+        
+        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+});
         const clearAllBtn = document.getElementById('clearAllBtn');
 if (clearAllBtn) {
     clearAllBtn.onclick = () => {
