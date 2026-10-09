@@ -1301,7 +1301,7 @@ function closeDeleteModal() {
 }
 
 async function confirmDelete() {
-    if (!deletingMemoryId) return;
+    if (!deletingMemoryId && !isClearAllMode) return;
     
     const confirmBtn = document.getElementById('deleteModalConfirm');
     confirmBtn.disabled = true;
@@ -1309,25 +1309,39 @@ async function confirmDelete() {
     
     try {
         const user = window.currentUser || currentUser;
-        if (user && window.db && window.doc && window.deleteDoc) {
+        if (!user || !window.db) {
+            throw new Error('Firebase not ready');
+        }
+        
+        if (isClearAllMode) {
+            // সব মেমোরি ডিলিট
+            const memoriesRef = window.collection(window.db, `users/${user.uid}/memories`);
+            const querySnapshot = await window.getDocs(memoriesRef);
+            for (const doc of querySnapshot.docs) {
+                await window.deleteDoc(window.doc(window.db, `users/${user.uid}/memories`, doc.id));
+            }
+            if (typeof showToast === 'function') showToast('🗑️ All memories cleared');
+        } else {
+            // একটা মেমোরি ডিলিট
             const memoryRef = window.doc(window.db, `users/${user.uid}/memories`, deletingMemoryId);
             await window.deleteDoc(memoryRef);
-            
             if (typeof showToast === 'function') showToast('🗑️ Memory deleted');
-            
-            // Detail view খোলা থাকলে বন্ধ করি
-            const detailView = document.getElementById('detailView');
-            if (detailView) detailView.classList.remove('open');
-            
-            // Modal বন্ধ করি
-            closeDeleteModal();
-            
-            // লিস্ট রিফ্রেশ করি
-            if (typeof window.loadMemories === 'function') {
-                await window.loadMemories();
-            }
-        } else {
-            throw new Error('Firebase not ready');
+        }
+        
+        // Detail view খোলা থাকলে বন্ধ করি
+        const detailView = document.getElementById('detailView');
+        if (detailView) detailView.classList.remove('open');
+        
+        // Folder view খোলা থাকলে বন্ধ করি
+        const folderView = document.getElementById('folderView');
+        if (folderView && isClearAllMode) folderView.classList.remove('open');
+        
+        // Modal বন্ধ করি
+        closeDeleteModal();
+        
+        // লিস্ট রিফ্রেশ করি
+        if (typeof window.loadMemories === 'function') {
+            await window.loadMemories();
         }
     } catch (error) {
         console.error('Delete error:', error);
@@ -1336,7 +1350,7 @@ async function confirmDelete() {
         confirmBtn.disabled = false;
         confirmBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Delete';
     }
-}
+                }
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {
