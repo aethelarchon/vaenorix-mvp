@@ -232,7 +232,18 @@ window.deleteAllMemories = deleteAllMemories;
     function renderMemories(filterText = '') {
         if (!currentUser || !memoriesList) return;
         if (memories.length === 0) {
-            memoriesList.innerHTML = '<div class="empty-message">No memories yet. Save your first one!</div>';
+            memoriesList.innerHTML = `
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <i class="fas fa-lightbulb"></i>
+        </div>
+        <h3 class="empty-state-title">Your Second Brain is empty</h3>
+        <p class="empty-state-text">Start by saving your first note, link, or screenshot. Everything you save will be searchable forever.</p>
+        <button class="empty-state-btn" onclick="document.getElementById('noteInput').focus(); document.querySelector('.save-section').scrollIntoView({behavior:'smooth'});">
+            <i class="fas fa-plus"></i> Save Your First Memory
+        </button>
+    </div>
+`;
             return;
         }
         let filteredMemories = memories;
