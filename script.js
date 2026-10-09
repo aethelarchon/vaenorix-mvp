@@ -855,9 +855,38 @@ function openFolderView(type) {
     folderCount.textContent = `(${filtered.length})`;
     
     if (filtered.length === 0) {
-        folderContent.className = 'folder-content list-view';
-        folderContent.innerHTML = '<div class="empty-message">No ' + (type === 'all' ? 'memories' : type + 's') + ' yet.</div>';
-    } else if (type === 'image') {
+    folderContent.className = 'folder-content list-view';
+    const emptyIcons = {
+        'all': 'fa-brain',
+        'image': 'fa-images',
+        'note': 'fa-sticky-note',
+        'link': 'fa-link'
+    };
+    const emptyTitles = {
+        'all': 'No memories yet',
+        'image': 'No images yet',
+        'note': 'No notes yet',
+        'link': 'No links yet'
+    };
+    const emptyTexts = {
+        'all': 'Save your first memory to get started. Anything you save will appear here.',
+        'image': 'Upload a screenshot to see it here. Perfect for saving visual ideas.',
+        'note': 'Write a note to capture your thoughts, ideas, and reminders.',
+        'link': 'Save a link to keep your favorite websites and articles organized.'
+    };
+    folderContent.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas ${emptyIcons[type] || 'fa-folder-open'}"></i>
+            </div>
+            <h3 class="empty-state-title">${emptyTitles[type] || 'Nothing here yet'}</h3>
+            <p class="empty-state-text">${emptyTexts[type] || 'Save something to get started.'}</p>
+            <button class="empty-state-btn" onclick="document.getElementById('folderClose').click(); setTimeout(() => { document.querySelector('.save-section').scrollIntoView({behavior:'smooth'}); }, 400);">
+                <i class="fas fa-plus"></i> Save Now
+            </button>
+        </div>
+    `;
+} else if (type === 'image') {
         folderContent.className = 'folder-content grid-view';
         folderContent.innerHTML = filtered.map(m => `
             <div class="memory-card" data-memory-id="${m.id}">
