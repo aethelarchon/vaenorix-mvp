@@ -214,6 +214,28 @@ async function initializeApp() {
         showToast("Failed to load memories", true);
     }
 }
+    function showSkeletonLoader() {
+    if (!memoriesList) return;
+    memoriesList.classList.add('skeleton-mode');
+    memoriesList.innerHTML = `
+        <div class="skeleton-card">
+            <div class="skeleton-line title"></div>
+            <div class="skeleton-line long"></div>
+            <div class="skeleton-line medium"></div>
+        </div>
+        <div class="skeleton-card">
+            <div class="skeleton-line title"></div>
+            <div class="skeleton-line long"></div>
+            <div class="skeleton-line short"></div>
+        </div>
+        <div class="skeleton-card">
+            <div class="skeleton-line title"></div>
+            <div class="skeleton-line medium"></div>
+            <div class="skeleton-line long"></div>
+        </div>
+    `;
+}
+    
     async function editMemory(id, newContent) {
         if (!currentUser) return;
         try {
