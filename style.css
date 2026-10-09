@@ -3728,34 +3728,37 @@ input, textarea {
     background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.05));
 }
 
-/* Selection Checkbox on Card */
+/* Selection Checkbox - inline with header */
 .memory-checkbox {
-    position: absolute;
-    top: 14px;
-    left: 14px;
+    display: none;
     width: 24px;
     height: 24px;
+    min-width: 24px;
     border-radius: 50%;
-    border: 2px solid rgba(139, 92, 246, 0.5);
-    background: rgba(10, 10, 15, 0.8);
-    display: flex;
+    border: 2px solid rgba(139, 92, 246, 0.6);
+    background: rgba(10, 10, 15, 0.5);
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.25s;
-    z-index: 10;
-    backdrop-filter: blur(8px);
+    flex-shrink: 0;
+    margin-right: 4px;
+}
+
+.memories-list.select-mode .memory-checkbox {
+    display: inline-flex;
 }
 
 .memory-checkbox:hover {
     border-color: #a855f7;
-    transform: scale(1.1);
+    transform: scale(1.08);
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
 }
 
 .memory-checkbox.checked {
     background: linear-gradient(135deg, #8b5cf6, #a855f7);
     border-color: transparent;
-    box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
 }
 
 .memory-checkbox i {
@@ -3769,6 +3772,17 @@ input, textarea {
     opacity: 1;
 }
 
+/* In select mode, hide pin button & menu to reduce clutter */
+.memories-list.select-mode .memory-card .pin-btn,
+.memories-list.select-mode .memory-card .menu-container {
+    display: none;
+}
+
+/* Card layout in select mode */
+.memories-list.select-mode .memory-card {
+    position: relative;
+    cursor: pointer;
+    }
 /* When in select mode, memory card needs padding-top for checkbox */
 .memories-list.select-mode .memory-card {
     position: relative;
