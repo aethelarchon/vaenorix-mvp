@@ -264,16 +264,21 @@ window.deleteAllMemories = deleteAllMemories;
         memoriesList.innerHTML = filteredMemories.map((memory) => `
             <div class="memory-card">
                 <div class="memory-header">
-                    <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
-                    <div class="menu-container">
-                        <button class="three-dots" data-id="${memory.id}">⋮</button>
-                        <div class="dropdown-menu" id="menu-${memory.id}">
-                            <button class="edit-btn" data-id="${memory.id}">Edit</button>
-                            <button class="share-btn" data-id="${memory.id}">Share</button>
-                            <button class="delete-btn-menu" data-id="${memory.id}">Delete</button>
-                        </div>
-                    </div>
-                </div>
+    <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
+    <div class="memory-header-actions">
+        <button class="pin-btn ${memory.pinned ? 'pinned' : ''}" data-id="${memory.id}" title="Pin">
+            <i class="fas fa-star"></i>
+        </button>
+        <div class="menu-container">
+            <button class="three-dots" data-id="${memory.id}">⋮</button>
+            <div class="dropdown-menu" id="menu-${memory.id}">
+                <button class="edit-btn" data-id="${memory.id}">Edit</button>
+                <button class="share-btn" data-id="${memory.id}">Share</button>
+                <button class="delete-btn-menu" data-id="${memory.id}">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
                 <div class="memory-content">
                     ${memory.type === 'link' ?
                         `<a href="${memory.content}" target="_blank" class="memory-link">${memory.content}</a>
