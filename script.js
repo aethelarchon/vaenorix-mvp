@@ -833,7 +833,142 @@ if (topSearchClear) {
         renderMemories();
     });
 }
+    // ==================== SEARCH SUGGESTIONS ====================
+const searchSuggestions = document.getElementById('searchSuggestions');
+
+function buildSuggestions() {
+    if (!searchSuggestions) return;
     
+    // সব ট্যাগ বের করি
+    const tagSet = new Set();
+    memories.forEach(m => {
+        if (m.tags && m.tags.length > 0) {
+            m.tags.forEach(t => tagSet.add(t));
+        }
+    });
+    
+    const topTags = Array.from(tagSet).slice(0, 6);
+    
+    let html = '';
+    
+    // ট্যাগ সাজেশন
+    if (topTags.length > 0) {
+        html += `<div class="suggestion-label">🏷️ Your Tags</div>`;
+        html += topTags.map(tag => 
+            `<button class="suggestion-chip" data-search-type="tag" data-search-value="${tag}">
+                <i class="fas fa-hashtag"></i> ${tag}
+            </button>`
+        ).join('');
+    }
+    
+    // টাইপ সাজেশন
+    html += `<div class="suggestion-label" style="margin-top:6px;">⚡ Quick Filters</div>`;
+    html += `
+        <button class="suggestion-chip type-chip" data-search-type="type" data-search-value="note">
+            <i class="fas fa-sticky-note"></i> Notes
+        </button>
+        <button class="suggestion-chip type-chip" data-search-type="type" data-search-value="link">
+            <i class="fas fa-link"></i> Links
+        </button>
+        <button class="suggestion-chip type-chip" data-search-type="type" data-search-value="image">
+            <i class="fas fa-images"></i> Images
+        </button>
+        <button class="suggestion-chip type-chip" data-search-type="type" data-search-value="pinned">
+            <i class="fas fa-star"></i> Pinned
+        </button>
+    `;
+    
+    searchSuggestions.innerHTML = html;
+    
+    // ক্লিক ইভেন্ট যোগ করি
+    searchSuggestions.querySelectorAll('.suggestion-chip').forEach(chip => {
+        chip.addEventListener('click', function(e) {
+            e.preventDefault();
+            const searchType = this.getAttribute('data-search-type');
+            const searchValue = this.getAttribute('data-search-value');
+            
+            // সাজেশন লুকাই
+            searchSuggestions.classList.remove('show');
+            if (topSearchInput) topSearchInput.blur();
+            
+            // সার্চ করি
+            if (searchType === 'tag') {
+                // ট্যাগ সার্চ
+                topSearchInput.value = '#' + searchValue;
+                const filtered = memories.filter(m => m.tags && m.tags.includes(searchValue));
+                const counterSpan = document.getElementById('memoryCount');
+                if (counterSpan) counterSpan.textContent = `(${filtered.length})`;
+                
+                if (filtered.length === 0) {
+                    memoriesList.innerHTML = '<div class="empty-message">No memories with #' + searchValue + '</div>';
+                } else {
+                    renderMemoriesWithData(filtered);
+                }
+            } else if (searchType === 'type') {
+                if (searchValue === 'pinned') {
+                    // শুধু পিন করা মেমোরি
+                    const filtered = memories.filter(m => m.pinned);
+                    topSearchInput.value = '⭐ Pinned';
+                    const counterSpan = document.getElementById('memoryCount');
+                    if (counterSpan) counterSpan.textContent = `(${filtered.length})`;
+                    
+                    if (filtered.length === 0) {
+                        memoriesList.innerHTML = '<div class="empty-message">No pinned memories yet</div>';
+                    } else {
+                        renderMemoriesWithData(filtered);
+                    }
+                } else {
+                    // টাইপ সার্চ
+                    topSearchInput.value = searchValue + 's';
+                    const filtered = memories.filter(m => m.type === searchValue);
+                    const counterSpan = document.getElementById('memoryCount');
+                    if (counterSpan) counterSpan.textContent = `(${filtered.length})`;
+                    
+                    if (filtered.length === 0) {
+                        memoriesList.innerHTML = '<div class="empty-message">No ' + searchValue + 's found</div>';
+                    } else {
+                        renderMemoriesWithData(filtered);
+                    }
+                }
+            }
+            
+            // সেকশনে স্ক্রল করি
+            const section = document.querySelector('.memories-section');
+            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+}
+
+// Search input এ ফোকাস করলে সাজেশন দেখাই
+if (topSearchInput && searchSuggestions) {
+    topSearchInput.addEventListener('focus', function() {
+        if (!currentUser) return;
+        buildSuggestions();
+        if (searchSuggestions.innerHTML.trim()) {
+            searchSuggestions.classList.add('show');
+        }
+    });
+    
+    // input ফাঁকা হলে সাজেশন দেখাই
+    topSearchInput.addEventListener('input', function() {
+        if (this.value.trim() === '') {
+            buildSuggestions();
+            if (searchSuggestions.innerHTML.trim()) {
+                searchSuggestions.classList.add('show');
+            }
+        } else {
+            searchSuggestions.classList.remove('show');
+        }
+    });
+}
+
+// বাইরে ক্লিক করলে সাজেশন লুকাই
+document.addEventListener('click', function(e) {
+    if (searchSuggestions && topSearchBar && !topSearchBar.contains(e.target)) {
+        searchSuggestions.classList.remove('show');
+    }
+});
+            
     // ==================== PROFILE MENU ====================
 const profileContainer = document.getElementById('profileContainer');
 const profileMenu = document.getElementById('profileMenu');
