@@ -155,7 +155,7 @@ async function initializeApp() {
             showToast("Failed to load memories", true);
         }
     }
-
+window.loadMemories = loadMemories;
     async function deleteMemory(id) {
         if (!currentUser) return;
         try {
