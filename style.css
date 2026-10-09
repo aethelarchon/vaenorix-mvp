@@ -2404,3 +2404,183 @@ input, textarea {
 .install-banner-secondary:hover {
     background: rgba(255, 255, 255, 0.15);
     }
+/* ==================== EDIT MEMORY MODAL ==================== */
+.edit-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.edit-modal.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.edit-modal-content {
+    background: linear-gradient(145deg, #1a1428, #14101f);
+    border: 1.5px solid rgba(139, 92, 246, 0.3);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(139, 92, 246, 0.15);
+    transform: translateY(30px) scale(0.95);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.edit-modal.open .edit-modal-content {
+    transform: translateY(0) scale(1);
+}
+
+.edit-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.edit-modal-header h3 {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.edit-modal-header h3 i {
+    color: #a855f7;
+    font-size: 16px;
+}
+
+.edit-modal-close {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #aaa;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.edit-modal-close:hover {
+    background: rgba(255, 102, 102, 0.15);
+    color: #ff6666;
+    border-color: rgba(255, 102, 102, 0.3);
+}
+
+.edit-modal-body {
+    padding: 20px 24px;
+}
+
+.edit-modal-input {
+    width: 100%;
+    background: rgba(139, 92, 246, 0.04) !important;
+    border: 1.5px solid rgba(139, 92, 246, 0.25) !important;
+    border-radius: 14px;
+    padding: 16px;
+    color: #fff;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 15px;
+    line-height: 1.6;
+    resize: vertical;
+    min-height: 120px;
+    outline: none;
+    transition: all 0.25s;
+    box-sizing: border-box;
+}
+
+.edit-modal-input:focus {
+    border-color: #a855f7 !important;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.25) !important;
+    background: rgba(139, 92, 246, 0.08) !important;
+}
+
+.edit-modal-footer {
+    display: flex;
+    gap: 10px;
+    padding: 16px 24px 22px;
+}
+
+.edit-modal-cancel, .edit-modal-save {
+    flex: 1;
+    padding: 13px 20px;
+    border-radius: 50px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.edit-modal-cancel {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ccc;
+}
+
+.edit-modal-cancel:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.edit-modal-save {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35);
+}
+
+.edit-modal-save:hover {
+    box-shadow: 0 6px 25px rgba(168, 85, 247, 0.5);
+    transform: translateY(-1px);
+}
+
+.edit-modal-save:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+@media (max-width: 500px) {
+    .edit-modal-content {
+        border-radius: 16px;
+    }
+    .edit-modal-header {
+        padding: 16px 18px;
+    }
+    .edit-modal-body {
+        padding: 16px 18px;
+    }
+    .edit-modal-footer {
+        padding: 14px 18px 18px;
+    }
+    .edit-modal-input {
+        font-size: 14px;
+        min-height: 100px;
+    }
+    }
