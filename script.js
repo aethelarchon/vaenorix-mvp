@@ -1260,3 +1260,109 @@ document.addEventListener('DOMContentLoaded', function() {
 // Global function হিসেবে এক্সপোর্ট করি
 window.openEditModal = openEditModal;
 window.closeEditModal = closeEditModal;
+// ==================== DELETE CONFIRMATION MODAL ====================
+let deletingMemoryId = null;
+
+function openDeleteModal(memoryId, memoryContent, memoryType) {
+    const modal = document.getElementById('deleteModal');
+    const preview = document.getElementById('deleteModalPreview');
+    if (!modal) return;
+    
+    deletingMemoryId = memoryId;
+    
+    // Preview তৈরি করি
+    if (preview) {
+        const typeLabel = memoryType === 'note' ? 'Note' : memoryType === 'link' ? 'Link' : 'Image';
+        
+        if (memoryType === 'image') {
+            preview.innerHTML = `
+                <div class="delete-modal-preview-type">${typeLabel}</div>
+                <img src="${memoryContent}" class="delete-modal-preview-image" alt="Preview">
+            `;
+        } else {
+            const text = memoryContent.length > 120 ? memoryContent.substring(0, 120) + '...' : memoryContent;
+            preview.innerHTML = `
+                <div class="delete-modal-preview-type">${typeLabel}</div>
+                <div class="delete-modal-preview-content">${escapeHtmlLocal(text)}</div>
+            `;
+        }
+    }
+    
+    modal.classList.add('open');
+}
+
+function escapeHtmlLocal(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteModal');
+    if (modal) modal.classList.remove('open');
+    deletingMemoryId = null;
+}
+
+async function confirmDelete() {
+    if (!deletingMemoryId) return;
+    
+    const confirmBtn = document.getElementById('deleteModalConfirm');
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Deleting...';
+    
+    try {
+        const user = window.currentUser || currentUser;
+        if (user && window.db && window.doc && window.deleteDoc) {
+            const memoryRef = window.doc(window.db, `users/${user.uid}/memories`, deletingMemoryId);
+            await window.deleteDoc(memoryRef);
+            
+            if (typeof showToast === 'function') showToast('🗑️ Memory deleted');
+            
+            // Detail view খোলা থাকলে বন্ধ করি
+            const detailView = document.getElementById('detailView');
+            if (detailView) detailView.classList.remove('open');
+            
+            // Modal বন্ধ করি
+            closeDeleteModal();
+            
+            // লিস্ট রিফ্রেশ করি
+            if (typeof window.loadMemories === 'function') {
+                await window.loadMemories();
+            }
+        } else {
+            throw new Error('Firebase not ready');
+        }
+    } catch (error) {
+        console.error('Delete error:', error);
+        if (typeof showToast === 'function') showToast('Failed to delete: ' + error.message, true);
+    } finally {
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Delete';
+    }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('deleteModal');
+    const cancelBtn = document.getElementById('deleteModalCancel');
+    const confirmBtn = document.getElementById('deleteModalConfirm');
+    
+    if (cancelBtn) cancelBtn.addEventListener('click', closeDeleteModal);
+    if (confirmBtn) confirmBtn.addEventListener('click', confirmDelete);
+    
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) closeDeleteModal();
+        });
+    }
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
+            closeDeleteModal();
+        }
+    });
+});
+
+// Global export
+window.openDeleteModal = openDeleteModal;
+window.closeDeleteModal = closeDeleteModal;
