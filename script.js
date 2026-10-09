@@ -420,11 +420,10 @@ function renderMemoriesWithData(data) {
         btn.addEventListener('click', function(e) {
             e.stopPropagation();
             const id = this.getAttribute('data-id');
-            const memory = memories.find(m => m.id === id);
-            if (memory) {
-                const newContent = prompt('Edit:', memory.content);
-                if (newContent && newContent.trim()) editMemory(id, newContent.trim());
-            }
+const memory = memories.find(m => m.id === id);
+if (memory) {
+    window.openEditModal(id, memory.content);
+}
             document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
         });
     });
