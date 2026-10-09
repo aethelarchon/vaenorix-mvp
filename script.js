@@ -147,6 +147,30 @@ async function initializeApp() {
     // Skeleton দেখাই
     showSkeletonLoader();
     
+    // Offline হলে localStorage থেকে দেখাই
+    if (!navigator.onLine) {
+        const cached = localStorage.getItem('vaenorix_memories_' + currentUser.uid);
+        if (cached) {
+            try {
+                memories = JSON.parse(cached);
+                memories.sort((a, b) => {
+                    if (a.pinned && !b.pinned) return -1;
+                    if (!a.pinned && b.pinned) return 1;
+                    return new Date(b.timestamp) - new Date(a.timestamp);
+                });
+                if (memoriesList) memoriesList.classList.remove('skeleton-mode');
+                renderMemories();
+                return;
+            } catch (e) {
+                console.error('Cache parse error:', e);
+            }
+        }
+        if (memoriesList) {
+            memoriesList.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-wifi"></i></div><h3 class="empty-state-title">You\'re offline</h3><p class="empty-state-text">Connect to the internet to load your memories.</p></div>';
+        }
+        return;
+    }
+    
     try {
         const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
         const q = window.query(memoriesRef, window.orderBy("timestamp", "desc"));
@@ -155,44 +179,41 @@ async function initializeApp() {
         querySnapshot.forEach((doc) => {
             memories.push({ id: doc.id, ...doc.data() });
         });
+        
+        // localStorage-এ ক্যাশ করি
+        try {
+            localStorage.setItem('vaenorix_memories_' + currentUser.uid, JSON.stringify(memories));
+        } catch (e) {
+            console.error('Cache save error:', e);
+        }
+        
         // Pinned items আগে, তারপর timestamp অনুযায়ী
-memories.sort((a, b) => {
-    if (a.pinned && !b.pinned) return -1;
-    if (!a.pinned && b.pinned) return 1;
-    return new Date(b.timestamp) - new Date(a.timestamp);
-});
-        // Skeleton থেকে আসল ডেটায় সুইচ করি
+        memories.sort((a, b) => {
+            if (a.pinned && !b.pinned) return -1;
+            if (!a.pinned && b.pinned) return 1;
+            return new Date(b.timestamp) - new Date(a.timestamp);
+        });
+        
         if (memoriesList) {
             memoriesList.classList.remove('skeleton-mode');
         }
         renderMemories();
     } catch (error) {
+        // Error হলে ক্যাশ থেকে দেখাই
+        const cached = localStorage.getItem('vaenorix_memories_' + currentUser.uid);
+        if (cached) {
+            try {
+                memories = JSON.parse(cached);
+                if (memoriesList) memoriesList.classList.remove('skeleton-mode');
+                renderMemories();
+                showToast("Showing cached data", true);
+                return;
+            } catch (e) {}
+        }
         if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">Error loading memories</div>';
         showToast("Failed to load memories", true);
     }
 }
-
-function showSkeletonLoader() {
-    if (!memoriesList) return;
-    memoriesList.classList.add('skeleton-mode');
-    memoriesList.innerHTML = `
-        <div class="skeleton-card">
-            <div class="skeleton-line title"></div>
-            <div class="skeleton-line long"></div>
-            <div class="skeleton-line medium"></div>
-        </div>
-        <div class="skeleton-card">
-            <div class="skeleton-line title"></div>
-            <div class="skeleton-line long"></div>
-            <div class="skeleton-line short"></div>
-        </div>
-        <div class="skeleton-card">
-            <div class="skeleton-line title"></div>
-            <div class="skeleton-line medium"></div>
-            <div class="skeleton-line long"></div>
-        </div>
-    `;
-            }
     async function editMemory(id, newContent) {
         if (!currentUser) return;
         try {
