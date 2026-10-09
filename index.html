@@ -89,6 +89,27 @@ const firebaseConfig = {
         window.firebaseReady = true;
     </script>
 </head>
+    <!-- Bulk Action Bar -->
+<div class="bulk-action-bar" id="bulkActionBar">
+    <div class="bulk-count">
+        <span id="bulkSelectedCount">0</span> selected
+    </div>
+    <div class="bulk-actions">
+        <button class="bulk-btn bulk-pin" id="bulkPinBtn">
+            <i class="fas fa-star"></i>
+        </button>
+        <button class="bulk-btn bulk-download" id="bulkDownloadBtn">
+            <i class="fas fa-download"></i>
+        </button>
+        <button class="bulk-btn bulk-delete" id="bulkDeleteBtn">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+        <button class="bulk-btn bulk-cancel" id="bulkCancelBtn">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+    
 <!-- Floating Action Button -->
 <div class="fab-container">
     <div class="fab-menu" id="fabMenu">
