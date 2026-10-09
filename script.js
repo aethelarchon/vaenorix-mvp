@@ -860,61 +860,110 @@ if (profileContainer && profileMenu) {
 
 // Settings modal তৈরি
 function openSettings() {
+function openSettings() {
     if (!currentUser) return;
     
+    // পরিসংখ্যান হিসাব করি
+    const totalMemories = memories.length;
+    const notesCount = memories.filter(m => m.type === 'note').length;
+    const linksCount = memories.filter(m => m.type === 'link').length;
+    const imagesCount = memories.filter(m => m.type === 'image').length;
+    const pinnedCount = memories.filter(m => m.pinned).length;
+    
+    // সব ট্যাগের ইউনিক লিস্ট
+    const allTags = new Set();
+    memories.forEach(m => {
+        if (m.tags && m.tags.length > 0) {
+            m.tags.forEach(t => allTags.add(t));
+        }
+    });
+    const tagsCount = allTags.size;
+    
+    // Member since
+    const memberSince = currentUser.metadata.creationTime 
+        ? new Date(currentUser.metadata.creationTime).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+        : 'N/A';
+    
+    // পুরনো modal সরাই
     let modal = document.getElementById('settingsModal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'settingsModal';
-        modal.className = 'settings-modal';
-        modal.innerHTML = `
-            <div class="settings-content">
-                <h3><i class="fas fa-cog"></i> Settings</h3>
-                <div class="settings-row">
-                    <span>Name</span>
-                    <span>${currentUser.displayName || 'User'}</span>
-                </div>
-                <div class="settings-row">
-                    <span>Email</span>
-                    <span>${currentUser.email}</span>
-                </div>
-                <div class="settings-row">
-                    <span>Total Memories</span>
-                    <span>${memories.length}</span>
-                </div>
-                <div class="settings-row">
-                    <span>Member Since</span>
-                    <span>${currentUser.metadata.creationTime ? new Date(currentUser.metadata.creationTime).toLocaleDateString() : 'N/A'}</span>
-                </div>
-                <button class="settings-close-btn" id="settingsClose">Close</button>
+    if (modal) modal.remove();
+    
+    modal = document.createElement('div');
+    modal.id = 'settingsModal';
+    modal.className = 'settings-modal';
+    modal.innerHTML = `
+        <div class="settings-content">
+            <div class="settings-profile-header">
+                <img src="${currentUser.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(currentUser.displayName || currentUser.email) + '&background=8b5cf6&color=ffffff'}" class="settings-avatar" alt="Profile">
+                <h3 class="settings-name">${currentUser.displayName || 'User'}</h3>
+                <p class="settings-email">${currentUser.email}</p>
             </div>
-        `;
-        document.body.appendChild(modal);
-        modal.querySelector('#settingsClose').onclick = () => modal.classList.remove('open');
-        modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('open'); };
-    }
+            
+            <div class="settings-stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(139, 92, 246, 0.15); color: #a855f7;">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div class="stat-number">${totalMemories}</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(236, 72, 153, 0.15); color: #ec4899;">
+                        <i class="fas fa-sticky-note"></i>
+                    </div>
+                    <div class="stat-number">${notesCount}</div>
+                    <div class="stat-label">Notes</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(34, 197, 94, 0.15); color: #22c55e;">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div class="stat-number">${linksCount}</div>
+                    <div class="stat-label">Links</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <div class="stat-number">${imagesCount}</div>
+                    <div class="stat-label">Images</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24;">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-number">${pinnedCount}</div>
+                    <div class="stat-label">Pinned</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(168, 85, 247, 0.15); color: #c084fc;">
+                        <i class="fas fa-hashtag"></i>
+                    </div>
+                    <div class="stat-number">${tagsCount}</div>
+                    <div class="stat-label">Tags</div>
+                </div>
+            </div>
+            
+            <div class="settings-info-row">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Member since <strong>${memberSince}</strong></span>
+            </div>
+            
+            <button class="settings-close-btn" id="settingsClose">Close</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelector('#settingsClose').onclick = () => modal.classList.remove('open');
+    modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('open'); };
+    
     modal.classList.add('open');
     profileMenu.classList.remove('open');
-}
-
-if (menuSettings) {
-    menuSettings.addEventListener('click', openSettings);
-}
-
-if (menuExport) {
-    menuExport.addEventListener('click', () => {
-        profileMenu.classList.remove('open');
-        const exportBtn = document.getElementById('exportBtn');
-        if (exportBtn) exportBtn.click();
-    });
-}
-
-if (menuSignOut) {
-    menuSignOut.addEventListener('click', () => {
-        profileMenu.classList.remove('open');
-        logout();
-    });
-            }
+                                                                                 }
     
 // ==================== MEMORY BROWSER (FAB + Folder View) ====================
 const fabMain = document.getElementById('fabMain');
