@@ -3433,3 +3433,80 @@ input, textarea {
         font-size: 17px !important;
     }
         }
+/* ==================== SEARCH SUGGESTIONS ==================== */
+.search-suggestions {
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 4px 4px;
+    animation: suggestionsFade 0.25s ease;
+}
+
+.search-suggestions.show {
+    display: flex;
+}
+
+@keyframes suggestionsFade {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.suggestion-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 50px;
+    color: #c084fc;
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.suggestion-chip:hover, .suggestion-chip:active {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    color: #ffffff;
+    border-color: transparent;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px rgba(139, 92, 246, 0.35);
+}
+
+.suggestion-chip i {
+    font-size: 10px;
+    opacity: 0.7;
+}
+
+.suggestion-chip.type-chip {
+    background: rgba(236, 72, 153, 0.1);
+    border-color: rgba(236, 72, 153, 0.3);
+    color: #ec4899;
+}
+
+.suggestion-chip.type-chip:hover {
+    background: linear-gradient(135deg, #ec4899, #db2777);
+    color: #ffffff;
+}
+
+.suggestion-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    width: 100%;
+    margin-bottom: 2px;
+}
+
+@media (max-width: 400px) {
+    .suggestion-chip {
+        font-size: 11.5px;
+        padding: 5px 12px;
+    }
+}
