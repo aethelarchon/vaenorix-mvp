@@ -1809,6 +1809,61 @@ window.closeDeleteModal = function() {
 };
 
 window.openClearAllModal = openClearAllModal;
+// ==================== OFFLINE DETECTION ====================
+function showOfflineBanner() {
+    let banner = document.getElementById('offlineBanner');
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'offlineBanner';
+        banner.className = 'offline-banner';
+        banner.innerHTML = `
+            <i class="fas fa-wifi"></i>
+            <span>You're offline — showing cached data</span>
+        `;
+        document.body.appendChild(banner);
+    }
+    setTimeout(() => banner.classList.add('show'), 100);
+}
+
+function hideOfflineBanner() {
+    const banner = document.getElementById('offlineBanner');
+    if (banner) {
+        banner.classList.remove('show');
+        setTimeout(() => banner.remove(), 400);
+    }
+}
+
+// চেক করি অনলাইন নাকি অফলাইন
+function checkOnlineStatus() {
+    if (!navigator.onLine) {
+        showOfflineBanner();
+    } else {
+        hideOfflineBanner();
+    }
+}
+
+// Event listeners
+window.addEventListener('online', function() {
+    hideOfflineBanner();
+    if (typeof showToast === 'function') {
+        showToast('✅ Back online');
+    }
+    // ডেটা reload করি
+    if (typeof loadMemories === 'function') {
+        loadMemories();
+    }
+});
+
+window.addEventListener('offline', function() {
+    showOfflineBanner();
+    if (typeof showToast === 'function') {
+        showToast('📡 No internet connection', true);
+    }
+});
+
+// পেজ লোড হওয়ার সময় চেক করি
+checkOnlineStatus();
+                   
 // ==================== NAVBAR SCROLL EFFECT ====================
 window.addEventListener('scroll', function() {
     const navbar = document.querySelector('.navbar');
