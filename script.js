@@ -285,11 +285,18 @@ window.deleteAllMemories = deleteAllMemories;
                             <img src="${memory.content}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${memory.content}')">
                             <button class="download-btn" onclick="downloadImage('${memory.content}')"><i class="fas fa-download"></i> Download</button>
                         </div>` :
-                        memory.content
-                    }
-                </div>
+                                        memory.content
+            }
+        </div>
+        ${memory.tags && memory.tags.length > 0 ? `
+            <div class="memory-tags">
+                ${memory.tags.map(tag => `
+                    <span class="memory-tag" data-tag="${tag}">${tag}</span>
+                `).join('')}
             </div>
-        `).join('');
+        ` : ''}
+    </div>
+`).join('');
 
         document.querySelectorAll('.link-preview-container').forEach(async (container) => {
             const url = container.getAttribute('data-url');
