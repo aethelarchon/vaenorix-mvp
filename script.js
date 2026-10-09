@@ -140,33 +140,52 @@ async function initializeApp() {
     }
 
     async function loadMemories() {
-        if (!currentUser) return;
-        try {
-            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-            const q = window.query(memoriesRef, window.orderBy("timestamp", "desc"));
-            const querySnapshot = await window.getDocs(q);
-            memories = [];
-            querySnapshot.forEach((doc) => {
-                memories.push({ id: doc.id, ...doc.data() });
-            });
-            renderMemories();
-        } catch (error) {
-            if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">Error loading memories</div>';
-            showToast("Failed to load memories", true);
+    if (!currentUser) return;
+    
+    // Skeleton দেখাই
+    showSkeletonLoader();
+    
+    try {
+        const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+        const q = window.query(memoriesRef, window.orderBy("timestamp", "desc"));
+        const querySnapshot = await window.getDocs(q);
+        memories = [];
+        querySnapshot.forEach((doc) => {
+            memories.push({ id: doc.id, ...doc.data() });
+        });
+        
+        // Skeleton থেকে আসল ডেটায় সুইচ করি
+        if (memoriesList) {
+            memoriesList.classList.remove('skeleton-mode');
         }
+        renderMemories();
+    } catch (error) {
+        if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">Error loading memories</div>';
+        showToast("Failed to load memories", true);
     }
-window.loadMemories = loadMemories;
-    async function deleteMemory(id) {
-        if (!currentUser) return;
-        try {
-            await window.deleteDoc(window.doc(window.db, `users/${currentUser.uid}/memories`, id));
-            showToast('Memory deleted');
-            await loadMemories();
-        } catch (error) {
-            showToast("Failed to delete", true);
-        }
-    }
+}
 
+function showSkeletonLoader() {
+    if (!memoriesList) return;
+    memoriesList.classList.add('skeleton-mode');
+    memoriesList.innerHTML = `
+        <div class="skeleton-card">
+            <div class="skeleton-line title"></div>
+            <div class="skeleton-line long"></div>
+            <div class="skeleton-line medium"></div>
+        </div>
+        <div class="skeleton-card">
+            <div class="skeleton-line title"></div>
+            <div class="skeleton-line long"></div>
+            <div class="skeleton-line short"></div>
+        </div>
+        <div class="skeleton-card">
+            <div class="skeleton-line title"></div>
+            <div class="skeleton-line medium"></div>
+            <div class="skeleton-line long"></div>
+        </div>
+    `;
+            }
     async function editMemory(id, newContent) {
         if (!currentUser) return;
         try {
