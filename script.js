@@ -1363,7 +1363,66 @@ document.addEventListener('keydown', function(e) {
         }
     }
 });
-                
+     // ==================== SORT OPTIONS ====================
+const sortBtn = document.getElementById('sortBtn');
+const sortMenu = document.getElementById('sortMenu');
+let currentSort = localStorage.getItem('vaenorix_sort') || 'newest';
+
+function applySort(type) {
+    if (type === 'newest') {
+        memories.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    } else if (type === 'oldest') {
+        memories.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    } else if (type === 'alpha') {
+        memories.sort((a, b) => (a.content || '').toLowerCase().localeCompare((b.content || '').toLowerCase()));
+    } else if (type === 'pinned') {
+        memories.sort((a, b) => {
+            if (a.pinned && !b.pinned) return -1;
+            if (!a.pinned && b.pinned) return 1;
+            return new Date(b.timestamp) - new Date(a.timestamp);
+        });
+    }
+    currentSort = type;
+    localStorage.setItem('vaenorix_sort', type);
+    
+    // সব sort option থেকে active সরাই
+    document.querySelectorAll('.sort-option').forEach(o => o.classList.remove('active'));
+    const activeOption = document.querySelector(`.sort-option[data-sort="${type}"]`);
+    if (activeOption) activeOption.classList.add('active');
+    
+    renderMemories();
+}
+
+if (sortBtn && sortMenu) {
+    // Sort button এ ক্লিক করলে মেনু টগল
+    sortBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        sortMenu.classList.toggle('open');
+    });
+    
+    // প্রতিটা sort option এ ক্লিক
+    document.querySelectorAll('.sort-option').forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const sortType = this.getAttribute('data-sort');
+            applySort(sortType);
+            sortMenu.classList.remove('open');
+        });
+    });
+    
+    // বাইরে ক্লিক করলে মেনু বন্ধ
+    document.addEventListener('click', function(e) {
+        if (!sortBtn.contains(e.target) && !sortMenu.contains(e.target)) {
+            sortMenu.classList.remove('open');
+        }
+    });
+    
+    // আগের sort preference apply করি
+    if (currentSort !== 'newest') {
+        setTimeout(() => applySort(currentSort), 100);
+    }
+                          }
+            
     // ==================== ATTACH EVENT LISTENERS ====================
     if (saveBtn) saveBtn.addEventListener('click', addMemory);
     if (aiSearchBtn) aiSearchBtn.addEventListener('click', searchMemories);
