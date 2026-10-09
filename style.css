@@ -2277,3 +2277,130 @@ input, textarea {
         font-size: 20px;
     }
 }
+/* ==================== PWA INSTALL BUTTON ==================== */
+.install-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 50px;
+    background: rgba(139, 92, 246, 0.12);
+    border: 1.5px solid rgba(139, 92, 246, 0.4);
+    color: #c084fc;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+    animation: installPulse 2s infinite;
+}
+
+@keyframes installPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(139, 92, 246, 0); }
+}
+
+.install-btn:hover {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    color: #ffffff;
+    border-color: transparent;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+.install-btn i {
+    font-size: 13px;
+}
+
+@media (max-width: 500px) {
+    .install-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    .install-btn i {
+        font-size: 12px;
+    }
+}
+
+/* Install banner (fallback for iOS) */
+.install-banner {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(150px);
+    background: linear-gradient(135deg, #1a1428, #2a1f3d);
+    border: 1.5px solid rgba(139, 92, 246, 0.4);
+    border-radius: 16px;
+    padding: 16px 20px;
+    max-width: 90%;
+    width: 340px;
+    z-index: 998;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.install-banner.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: all;
+}
+
+.install-banner-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.install-banner-title i {
+    color: #a855f7;
+}
+
+.install-banner-text {
+    font-size: 12px;
+    color: #aaa;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.install-banner-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.install-banner-actions button {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.install-banner-primary {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    color: #fff;
+}
+
+.install-banner-primary:hover {
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.5);
+}
+
+.install-banner-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ccc;
+}
+
+.install-banner-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    }
