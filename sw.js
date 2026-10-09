@@ -1,11 +1,12 @@
 // ==================== VAENORIX SERVICE WORKER ====================
-const CACHE_NAME = 'vaenorix-v4';
-const RUNTIME_CACHE = 'vaenorix-runtime-v4';
+const CACHE_NAME = 'vaenorix-v5';
+const RUNTIME_CACHE = 'vaenorix-runtime-v5';
 
 // Static files to cache on install
 const STATIC_ASSETS = [
   '/',
   '/index.html',
+  '/share.html',
   '/style.css',
   '/script.js',
   '/manifest.json',
