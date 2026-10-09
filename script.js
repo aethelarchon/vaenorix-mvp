@@ -860,7 +860,6 @@ if (profileContainer && profileMenu) {
 
 // Settings modal তৈরি
 function openSettings() {
-function openSettings() {
     if (!currentUser) return;
     
     // পরিসংখ্যান হিসাব করি
