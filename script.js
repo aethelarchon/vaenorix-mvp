@@ -262,7 +262,7 @@ window.deleteAllMemories = deleteAllMemories;
             return;
         }
         memoriesList.innerHTML = filteredMemories.map((memory) => `
-            <div class="memory-card">
+            <div class="memory-card ${memory.pinned ? 'pinned' : ''}">
                 <div class="memory-header">
     <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
     <div class="memory-header-actions">
