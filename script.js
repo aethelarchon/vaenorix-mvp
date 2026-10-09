@@ -365,6 +365,54 @@ if (memory) {
             });
         });
 
+// ==================== PIN / STAR ====================
+document.querySelectorAll('.pin-btn').forEach(btn => {
+    btn.addEventListener('click', async function(e) {
+        e.stopPropagation();
+        const id = this.getAttribute('data-id');
+        const memory = memories.find(m => m.id === id);
+        if (!memory || !currentUser) return;
+        
+        const newPinnedState = !memory.pinned;
+        
+        try {
+            const memoryRef = window.doc(window.db, `users/${currentUser.uid}/memories`, id);
+            await window.updateDoc(memoryRef, { pinned: newPinnedState });
+            
+            memory.pinned = newPinnedState;
+            
+            // অ্যানিমেশন
+            if (newPinnedState) {
+                this.classList.add('pinned');
+                showToast('⭐ Pinned to top');
+            } else {
+                this.classList.remove('pinned');
+                showToast('Unpinned');
+            }
+            
+            // পুনরায় সর্ট করে রেন্ডার
+            sortAndRenderMemories();
+        } catch (error) {
+            console.error('Pin error:', error);
+            showToast('Failed to pin', true);
+        }
+    });
+});
+
+// Pinned গুলো আগে দেখানোর জন্য সর্টিং
+function sortAndRenderMemories() {
+    // pinned গুলো আগে
+    memories.sort((a, b) => {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return new Date(b.timestamp) - new Date(a.timestamp);
+    });
+    
+    if (typeof renderMemories === 'function') {
+        renderMemories();
+    }
+                    }
+    
 // ==================== TAG FILTER ====================
 document.querySelectorAll('.memory-tag').forEach(tagEl => {
     tagEl.addEventListener('click', function(e) {
