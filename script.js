@@ -1020,7 +1020,18 @@ document.addEventListener('keydown', function(e) {
         window.currentUser = null;
         if (loginBtn) loginBtn.style.display = 'inline-block';
         if (profileContainer) profileContainer.style.display = 'none';
-        if (memoriesList) memoriesList.innerHTML = '<div class="empty-message">Please sign in to see your memories</div>';
+        if (memoriesList) memoriesList.innerHTML = `
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <i class="fas fa-brain"></i>
+        </div>
+        <h3 class="empty-state-title">Sign in to get started</h3>
+        <p class="empty-state-text">Save notes, links, and screenshots to your personal AI Second Brain.</p>
+        <button class="empty-state-btn" onclick="document.getElementById('loginBtn').click()">
+            <i class="fas fa-sign-in-alt"></i> Sign in with Google
+        </button>
+    </div>
+`;
         if (topSearchBar) topSearchBar.style.display = 'none';
     }
 });
