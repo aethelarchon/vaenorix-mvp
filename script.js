@@ -284,6 +284,7 @@ async function initializeApp() {
         }
     }
 window.deleteAllMemories = deleteAllMemories;
+    window.loadMemories = loadMemories;
     function renderMemories(filterText = '') {
         if (!currentUser || !memoriesList) return;
         if (memories.length === 0) {
