@@ -1545,27 +1545,43 @@ if (bulkPinBtn) {
         const user = window.currentUser || currentUser;
         if (!user) return;
         
-        const selectedMemories = memories.filter(m => selectedIds.includes(m.id));
+        const idsToUpdate = [...selectedIds];
+        const selectedMemories = memories.filter(m => idsToUpdate.includes(m.id));
         const allPinned = selectedMemories.every(m => m.pinned);
         const newState = !allPinned;
         
         try {
             bulkPinBtn.disabled = true;
-            for (const memory of selectedMemories) {
-                const ref = window.doc(window.db, `users/${user.uid}/memories`, memory.id);
+            for (const id of idsToUpdate) {
+                const ref = window.doc(window.db, `users/${user.uid}/memories`, id);
                 await window.updateDoc(ref, { pinned: newState });
             }
             
+            // Local array update (instant)
+            memories.forEach(m => {
+                if (idsToUpdate.includes(m.id)) m.pinned = newState;
+            });
+            
+            // Re-sort করি
+            memories.sort((a, b) => {
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+                return new Date(b.timestamp) - new Date(a.timestamp);
+            });
+            
+            // localStorage ক্যাশ আপডেট
+            try {
+                localStorage.setItem('vaenorix_memories_' + user.uid, JSON.stringify(memories));
+            } catch (e) {}
+            
             if (typeof showToast === 'function') {
-                showToast(newState ? `⭐ Pinned ${selectedMemories.length}` : `Unpinned ${selectedMemories.length}`);
+                showToast(newState ? `⭐ Pinned ${idsToUpdate.length}` : `Unpinned ${idsToUpdate.length}`);
             }
             
             // Select mode বন্ধ করি
+            selectedIds = [];
             toggleSelectMode();
             
-            if (typeof window.loadMemories === 'function') {
-                await window.loadMemories();
-            }
         } catch (error) {
             console.error('Bulk pin error:', error);
             if (typeof showToast === 'function') showToast('Failed to pin', true);
@@ -1573,7 +1589,7 @@ if (bulkPinBtn) {
             bulkPinBtn.disabled = false;
         }
     });
-}
+        }
 
 // Bulk Download
 if (bulkDownloadBtn) {
