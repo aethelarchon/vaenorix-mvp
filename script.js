@@ -506,17 +506,24 @@ if (memory) {
             }
         }
         try {
-            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-            await window.addDoc(memoriesRef, {
-                type: type,
-                content: content,
-                timestamp: new Date().toISOString()
-            });
-            showToast('Memory saved!');
-            await loadMemories();
-        } catch (error) {
-            showToast("Failed to save", true);
-        } finally {
+    // ট্যাগ এক্সট্রাক্ট করি
+    const tagRegex = /#([\w\u0980-\u09FF]+)/g;
+    const foundTags = content.match(tagRegex) || [];
+    const tags = foundTags.map(t => t.substring(1).toLowerCase());
+    const uniqueTags = [...new Set(tags)];
+    
+    const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+    await window.addDoc(memoriesRef, {
+        type: type,
+        content: content,
+        tags: uniqueTags,
+        timestamp: new Date().toISOString()
+    });
+    showToast('Memory saved!' + (uniqueTags.length > 0 ? ' 🏷️ ' + uniqueTags.length + ' tags' : ''));
+    await loadMemories();
+} catch (error) {
+    showToast("Failed to save", true);
+} finally {
             if (saveBtn) {
                 saveBtn.disabled = false;
                 saveBtn.innerHTML = '<i class="fas fa-save"></i> Save to Second Brain';
