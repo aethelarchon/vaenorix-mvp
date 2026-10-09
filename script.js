@@ -566,8 +566,11 @@ function renderMemoriesWithData(data) {
     }
     
     memoriesList.innerHTML = data.map((memory) => `
-        <div class="memory-card ${memory.pinned ? 'pinned' : ''}">
-            <div class="memory-header">
+        <div class="memory-card ${memory.pinned ? 'pinned' : ''} ${isSelectMode && selectedIds.includes(memory.id) ? 'selected' : ''}" data-memory-id="${memory.id}">
+    <div class="memory-checkbox ${selectedIds.includes(memory.id) ? 'checked' : ''}" data-id="${memory.id}">
+        <i class="fas fa-check"></i>
+    </div>
+    <div class="memory-header">
                 <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
                 <div class="menu-container">
                     <button class="three-dots" data-id="${memory.id}">⋯</button>
