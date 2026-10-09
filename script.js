@@ -1259,7 +1259,7 @@ window.openEditModal = openEditModal;
 window.closeEditModal = closeEditModal;
 // ==================== DELETE CONFIRMATION MODAL ====================
 let deletingMemoryId = null;
-
+let isClearAllMode = false;
 function openDeleteModal(memoryId, memoryContent, memoryType) {
     const modal = document.getElementById('deleteModal');
     const preview = document.getElementById('deleteModalPreview');
