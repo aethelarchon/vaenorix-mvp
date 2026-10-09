@@ -278,12 +278,15 @@ window.deleteAllMemories = deleteAllMemories;
                 <div class="memory-header">
                 ${memory.pinned ? '<div class="pinned-badge"><i class="fas fa-star"></i> Pinned</div>' : ''}
     <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
+    <div class="memory-header">
+    ${memory.pinned ? '<div class="pinned-badge"><i class="fas fa-star"></i> Pinned</div>' : ''}
+    <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
     <div class="memory-header-actions">
         <button class="pin-btn ${memory.pinned ? 'pinned' : ''}" data-id="${memory.id}" title="Pin">
             <i class="fas fa-star"></i>
         </button>
         <div class="menu-container">
-            <button class="three-dots" data-id="${memory.id}">⋮</button>
+            <button class="three-dots" data-id="${memory.id}">⋯</button>
             <div class="dropdown-menu" id="menu-${memory.id}">
                 <button class="edit-btn" data-id="${memory.id}">Edit</button>
                 <button class="share-btn" data-id="${memory.id}">Share</button>
