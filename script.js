@@ -1534,6 +1534,68 @@ if (document.readyState === 'loading') {
 } else {
     initializeApp();
                     }
+// ==================== SHARE PUBLIC LINK ====================
+window.shareMemoryPublic = async function(memory) {
+    if (!memory) return;
+    
+    try {
+        if (typeof showToast === 'function') showToast('⏳ Creating share link...');
+        
+        // ইউনিক শেয়ার আইডি
+        const shareId = 'mem_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+        
+        // Firestore-এ পাবলিক কপি সেভ করি
+        const publicRef = window.doc(window.db, 'public_memories', shareId);
+        await window.updateDoc ? null : null; // placeholder
+        
+        // setDoc/updateDoc কাজ করবে না, তাই addDoc দিয়ে করতে হবে
+        // তবে addDoc এর জন্য collection লাগে
+        const { setDoc } = await import('https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js');
+        
+        await setDoc(publicRef, {
+            type: memory.type,
+            content: memory.content,
+            tags: memory.tags || [],
+            timestamp: memory.timestamp,
+            shared_at: new Date().toISOString(),
+            shared_by: currentUser ? currentUser.uid : 'anonymous'
+        });
+        
+        // শেয়ার লিংক তৈরি
+        const shareUrl = `${window.location.origin}/share.html?id=${shareId}`;
+        
+        // ক্লিপবোর্ডে কপি
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            if (typeof showToast === 'function') showToast('✅ Share link copied!');
+        } catch (err) {
+            // Fallback
+            const textarea = document.createElement('textarea');
+            textarea.value = shareUrl;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            if (typeof showToast === 'function') showToast('✅ Share link copied!');
+        }
+        
+        // শেয়ার মেনু দেখাই
+        if (navigator.share) {
+            setTimeout(() => {
+                navigator.share({
+                    title: 'A memory from Vaenorix',
+                    text: memory.type === 'note' ? memory.content.substring(0, 100) : 'Check out this memory',
+                    url: shareUrl
+                }).catch(() => {});
+            }, 500);
+        }
+        
+    } catch (error) {
+        console.error('Share error:', error);
+        if (typeof showToast === 'function') showToast('Failed to create share link', true);
+    }
+};
+        
 // ==================== PWA INSTALL ====================
 let deferredPrompt = null;
 let installBannerShown = false;
