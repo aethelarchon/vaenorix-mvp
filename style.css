@@ -2791,3 +2791,35 @@ input, textarea {
         font-size: 13px;
     }
 }
+/* ==================== STICKY NAVBAR ==================== */
+.navbar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 200 !important;
+    background: rgba(10, 10, 15, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    margin-left: -24px !important;
+    margin-right: -24px !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    margin-bottom: 20px !important;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.15) !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Scroll হলে হালকা শ্যাডো যোগ হবে */
+.navbar.scrolled {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+    border-bottom-color: rgba(139, 92, 246, 0.3) !important;
+}
+
+/* মোবাইলে প্যাডিং */
+@media (max-width: 500px) {
+    .navbar {
+        margin-left: -20px !important;
+        margin-right: -20px !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+        }
