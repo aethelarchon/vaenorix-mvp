@@ -1427,6 +1427,38 @@ if (sortBtn && sortMenu) {
     }
                           }
             // ==================== BULK ACTIONS ====================
+    // Checkbox ও Card click handle করি (event delegation)
+document.addEventListener('click', function(e) {
+    // Checkbox এ ক্লিক
+    const checkbox = e.target.closest('.memory-checkbox');
+    if (checkbox && isSelectMode) {
+        e.stopPropagation();
+        e.preventDefault();
+        const id = checkbox.getAttribute('data-id');
+        toggleMemorySelection(id);
+        return;
+    }
+    
+    // Select mode-এ Card এ ক্লিক
+    if (isSelectMode) {
+        const card = e.target.closest('.memory-card[data-memory-id]');
+        if (card) {
+            // লিংক বা বাটনে ক্লিক হলে select করব না
+            if (e.target.tagName === 'A' || 
+                e.target.closest('a') || 
+                e.target.closest('.menu-container') ||
+                e.target.closest('.pin-btn') ||
+                e.target.closest('.download-btn')) {
+                return;
+            }
+            e.stopPropagation();
+            e.preventDefault();
+            const id = card.getAttribute('data-memory-id');
+            toggleMemorySelection(id);
+        }
+    }
+}, true);
+    
 const selectBtn = document.getElementById('selectBtn');
 const bulkActionBar = document.getElementById('bulkActionBar');
 const bulkSelectedCount = document.getElementById('bulkSelectedCount');
