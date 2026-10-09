@@ -153,7 +153,12 @@ async function initializeApp() {
         querySnapshot.forEach((doc) => {
             memories.push({ id: doc.id, ...doc.data() });
         });
-        
+        // Pinned items আগে, তারপর timestamp অনুযায়ী
+memories.sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return new Date(b.timestamp) - new Date(a.timestamp);
+});
         // Skeleton থেকে আসল ডেটায় সুইচ করি
         if (memoriesList) {
             memoriesList.classList.remove('skeleton-mode');
