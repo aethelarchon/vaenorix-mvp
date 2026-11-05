@@ -247,7 +247,26 @@ async function initializeApp() {
             showToast("Failed to edit", true);
         }
     }
+async function deleteMemory(id) {
+    if (!currentUser) {
+        showToast('Please sign in first!', true);
+        return;
+    }
+    if (!id) return;
+    
+    try {
+        const memoryRef = window.doc(window.db, `users/${currentUser.uid}/memories`, id);
+        await window.deleteDoc(memoryRef);
+        showToast('🗑️ Memory deleted');
+        await loadMemories();
+    } catch (error) {
+        console.error('Delete error:', error);
+        showToast('Failed to delete', true);
+    }
+}
 
+// Global scope-এ এক্সপোর্ট (renderMemoriesWithData মডিউল স্কোপ থেকেও কল করতে পারবে)
+window.deleteMemory = deleteMemory;
     async function fetchLinkPreview(url) {
     // Cache এ থাকলে সরাসরি ফেরত দিই
     if (previewCache[url]) return previewCache[url];
