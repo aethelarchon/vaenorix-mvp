@@ -441,14 +441,7 @@ if (memory) {
         document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
     });
 });
-document.querySelectorAll('.delete-btn-menu').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const id = this.getAttribute('data-id');
-        deleteMemory(id);
-        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-    });
-});
+
 // ==================== PIN / STAR ====================
 document.querySelectorAll('.pin-btn').forEach(btn => {
     btn.addEventListener('click', async function(e) {
