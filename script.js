@@ -1248,8 +1248,9 @@ if (menuExport) {
 if (menuSignOut) {
     menuSignOut.addEventListener('click', () => {
         profileMenu.classList.remove('open');
-        logout();
+        window.logout(); // এখন ঠিকমতো কাজ করবে
     });
+}
                     }
                                 
 // ==================== MEMORY BROWSER (FAB + Folder View) ====================
