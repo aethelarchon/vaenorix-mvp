@@ -539,61 +539,39 @@ if (clearAllBtn) {
     };
 }
     
-// ==================== EXPORT DATA ====================
-const exportBtn = document.getElementById('exportBtn');
-if (exportBtn) {
-    exportBtn.onclick = () => {
-        if (!currentUser) { 
-            showToast('Please sign in first!', true); 
-            return; 
-        }
-        if (memories.length === 0) { 
-            showToast('No memories to export', true); 
-            return; 
-        }
-        
-        try {
-            // JSON ফাইল তৈরি
-            const dataStr = JSON.stringify({
-                exported_at: new Date().toISOString(),
-                user: currentUser.email,
-                total_memories: memories.length,
-                memories: memories
-            }, null, 2);
-            
-            // ডাউনলোড লিংক তৈরি
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `vaenorix-backup-${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showToast('✅ Exported ' + memories.length + ' memories!');
-        } catch (error) {
-            showToast('Export failed: ' + error.message, true);
-            console.error(error);
-        }
-    };
-}
+
+    // ==================== EXPORT DATA ====================
+    const exportBtn = document.getElementById('exportBtn');
+    if (exportBtn) {
+        exportBtn.onclick = () => {
+            if (!currentUser) { showToast('Please sign in first!', true); return; }
+            if (memories.length === 0) { showToast('No memories to export', true); return; }
+            try {
+                const dataStr = JSON.stringify({ exported_at: new Date().toISOString(), user: currentUser.email, total_memories: memories.length, memories: memories }, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `vaenorix-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('✅ Exported ' + memories.length + ' memories!');
+            } catch (error) {
+                showToast('Export failed: ' + error.message, true);
+            }
+        };
+    }
+    } // <--- এই ব্র্যাকেটটি renderMemories ফাংশন বন্ধ করবে (এটাই আগে মিসিং ছিল)
 
 function renderMemoriesWithData(data) {
     if (!memoriesList) return;
-    
-    if (data.length === 0) {
-        memoriesList.innerHTML = '<div class="empty-message">No memories found</div>';
-        return;
-    }
+    if (data.length === 0) { memoriesList.innerHTML = '<div class="empty-message">No memories found</div>'; return; }
     
     memoriesList.innerHTML = data.map((memory) => `
-<div class="memory-card ${memory.pinned ? 'pinned' : ''} ${isSelectMode && selectedIds.includes(memory.id) ? 'selected' : ''}" data-memory-id="${memory.id}">
-    <div class="memory-header">
-        <div class="memory-checkbox ${selectedIds.includes(memory.id) ? 'checked' : ''}" data-id="${memory.id}">
-            <i class="fas fa-check"></i>
-        </div>
+        <div class="memory-card ${memory.pinned ? 'pinned' : ''}" data-memory-id="${memory.id}">
+            <div class="memory-header">
                 <div class="memory-type">${memory.type === 'note' ? 'Note' : memory.type === 'link' ? 'Link' : 'Image'}</div>
                 <div class="menu-container">
                     <button class="three-dots" data-id="${memory.id}">⋯</button>
@@ -605,59 +583,49 @@ function renderMemoriesWithData(data) {
                 </div>
             </div>
             <div class="memory-content">
-    ${memory.type === 'link' ?
-        `<a href="${escapeHtml(memory.content)}" target="_blank" class="memory-link">${escapeHtml(memory.content)}</a>` :
-        memory.type === 'image' ?
-        `<div style="position: relative;">
-            <img src="${escapeHtml(memory.content)}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${escapeHtml(memory.content)}')">
-        </div>` :
-        escapeHtml(memory.content)
-    }
-</div>
+                ${memory.type === 'link' ? `<a href="${escapeHtml(memory.content)}" target="_blank" class="memory-link">${escapeHtml(memory.content)}</a>` : memory.type === 'image' ? `<div style="position: relative;"><img src="${escapeHtml(memory.content)}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${escapeHtml(memory.content)}')"></div>` : escapeHtml(memory.content)}
+            </div>
         </div>
     `).join('');
-    
-    document.querySelectorAll('.three-dots').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const id = this.getAttribute('data-id');
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-            const menu = document.getElementById(`menu-${id}`);
-            if (menu) menu.classList.toggle('show');
-        });
-    });
-    
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const id = this.getAttribute('data-id');
-const memory = memories.find(m => m.id === id);
-if (memory) {
-    window.openEditModal(id, memory.content);
+
+    document.querySelectorAll('.three-dots').forEach(btn => { btn.addEventListener('click', function(e) { e.stopPropagation(); const id = this.getAttribute('data-id'); document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show')); const menu = document.getElementById(`menu-${id}`); if (menu) menu.classList.toggle('show'); }); });
+    document.querySelectorAll('.edit-btn').forEach(btn => { btn.addEventListener('click', function(e) { e.stopPropagation(); const id = this.getAttribute('data-id'); const memory = memories.find(m => m.id === id); if (memory) window.openEditModal(id, memory.content); document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show')); }); });
+    document.querySelectorAll('.delete-btn-menu').forEach(btn => { btn.addEventListener('click', function(e) { e.stopPropagation(); const id = this.getAttribute('data-id'); window.deleteMemory(id); document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show')); }); });
+    document.querySelectorAll('.share-btn').forEach(btn => { btn.addEventListener('click', function(e) { e.stopPropagation(); const id = this.getAttribute('data-id'); const memory = memories.find(m => m.id === id); if (memory) window.shareMemoryPublic(memory); document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show')); }); });
 }
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-        });
-    });
+
+    async function addMemory() {
+        if (!currentUser) { showToast('Please sign in first!', true); login(); return; }
+        const note = noteInput ? noteInput.value.trim() : '';
+        const link = linkInput ? linkInput.value.trim() : '';
+        if (!note && !link) { showToast('Please write a note or paste a link', true); return; }
+        
+        let type = '', content = '';
+        if (note) {
+            type = 'note'; content = note;
+            if (noteInput) noteInput.value = '';
+        } else if (link) {
+            type = 'link'; content = link;
+            if (linkInput) linkInput.value = '';
+            if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<span class="spinner"></span> Saving...'; }
+        }
+        
+        try {
+            const tagRegex = /#([\w\u0980-\u09FF]+)/g;
+            const foundTags = content.match(tagRegex) || [];
+            const tags = foundTags.map(t => t.substring(1).toLowerCase());
+            const uniqueTags = [...new Set(tags)];
+            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+            await window.addDoc(memoriesRef, { type: type, content: content, tags: uniqueTags, timestamp: new Date().toISOString() });
+            showToast('Memory saved!' + (uniqueTags.length > 0 ? ' 🏷️ ' + uniqueTags.length + ' tags' : ''));
+            await loadMemories();
+        } catch (error) {
+            showToast("Failed to save", true);
+        } finally {
+            if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '<i class="fas fa-save"></i> Save to Second Brain'; }
+        }
+        }
     
-    document.querySelectorAll('.delete-btn-menu').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const id = this.getAttribute('data-id');
-            deleteMemory(id);
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-        });
-    });
-    
-    document.querySelectorAll('.share-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const id = this.getAttribute('data-id');
-            const memory = memories.find(m => m.id === id);
-            if (memory) window.shareMemory(memory.content, memory.type);
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-        });
-    });
-            }
     // ==================== PIN / STAR ====================
 document.querySelectorAll('.pin-btn').forEach(btn => {
     btn.addEventListener('click', async function(e) {
