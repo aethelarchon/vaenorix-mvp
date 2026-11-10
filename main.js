@@ -595,197 +595,52 @@ function renderMemoriesWithData(data) {
 }
 
     async function addMemory() {
-        if (!currentUser) { showToast('Please sign in first!', true); login(); return; }
-        const note = noteInput ? noteInput.value.trim() : '';
-        const link = linkInput ? linkInput.value.trim() : '';
-        if (!note && !link) { showToast('Please write a note or paste a link', true); return; }
-        
-        let type = '', content = '';
-        if (note) {
-            type = 'note'; content = note;
-            if (noteInput) noteInput.value = '';
-        } else if (link) {
-            type = 'link'; content = link;
-            if (linkInput) linkInput.value = '';
-            if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<span class="spinner"></span> Saving...'; }
-        }
-        
-        try {
-            const tagRegex = /#([\w\u0980-\u09FF]+)/g;
-            const foundTags = content.match(tagRegex) || [];
-            const tags = foundTags.map(t => t.substring(1).toLowerCase());
-            const uniqueTags = [...new Set(tags)];
-            const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-            await window.addDoc(memoriesRef, { type: type, content: content, tags: uniqueTags, timestamp: new Date().toISOString() });
-            showToast('Memory saved!' + (uniqueTags.length > 0 ? ' 🏷️ ' + uniqueTags.length + ' tags' : ''));
-            await loadMemories();
-        } catch (error) {
-            showToast("Failed to save", true);
-        } finally {
-            if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '<i class="fas fa-save"></i> Save to Second Brain'; }
-        }
-        
+    if (!currentUser) { showToast('Please sign in first!', true); login(); return; }
+    const note = noteInput ? noteInput.value.trim() : '';
+    const link = linkInput ? linkInput.value.trim() : '';
+    if (!note && !link) { showToast('Please write a note or paste a link', true); return; }
     
-    // ==================== PIN / STAR ====================
-document.querySelectorAll('.pin-btn').forEach(btn => {
-    btn.addEventListener('click', async function(e) {
-        e.stopPropagation();
-        const id = this.getAttribute('data-id');
-        const memory = memories.find(m => m.id === id);
-        if (!memory || !window.currentUser) return;
-        
-        const newPinnedState = !memory.pinned;
-        
-        try {
-            const memoryRef = window.doc(window.db, `users/${window.currentUser.uid}/memories`, id);
-            await window.updateDoc(memoryRef, { pinned: newPinnedState });
-            
-            memory.pinned = newPinnedState;
-            
-            if (newPinnedState) {
-                this.classList.add('pinned');
-                showToast('⭐ Pinned to top');
-            } else {
-                this.classList.remove('pinned');
-                showToast('Unpinned');
-            }
-        } catch (error) {
-            console.error('Pin error:', error);
-            showToast('Failed to pin', true);
-        }
-    });
-});
-
-// ==================== TAG FILTER ====================
-document.querySelectorAll('.memory-tag').forEach(tagEl => {
-    tagEl.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const tag = this.getAttribute('data-tag');
-        const filtered = memories.filter(m => m.tags && m.tags.includes(tag));
-        const listElement = document.getElementById('memoriesList');
-        
-        const section = document.querySelector('.memories-section');
-        let indicator = document.getElementById('tagFilterIndicator');
-        if (indicator) indicator.remove();
-        
-        indicator = document.createElement('div');
-        indicator.id = 'tagFilterIndicator';
-        indicator.className = 'tag-filter-active';
-        indicator.innerHTML = `<span>🏷️ #${tag} (${filtered.length})</span><button class="tag-filter-clear" id="tagClearBtn">✕</button>`;
-        
-        const filterButtons = section.querySelector('.filter-buttons');
-        if (filterButtons) {
-            filterButtons.parentNode.insertBefore(indicator, filterButtons.nextSibling);
-        }
-        
-        document.getElementById('tagClearBtn').onclick = () => {
-            indicator.remove();
-            renderMemories();
-        };
-        
-        const counterSpan = document.getElementById('memoryCount');
-        if (counterSpan) counterSpan.textContent = `(${filtered.length})`;
-        
-        if (filtered.length === 0) {
-            listElement.innerHTML = '<div class="empty-message">No memories with #' + tag + '</div>';
-        } else {
-            renderMemoriesWithData(filtered);
-        }
-        
-        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-});
-    async function addMemory() {
-        if (!currentUser) {
-            showToast('Please sign in first!', true);
-            login();
-            return;
-        }
-        const note = noteInput ? noteInput.value.trim() : '';
-        const link = linkInput ? linkInput.value.trim() : '';
-        if (!note && !link) {
-            showToast('Please write a note or paste a link', true);
-            return;
-        }
-        let type = '';
-        let content = '';
-        if (note) {
-            type = 'note';
-            content = note;
-            if (noteInput) noteInput.value = '';
-        } else if (link) {
-            type = 'link';
-            content = link;
-            if (linkInput) linkInput.value = '';
-                saveBtn.disabled = true;
-                saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
-            }
-        try {
-    // ট্যাগ এক্সট্রাক্ট করি
-    const tagRegex = /#([\w\u0980-\u09FF]+)/g;
-    const foundTags = content.match(tagRegex) || [];
-    const tags = foundTags.map(t => t.substring(1).toLowerCase());
-    const uniqueTags = [...new Set(tags)];
-    
-    const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
-    await window.addDoc(memoriesRef, {
-        type: type,
-        content: content,
-        tags: uniqueTags,
-        timestamp: new Date().toISOString()
-    });
-    showToast('Memory saved!' + (uniqueTags.length > 0 ? ' 🏷️ ' + uniqueTags.length + ' tags' : ''));
-    await loadMemories();
-} catch (error) {
-    showToast("Failed to save", true);
-} finally {
-            if (saveBtn) {
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save to Second Brain';
-            }
-        }
+    let type = '', content = '';
+    if (note) {
+        type = 'note'; content = note;
+        if (noteInput) noteInput.value = '';
+    } else if (link) {
+        type = 'link'; content = link;
+        if (linkInput) linkInput.value = '';
+        if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<span class="spinner"></span> Saving...'; }
     }
-
-    function searchMemories() {
-    if (!aiSearchInput || !currentUser) return;
     
+    try {
+        const tagRegex = /#([\w\u0980-\u09FF]+)/g;
+        const foundTags = content.match(tagRegex) || [];
+        const tags = foundTags.map(t => t.substring(1).toLowerCase());
+        const uniqueTags = [...new Set(tags)];
+        const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+        await window.addDoc(memoriesRef, { type: type, content: content, tags: uniqueTags, timestamp: new Date().toISOString() });
+        showToast('Memory saved!' + (uniqueTags.length > 0 ? ' 🏷️ ' + uniqueTags.length + ' tags' : ''));
+        await loadMemories();
+    } catch (error) {
+        showToast("Failed to save", true);
+    } finally {
+        if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '<i class="fas fa-save"></i> Save to Second Brain'; }
+    }
+}
+
+function searchMemories() {
+    if (!aiSearchInput || !currentUser) return;
     const query = aiSearchInput.value.trim().toLowerCase();
     const resultBox = document.getElementById('aiSearchResult');
-    
-    if (!query) {
-        renderMemories();
-        if (resultBox) { resultBox.classList.remove('show'); resultBox.innerHTML = ''; }
-        return;
-    }
+    if (!query) { renderMemories(); if (resultBox) { resultBox.classList.remove('show'); resultBox.innerHTML = ''; } return; }
     
     let detectedType = 'all';
     if (query.includes('link') || query.includes('লিংক') || query.includes('url')) detectedType = 'link';
     else if (query.includes('note') || query.includes('নোট') || query.includes('লেখা')) detectedType = 'note';
     else if (query.includes('image') || query.includes('ছবি') || query.includes('photo')) detectedType = 'image';
     
-    const now = new Date();
-    let dateFilter = null;
-    let dateLabel = '';
-    
-    if (query.includes('today') || query.includes('আজ')) {
-        dateFilter = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        dateLabel = 'today';
-    } else if (query.includes('yesterday') || query.includes('গতকাল')) {
-        dateFilter = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-        dateLabel = 'yesterday';
-    } else if (query.includes('last week')) {
-        dateFilter = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        dateLabel = 'this week';
-    } else if (query.includes('last month')) {
-        dateFilter = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        dateLabel = 'this month';
-    }
-    
     let results = memories;
     if (detectedType !== 'all') results = results.filter(m => m.type === detectedType);
-    if (dateFilter) results = results.filter(m => new Date(m.timestamp) >= dateFilter);
     
-    if (detectedType === 'all' && !dateFilter) {
+    if (detectedType === 'all') {
         const cleanQuery = query.replace(/show me|find|get|from|last|this|week|month|today|yesterday/g, '').trim();
         if (cleanQuery) results = results.filter(m => m.content.toLowerCase().includes(cleanQuery));
     }
@@ -801,31 +656,30 @@ document.querySelectorAll('.memory-tag').forEach(tagEl => {
     
     if (resultBox) {
         let msg = `🤖 Found <span class="ai-result-count">${results.length}</span> ${detectedType === 'all' ? 'memories' : detectedType + 's'}`;
-        if (dateLabel) msg += ` from ${dateLabel}`;
         resultBox.innerHTML = `<div class="ai-result-text">${msg}</div>`;
         resultBox.classList.add('show');
         setTimeout(() => resultBox.classList.remove('show'), 4000);
     }
-    }
+}
 
-    function scrollToSave() {
-        const saveSection = document.querySelector('.save-section');
-        if (saveSection) saveSection.scrollIntoView({ behavior: 'smooth' });
-    }
+function scrollToSave() {
+    const saveSection = document.querySelector('.save-section');
+    if (saveSection) saveSection.scrollIntoView({ behavior: 'smooth' });
+}
 
-    function initFilters() {
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        if (filterBtns.length === 0) return;
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentFilter = this.getAttribute('data-filter');
-                if (aiSearchInput) renderMemories(aiSearchInput.value.trim());
-                else renderMemories();
-            });
+function initFilters() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    if (filterBtns.length === 0) return;
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = this.getAttribute('data-filter');
+            if (aiSearchInput) renderMemories(aiSearchInput.value.trim());
+            else renderMemories();
         });
-    }
+    });
+                                                                                                                                                                                                   }
 
     async function handleScreenshotUpload(e) {
         const file = e.target.files[0];
