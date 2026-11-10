@@ -875,11 +875,17 @@ document.querySelectorAll('.memory-tag').forEach(tagEl => {
         try {
             const base64Image = await compressImage(file);
             
-            const response = await fetch('/api/upload', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image: base64Image.split(',')[1] })
-            });
+            // ইউজারের সিকিউরিটি টোকেন নিচ্ছি
+const token = await currentUser.getIdToken();
+
+const response = await fetch('/api/upload', {
+    method: 'POST',
+    headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // টোকেন হেডারে পাঠাচ্ছি
+    },
+    body: JSON.stringify({ image: base64Image.split(',')[1] })
+});
             
             const data = await response.json();
             if (!data.success) throw new Error(data.error.message || 'Upload failed');
