@@ -1,5 +1,5 @@
 // ==================== VAENORIX SERVICE WORKER ====================
-const CACHE_NAME = 'vaenorix-v7';
+const CACHE_NAME = 'vaenorix-v8';
 const RUNTIME_CACHE = 'vaenorix-runtime-v5';
 
 // Static files to cache on install
@@ -8,7 +8,7 @@ const STATIC_ASSETS = [
   '/index.html',
   '/share.html',
   '/style.css',
-  '/script.js',
+  '/app.js',        // <--- এখানে পরিবর্তন করুন
   '/manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap'
