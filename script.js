@@ -602,15 +602,15 @@ function renderMemoriesWithData(data) {
                 </div>
             </div>
             <div class="memory-content">
-                ${memory.type === 'link' ?
-                    `<a href="${memory.content}" target="_blank" class="memory-link">${memory.content}</a>` :
-                    memory.type === 'image' ?
-                    `<div style="position: relative;">
-                        <img src="${memory.content}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${memory.content}')">
-                    </div>` :
-                    memory.content
-                }
-            </div>
+    ${memory.type === 'link' ?
+        `<a href="${escapeHtml(memory.content)}" target="_blank" class="memory-link">${escapeHtml(memory.content)}</a>` :
+        memory.type === 'image' ?
+        `<div style="position: relative;">
+            <img src="${escapeHtml(memory.content)}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${escapeHtml(memory.content)}')">
+        </div>` :
+        escapeHtml(memory.content)
+    }
+</div>
         </div>
     `).join('');
     
