@@ -472,7 +472,6 @@ document.querySelectorAll('.pin-btn').forEach(btn => {
 
 // Pinned গুলো আগে দেখানোর জন্য সর্টিং
 function sortAndRenderMemories() {
-    // pinned গুলো আগে
     memories.sort((a, b) => {
         if (a.pinned && !b.pinned) return -1;
         if (!a.pinned && b.pinned) return 1;
@@ -482,7 +481,7 @@ function sortAndRenderMemories() {
     if (typeof renderMemories === 'function') {
         renderMemories();
     }
-                    }
+}
     
 // ==================== TAG FILTER ====================
 document.querySelectorAll('.memory-tag').forEach(tagEl => {
