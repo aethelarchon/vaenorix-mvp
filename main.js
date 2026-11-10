@@ -749,11 +749,9 @@ document.querySelectorAll('.memory-tag').forEach(tagEl => {
             type = 'link';
             content = link;
             if (linkInput) linkInput.value = '';
-            
                 saveBtn.disabled = true;
                 saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
             }
-        
         try {
     // ট্যাগ এক্সট্রাক্ট করি
     const tagRegex = /#([\w\u0980-\u09FF]+)/g;
