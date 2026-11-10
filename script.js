@@ -655,6 +655,75 @@ if (memory) {
         });
     });
             }
+    // ==================== PIN / STAR ====================
+document.querySelectorAll('.pin-btn').forEach(btn => {
+    btn.addEventListener('click', async function(e) {
+        e.stopPropagation();
+        const id = this.getAttribute('data-id');
+        const memory = memories.find(m => m.id === id);
+        if (!memory || !window.currentUser) return;
+        
+        const newPinnedState = !memory.pinned;
+        
+        try {
+            const memoryRef = window.doc(window.db, `users/${window.currentUser.uid}/memories`, id);
+            await window.updateDoc(memoryRef, { pinned: newPinnedState });
+            
+            memory.pinned = newPinnedState;
+            
+            if (newPinnedState) {
+                this.classList.add('pinned');
+                showToast('⭐ Pinned to top');
+            } else {
+                this.classList.remove('pinned');
+                showToast('Unpinned');
+            }
+        } catch (error) {
+            console.error('Pin error:', error);
+            showToast('Failed to pin', true);
+        }
+    });
+});
+
+// ==================== TAG FILTER ====================
+document.querySelectorAll('.memory-tag').forEach(tagEl => {
+    tagEl.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const tag = this.getAttribute('data-tag');
+        const filtered = memories.filter(m => m.tags && m.tags.includes(tag));
+        const listElement = document.getElementById('memoriesList');
+        
+        const section = document.querySelector('.memories-section');
+        let indicator = document.getElementById('tagFilterIndicator');
+        if (indicator) indicator.remove();
+        
+        indicator = document.createElement('div');
+        indicator.id = 'tagFilterIndicator';
+        indicator.className = 'tag-filter-active';
+        indicator.innerHTML = `<span>🏷️ #${tag} (${filtered.length})</span><button class="tag-filter-clear" id="tagClearBtn">✕</button>`;
+        
+        const filterButtons = section.querySelector('.filter-buttons');
+        if (filterButtons) {
+            filterButtons.parentNode.insertBefore(indicator, filterButtons.nextSibling);
+        }
+        
+        document.getElementById('tagClearBtn').onclick = () => {
+            indicator.remove();
+            renderMemories();
+        };
+        
+        const counterSpan = document.getElementById('memoryCount');
+        if (counterSpan) counterSpan.textContent = `(${filtered.length})`;
+        
+        if (filtered.length === 0) {
+            listElement.innerHTML = '<div class="empty-message">No memories with #' + tag + '</div>';
+        } else {
+            renderMemoriesWithData(filtered);
+        }
+        
+        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+});
     async function addMemory() {
         if (!currentUser) {
             showToast('Please sign in first!', true);
