@@ -579,7 +579,7 @@ if (exportBtn) {
         }
     };
 }
-}
+
 function renderMemoriesWithData(data) {
     if (!memoriesList) return;
     
