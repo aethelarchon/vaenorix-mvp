@@ -349,19 +349,19 @@ const firebaseConfig = {
         <p class="footer-copyright">© 2026 Vaenorix — Your AI Second Brain</p>
     </div>
 </footer>
+        <!-- KILL SWITCH: Force unregister old service workers -->
     <script>
-        
-    </script>
-    <script src="main.js"></script>
-    <script>
-        // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .catch(err => console.log('SW reg error: ', err));
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                    console.log('✅ Old SW Killed');
+                } 
             });
         }
     </script>
+    <!-- Load new app.js with cache buster -->
+    <script src="app.js?v=9999"></script>
 </body>
-        </html>
+</html>
         
