@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaenorix Diagnostic Tool</title>
+    <style>
+        body { font-family: monospace; background: #0a0a0f; color: #fff; padding: 20px; line-height: 1.6; }
+        .success { color: #4ade80; font-weight: bold; }
+        .error { color: #f87171; font-weight: bold; }
+        .warning { color: #fbbf24; font-weight: bold; }
+        .box { background: #1a1a2e; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333; }
+    </style>
+</head>
+<body>
+    <h2>🔍 Vaenorix Diagnostic Tool</h2>
+    <p>আপনার কোডের সমস্যা খুঁজে বের করা হচ্ছে...</p>
+    <div id="results"></div>
+
+    <script>
+        const filesToTest = ['/app.js', '/script.js', '/sw.js'];
+        const resultsDiv = document.getElementById('results');
+
+        async function testFile(fileName) {
+            const box = document.createElement('div');
+            box.className = 'box';
+            box.innerHTML = `<strong>ফাইল চেক করা হচ্ছে: ${fileName}</strong><br>`;
+            resultsDiv.appendChild(box);
+
+            try {
+                // ক্যাশ বাইপাস করার জন্য টাইমস্ট্যাম্প যোগ করা হলো
+                const res = await fetch(fileName + '?t=' + Date.now());
+                
+                if (!res.ok) {
+                    box.innerHTML += `<span class="warning">⚠️ এই ফাইলটি সার্ভারে নেই (404 Not Found)।</span>`;
+                    return;
+                }
+                
+                const text = await res.text();
+                
+                // ফাইলের ভেতরে Syntax Error আছে কিনা চেক করা
+                const blob = new Blob([text], { type: 'application/javascript' });
+                const url = URL.createObjectURL(blob);
+                await import(url); // এখানেই যদি ভুল থাকে, তবে এরর ধরবে
+                
+                box.innerHTML += `<span class="success">✅ এই ফাইলে কোনো Syntax Error নেই! এটি একদম ঠিক আছে।</span>`;
+                
+            } catch (e) {
+                box.innerHTML += `<span class="error">❌ এই ফাইলে ভুল আছে!<br><br>এরর মেসেজ: ${e.message}</span>`;
+                if (fileName === '/script.js') {
+                    box.innerHTML += `<br><br><em>(বিঃদ্রঃ আপনার index.html এখনো এই পুরনো ও ভাঙা script.js ফাইলটিকেই ডাকছে।)</em>`;
+                }
+            }
+        }
+
+        window.onload = async () => {
+            for (const file of filesToTest) {
+                await testFile(file);
+            }
+        };
+    </script>
+</body>
+</html>
