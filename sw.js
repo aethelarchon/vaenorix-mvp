@@ -1,5 +1,5 @@
 // ==================== VAENORIX SERVICE WORKER ====================
-const CACHE_NAME = 'vaenorix-v6';
+const CACHE_NAME = 'vaenorix-v7';
 const RUNTIME_CACHE = 'vaenorix-runtime-v5';
 
 // Static files to cache on install
