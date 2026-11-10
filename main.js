@@ -1465,7 +1465,8 @@ if (bulkDeleteBtn) {
             bulkDeleteBtn.disabled = false;
         }
     });
-                                     }
+
+}
     function renderMemoriesWithData(data) {
     if (!memoriesList) return;
     if (data.length === 0) { memoriesList.innerHTML = '<div class="empty-message">No memories found</div>'; return; }
