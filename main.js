@@ -624,7 +624,7 @@ function renderMemoriesWithData(data) {
         } finally {
             if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '<i class="fas fa-save"></i> Save to Second Brain'; }
         }
-        }
+        
     
     // ==================== PIN / STAR ====================
 document.querySelectorAll('.pin-btn').forEach(btn => {
