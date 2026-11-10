@@ -1776,7 +1776,6 @@ if (bulkDeleteBtn) {
     if (aiSearchBtn) aiSearchBtn.addEventListener('click', searchMemories);
     if (getStartedBtn) getStartedBtn.addEventListener('click', scrollToSave);
     if (loginBtn) loginBtn.addEventListener('click', login);
-    if (logoutBtn) logoutBtn.addEventListener('click', logout);
     if (aiSearchInput) {
         aiSearchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') searchMemories();
