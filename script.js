@@ -111,7 +111,6 @@ async function initializeApp() {
     const memoriesList = document.getElementById('memoriesList');
     const getStartedBtn = document.getElementById('getStartedBtn');
     const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
     const uploadArea = document.getElementById('uploadArea');
     const screenshotInput = document.getElementById('screenshotInput');
     const uploadBtn = document.getElementById('uploadBtn');
@@ -132,14 +131,17 @@ async function initializeApp() {
     }
 
     async function logout() {
-        try {
-            await window.signOut(window.auth);
-            showToast('Logged out successfully');
-        } catch (error) {
-            showToast("Logout failed", true);
-            console.error('Logout error:', error);
-        }
+    try {
+        await window.signOut(window.auth);
+        showToast('Logged out successfully');
+    } catch (error) {
+        showToast("Logout failed", true);
+        console.error('Logout error:', error);
     }
+}
+
+// এই লাইনটি যোগ করুন (যাতে Profile Menu থেকে কল করা যায়)
+window.logout = logout;
 
     async function loadMemories() {
     if (!currentUser) return;
