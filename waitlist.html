@@ -7,67 +7,153 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        .waitlist-container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 60px 20px;
-            text-align: center;
-        }
-        .waitlist-title {
-            font-size: 36px;
-            margin-bottom: 20px;
-        }
-        .waitlist-desc {
-            color: #aaa;
-            margin-bottom: 40px;
-        }
-        .email-input, .name-input {
-            width: 100%;
-            padding: 16px;
-            border-radius: 50px;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            background: rgba(255,255,255,0.05);
-            color: white;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-        .join-btn {
-            width: 100%;
-            padding: 16px;
-            border-radius: 50px;
-            background: linear-gradient(135deg, #00ffff, #0066ff);
-            border: none;
-            font-size: 18px;
-            font-weight: bold;
-            color: #0a0a0f;
-            cursor: pointer;
-        }
-        .message {
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 12px;
-            display: none;
-        }
-        .success {
-            background: rgba(0,255,0,0.1);
-            border: 1px solid rgba(0,255,0,0.3);
-            color: #00ff00;
-        }
-        .error {
-            background: rgba(255,0,0,0.1);
-            border: 1px solid rgba(255,0,0,0.3);
-            color: #ff6666;
-        }
-        .back-link {
-            display: inline-block;
-            margin-top: 30px;
-            color: #00ffff;
-            text-decoration: none;
-        }
-        .back-link i {
-            margin-right: 5px;
-        }
-    </style>
+    /* ফন্ট ইমপোর্ট (যদি index.html থেকে না আসে) */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+    body {
+        font-family: 'Inter', -apple-system, sans-serif;
+    }
+
+    .waitlist-container {
+        max-width: 500px;
+        margin: 60px auto;
+        padding: 40px 24px;
+        text-align: center;
+        background: rgba(139, 92, 246, 0.03);
+        border: 1.5px solid rgba(139, 92, 246, 0.2);
+        border-radius: 24px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .waitlist-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 32px;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #a855f7, #ec4899);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .waitlist-title i {
+        color: #a855f7;
+        -webkit-text-fill-color: #a855f7;
+    }
+
+    .waitlist-desc {
+        color: #9ca3af;
+        margin-bottom: 30px;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .email-input, .name-input {
+        width: 100%;
+        padding: 16px 20px;
+        border-radius: 50px;
+        border: 1.5px solid rgba(139, 92, 246, 0.3);
+        background: rgba(139, 92, 246, 0.05);
+        color: white;
+        font-size: 15px;
+        margin-bottom: 15px;
+        outline: none;
+        transition: all 0.3s;
+        box-sizing: border-box;
+    }
+
+    .email-input:focus, .name-input:focus {
+        border-color: #a855f7;
+        box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+        background: rgba(139, 92, 246, 0.1);
+    }
+
+    .email-input::placeholder, .name-input::placeholder {
+        color: #6b7280;
+    }
+
+    .join-btn {
+        width: 100%;
+        padding: 16px;
+        border-radius: 50px;
+        background: linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899);
+        border: none;
+        font-family: 'Inter', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: #ffffff;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .join-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(168, 85, 247, 0.5);
+    }
+
+    .join-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .message {
+        margin-top: 20px;
+        padding: 14px;
+        border-radius: 14px;
+        display: none;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .success {
+        background: rgba(34, 197, 94, 0.15);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: #4ade80;
+    }
+
+    .error {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #f87171;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 30px;
+        color: #c084fc;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.3s;
+    }
+
+    .back-link:hover {
+        color: #ec4899;
+    }
+
+    /* Navbar override for waitlist */
+    .navbar {
+        border-bottom: 1px solid rgba(139, 92, 246, 0.2) !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .nav-badge {
+        background: rgba(139, 92, 246, 0.15) !important;
+        color: #c084fc !important;
+        border: 1px solid rgba(139, 92, 246, 0.3) !important;
+    }
+        </style>
 </head>
 <body>
     <div class="container">
