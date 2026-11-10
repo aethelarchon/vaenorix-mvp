@@ -435,15 +435,6 @@ if (memory) {
     });
 });
 
-        document.querySelectorAll('.share-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const id = this.getAttribute('data-id');
-        const memory = memories.find(m => m.id === id);
-        if (memory) window.shareMemoryPublic(memory);
-        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-    });
-});
 
 // ==================== PIN / STAR ====================
 document.querySelectorAll('.pin-btn').forEach(btn => {
