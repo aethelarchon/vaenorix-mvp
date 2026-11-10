@@ -1,3 +1,4 @@
+console.log("✅ নতুন app.js সফলভাবে লোড হয়েছে!");
 // ==================== PREVIEW CACHE ====================
 const previewCache = {};
 // ==================== Toast Notification ====================
