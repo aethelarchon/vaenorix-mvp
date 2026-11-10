@@ -1660,7 +1660,7 @@ window.downloadImage = async function(imageUrl) {
 };
 
 // ==================== START APP ====================
-}
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
