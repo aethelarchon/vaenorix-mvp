@@ -1624,7 +1624,7 @@ function initFilters() {
         if (topSearchBar) topSearchBar.style.display = 'none';
     }
 });
-}
+
 // ==================== Image Modal ====================
 window.showImageModal = function(imageUrl) {
     const modal = document.createElement('div');
