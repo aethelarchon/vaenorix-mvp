@@ -45,8 +45,7 @@
     <!-- Firebase Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-        import { 
-            getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy 
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
         } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
         import { 
             getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut 
@@ -75,6 +74,7 @@ const firebaseConfig = {
         window.doc = doc;
         window.deleteDoc = deleteDoc;
         window.updateDoc = updateDoc;
+        window.setDoc = setDoc;
         window.query = query;
         window.orderBy = orderBy;
         window.onAuthStateChanged = onAuthStateChanged;
