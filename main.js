@@ -1710,35 +1710,25 @@ window.shareMemoryPublic = async function(memory) {
     try {
         if (typeof showToast === 'function') showToast('⏳ Creating share link...');
         
-        // ইউনিক শেয়ার আইডি
         const shareId = 'mem_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-        
-        // Firestore-এ পাবলিক কপি সেভ করি
         const publicRef = window.doc(window.db, 'public_memories', shareId);
-        await window.updateDoc ? null : null; // placeholder
         
-        // setDoc/updateDoc কাজ করবে না, তাই addDoc দিয়ে করতে হবে
-        // তবে addDoc এর জন্য collection লাগে
-        
-        
-       await window.setDoc(publicRef, {
+        // এখানে window.setDoc ব্যবহার করা হলো, কোনো await import নেই
+        await window.setDoc(publicRef, {
             type: memory.type,
             content: memory.content,
             tags: memory.tags || [],
             timestamp: memory.timestamp,
             shared_at: new Date().toISOString(),
-            shared_by: currentUser ? currentUser.uid : 'anonymous'
+            shared_by: window.currentUser ? window.currentUser.uid : 'anonymous'
         });
         
-        // শেয়ার লিংক তৈরি
         const shareUrl = `${window.location.origin}/share.html?id=${shareId}`;
         
-        // ক্লিপবোর্ডে কপি
         try {
             await navigator.clipboard.writeText(shareUrl);
             if (typeof showToast === 'function') showToast('✅ Share link copied!');
         } catch (err) {
-            // Fallback
             const textarea = document.createElement('textarea');
             textarea.value = shareUrl;
             document.body.appendChild(textarea);
@@ -1748,7 +1738,6 @@ window.shareMemoryPublic = async function(memory) {
             if (typeof showToast === 'function') showToast('✅ Share link copied!');
         }
         
-        // শেয়ার মেনু দেখাই
         if (navigator.share) {
             setTimeout(() => {
                 navigator.share({
