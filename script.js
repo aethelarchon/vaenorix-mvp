@@ -1338,12 +1338,11 @@ function openDetailView(memory) {
     }
     
     detailActions.querySelector('.edit-action').onclick = () => {
-        const newContent = prompt('Edit:', memory.content);
-        if (newContent && newContent.trim()) {
-            editMemory(memory.id, newContent.trim());
-            detailView.classList.remove('open');
-        }
-    };
+    // সরাসরি আপনার বানানো Edit Modal ওপেন করবে
+    window.openEditModal(memory.id, memory.content);
+    // Detail view বন্ধ করে দেবে
+    detailView.classList.remove('open');
+};
     
     detailActions.querySelector('.download-action').onclick = () => {
         if (memory.type === 'image') {
