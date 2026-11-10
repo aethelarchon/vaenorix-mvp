@@ -359,18 +359,18 @@ window.deleteAllMemories = deleteAllMemories;
     </div>
 </div>
                 <div class="memory-content">
-                    ${memory.type === 'link' ?
-                        `<a href="${memory.content}" target="_blank" class="memory-link">${memory.content}</a>
-                         <div class="link-preview-container" data-url="${memory.content}">
-                            <div class="loading-preview">Loading preview...</div>
-                         </div>` :
-                        memory.type === 'image' ?
-                        `<div style="position: relative;">
-                            <img src="${memory.content}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${memory.content}')">
-                            <button class="download-btn" onclick="downloadImage('${memory.content}')"><i class="fas fa-download"></i> Download</button>
-                        </div>` :
-                                        memory.content
-            }
+                            ${memory.type === 'link' ?
+            `<a href="${escapeHtml(memory.content)}" target="_blank" class="memory-link">${escapeHtml(memory.content)}</a>
+             <div class="link-preview-container" data-url="${escapeHtml(memory.content)}">
+                <div class="loading-preview">Loading preview...</div>
+             </div>` :
+            memory.type === 'image' ?
+            `<div style="position: relative;">
+                <img src="${escapeHtml(memory.content)}" alt="Screenshot" class="clickable-image" onclick="showImageModal('${escapeHtml(memory.content)}')">
+                <button class="download-btn" onclick="downloadImage('${escapeHtml(memory.content)}')"><i class="fas fa-download"></i> Download</button>
+            </div>` :
+            escapeHtml(memory.content)
+                            }
         </div>
         ${memory.tags && memory.tags.length > 0 ? `
             <div class="memory-tags">
