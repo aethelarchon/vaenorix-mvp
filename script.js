@@ -1348,20 +1348,20 @@ function openFolderView(type) {
             </div>
         `).join('');
     } else {
-        folderContent.className = 'folder-content list-view';
-        folderContent.innerHTML = filtered.map(m => `
-            <div class="memory-card" data-memory-id="${m.id}">
-                <div class="memory-header">
-                    <div class="memory-type">${m.type === 'note' ? 'Note' : m.type === 'link' ? 'Link' : 'Image'}</div>
-                </div>
-                <div class="memory-content">
-                    ${m.type === 'link' ? 
-                        `<a href="${m.content}" target="_blank" class="memory-link">${m.content}</a>` : 
-                        escapeHtml(m.content)
-                    }
-                </div>
+    folderContent.className = 'folder-content list-view';
+    folderContent.innerHTML = filtered.map(m => `
+        <div class="memory-card" data-memory-id="${m.id}">
+            <div class="memory-header">
+                <div class="memory-type">${m.type === 'note' ? 'Note' : m.type === 'link' ? 'Link' : 'Image'}</div>
             </div>
-        `).join('');
+            <div class="memory-content">
+                ${m.type === 'link' ? 
+                    `<a href="${escapeHtml(m.content)}" target="_blank" class="memory-link">${escapeHtml(m.content)}</a>` : 
+                    escapeHtml(m.content)
+                }
+            </div>
+        </div>
+    `).join('');
     }
     
     // কার্ডে ক্লিক করলে ডিটেইল খুলবে
