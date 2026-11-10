@@ -563,7 +563,7 @@ if (clearAllBtn) {
             }
         };
     }
-    } // <--- এই ব্র্যাকেটটি renderMemories ফাংশন বন্ধ করবে (এটাই আগে মিসিং ছিল)
+    
                                                                                                                                                                                             }
     async function handleScreenshotUpload(e) {
         const file = e.target.files[0];
