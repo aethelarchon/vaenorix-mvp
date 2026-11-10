@@ -749,7 +749,7 @@ document.querySelectorAll('.memory-tag').forEach(tagEl => {
             type = 'link';
             content = link;
             if (linkInput) linkInput.value = '';
-            if (saveBtn) {
+            if (saveBtn) saveBtn.addEventListener('click', addMemory);
                 saveBtn.disabled = true;
                 saveBtn.innerHTML = '<span class="spinner"></span> Saving...';
             }
