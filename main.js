@@ -1549,7 +1549,18 @@ function initFilters() {
     // ==================== ATTACH EVENT LISTENERS ====================
     if (saveBtn) saveBtn.addEventListener('click', addMemory);
     if (aiSearchBtn) aiSearchBtn.addEventListener('click', searchMemories);
-    if (getStartedBtn) getStartedBtn.addEventListener('click', scrollToSave);
+    if (getStartedBtn) {
+    getStartedBtn.addEventListener('click', function() {
+        const saveSection = document.querySelector('.save-section');
+        if (saveSection) {
+            saveSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        const noteInput = document.getElementById('noteInput');
+        if (noteInput) {
+            setTimeout(() => noteInput.focus(), 500);
+        }
+    });
+}
     if (loginBtn) loginBtn.addEventListener('click', login);
     if (aiSearchInput) {
         aiSearchInput.addEventListener('keypress', function(e) {
