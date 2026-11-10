@@ -520,7 +520,7 @@ document.querySelectorAll('.memory-tag').forEach(tagEl => {
         if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 });
-                           
+}                           
         const clearAllBtn = document.getElementById('clearAllBtn');
 if (clearAllBtn) {
     clearAllBtn.onclick = () => {
