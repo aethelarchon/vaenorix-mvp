@@ -556,7 +556,7 @@ if (clearAllBtn) {
         };
     }
     
-                                                                                                                                                                                            }
+                                                                                                                                                                                
     async function handleScreenshotUpload(e) {
         const file = e.target.files[0];
         if (!file) return;
