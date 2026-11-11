@@ -559,7 +559,8 @@ if (memoriesList) {
             block: 'start'
         });
     }
-});                          
+});
+}
         const clearAllBtn = document.getElementById('clearAllBtn');
 if (clearAllBtn) {
     clearAllBtn.onclick = () => {
