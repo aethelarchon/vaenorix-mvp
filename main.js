@@ -652,7 +652,7 @@ function performTopSearch(query) {
     const q = query.trim().toLowerCase();
     
     if (!q) {
-        topSearchClear.style.display = 'none';
+        if (topSearchClear) topSearchClear.style.display = 'none';
         renderMemories();
         return;
     }
