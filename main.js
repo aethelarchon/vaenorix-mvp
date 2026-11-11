@@ -554,13 +554,16 @@ if (memoriesList) {
     }
 
     if (section) {
-        section.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
-    }
+    section.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+    });
+}
 
-        const clearAllBtn = document.getElementById('clearAllBtn');
+    });
+}
+
+const clearAllBtn = document.getElementById('clearAllBtn');
 if (clearAllBtn) {
     clearAllBtn.onclick = () => {
         if (!currentUser) { showToast('Please sign in first!', true); return; }
