@@ -1983,7 +1983,7 @@ async function confirmDelete() {
     confirmBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Deleting...';
     
     try {
-        const user = window.currentUser || currentUser;
+        const user = window.currentUser;
         if (!user || !window.db) {
             throw new Error('Firebase not ready');
         }
