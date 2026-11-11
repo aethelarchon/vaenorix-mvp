@@ -579,8 +579,10 @@ if (exportBtn) {
             showToast('✅ Exported ' + memories.length + ' memories!');
         } catch (error) {
             showToast('Export failed: ' + error.message, true);
-            console.error(error);
-    };
+         console.error(error);
+      }
+   };
+    
 }
 
 function renderMemoriesWithData(data) {
