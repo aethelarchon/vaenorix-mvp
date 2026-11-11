@@ -1883,7 +1883,7 @@ function closeEditModal() {
 async function saveEditModal() {
     const input = document.getElementById('editModalInput');
     const saveBtn = document.getElementById('editModalSave');
-    
+    if (!saveBtn) return;
     if (!editingMemoryId || !input) return;
     
     const newContent = input.value.trim();
