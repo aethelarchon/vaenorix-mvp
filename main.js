@@ -311,7 +311,10 @@ window.deleteAllMemories = deleteAllMemories;
     function renderMemories(filterText = '') {
         if (!currentUser || !memoriesList) return;
         if (memories.length === 0) {
-            memoriesList.innerHTML = `
+    const counterSpan = document.getElementById('memoryCount');
+    if (counterSpan) counterSpan.textContent = '(0)';
+
+    memoriesList.innerHTML = `
     <div class="empty-state">
         <div class="empty-state-icon">
             <i class="fas fa-lightbulb"></i>
