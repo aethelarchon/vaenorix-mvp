@@ -436,6 +436,22 @@ if (memory) {
     });
 });
 
+    document.querySelectorAll('.delete-btn-menu').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+
+        const id = this.getAttribute('data-id');
+        const memory = memories.find(m => m.id === id);
+
+        if (memory) {
+            window.openDeleteModal(id, memory.content, memory.type);
+        }
+
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    });
+});
 }
 // ==================== PIN / STAR ====================
 if (memoriesList) {
