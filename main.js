@@ -307,6 +307,7 @@ window.deleteMemory = deleteMemory;
     }
 window.deleteAllMemories = deleteAllMemories;
     window.loadMemories = loadMemories;
+    window.getMemoryCount = () => memories.length;
     function renderMemories(filterText = '') {
         if (!currentUser || !memoriesList) return;
         if (memories.length === 0) {
