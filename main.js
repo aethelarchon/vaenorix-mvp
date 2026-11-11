@@ -2107,7 +2107,7 @@ function openClearAllModal() {
         preview.innerHTML = `
             <div class="delete-modal-preview-type">Warning</div>
             <div class="delete-modal-preview-content" style="color: #ff8888;">
-                ${typeof memories !== 'undefined' ? memories.length : 0} memories will be permanently deleted
+                ${window.getMemoryCount ? window.getMemoryCount() : 0} memories will be permanently deleted
             </div>
         `;
     }
