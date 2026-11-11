@@ -1930,7 +1930,14 @@ async function saveEditModal() {
         // সরাসরি Firebase update
         if (window.currentUser && window.db && window.doc && window.updateDoc) {
             const memoryRef = window.doc(window.db, `users/${window.currentUser.uid}/memories`, editingMemoryId);
-            await window.updateDoc(memoryRef, { content: newContent });
+            const tagRegex = /#([\w\u0980-\u09FF]+)/g;
+const foundTags = newContent.match(tagRegex) || [];
+const tags = [...new Set(foundTags.map(tag => tag.substring(1).toLowerCase()))];
+
+await window.updateDoc(memoryRef, {
+    content: newContent,
+    tags: tags
+});
             
             if (typeof showToast === 'function') showToast('✅ Memory updated!');
             closeEditModal();
