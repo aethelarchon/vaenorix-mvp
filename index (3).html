@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="google-site-verification" content="jd5nrMC2HAkXVGKAH2h5v84_N7FyyKMFAzCLiV4Stxg" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZCNV92D19B"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-ZCNV92D19B');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Vaenorix - Your AI Second Brain</title>
+
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0a0a0f">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/48/brain.png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/48/brain.png">
+
+    <meta property="og:title" content="Vaenorix - Your AI Second Brain">
+    <meta property="og:description" content="Save anything from the internet. Find everything later. Your digital memory, forever organized.">
+    <meta property="og:image" content="https://vaenorix-mvp.vercel.app/og-image.png">
+    <meta property="og:url" content="https://vaenorix-mvp.vercel.app">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Vaenorix">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vaenorix - Your AI Second Brain">
+    <meta name="twitter:description" content="Save anything from the internet. Find everything later. Your digital memory, forever organized.">
+    <meta name="twitter:image" content="https://vaenorix-mvp.vercel.app/og-image.png">
+    <!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Mobile Console Debugger -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
+
+    <!-- Firebase Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+        import { 
+            getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut 
+        } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyB4SxkLnozpPFv7O_jGljLvNXQW-Lbnapc",
+  authDomain: "veanorix.firebaseapp.com",
+  databaseURL: "https://veanorix-default-rtdb.firebaseio.com",
+  projectId: "veanorix",
+  storageBucket: "veanorix.firebasestorage.app",
+  messagingSenderId: "935840989114",
+  appId: "1:935840989114:web:607fc547721a6efdbc6783",
+  measurementId: "G-1QHMX1R51N"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.db = getFirestore(app);
+        window.auth = auth;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.getDocs = getDocs;
+        window.doc = doc;
+        window.deleteDoc = deleteDoc;
+        window.updateDoc = updateDoc;
+        window.setDoc = setDoc;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.onAuthStateChanged = onAuthStateChanged;
+        window.GoogleAuthProvider = GoogleAuthProvider;
+        window.signInWithPopup = signInWithPopup;
+        window.signOut = signOut;
+        window.firebaseReady = true;
+    </script>
+</head>
+    <!-- Bulk Action Bar -->
+<div class="bulk-action-bar" id="bulkActionBar">
+    <div class="bulk-count">
+        <span id="bulkSelectedCount">0</span> selected
+    </div>
+    <div class="bulk-actions">
+        <button class="bulk-btn bulk-pin" id="bulkPinBtn">
+            <i class="fas fa-star"></i>
+        </button>
+        <button class="bulk-btn bulk-download" id="bulkDownloadBtn">
+            <i class="fas fa-download"></i>
+        </button>
+        <button class="bulk-btn bulk-delete" id="bulkDeleteBtn">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+        <button class="bulk-btn bulk-cancel" id="bulkCancelBtn">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+    
+<!-- Floating Action Button -->
+<div class="fab-container">
+    <div class="fab-menu" id="fabMenu">
+        <button class="fab-item" data-folder="all">
+            <span class="fab-label">All Memories</span>
+            <span class="fab-icon"><i class="fas fa-layer-group"></i></span>
+        </button>
+        <button class="fab-item" data-folder="image">
+            <span class="fab-label">Images</span>
+            <span class="fab-icon"><i class="fas fa-images"></i></span>
+        </button>
+        <button class="fab-item" data-folder="note">
+            <span class="fab-label">Notes</span>
+            <span class="fab-icon"><i class="fas fa-sticky-note"></i></span>
+        </button>
+        <button class="fab-item" data-folder="link">
+            <span class="fab-label">Links</span>
+            <span class="fab-icon"><i class="fas fa-link"></i></span>
+        </button>
+    </div>
+    <button class="fab-main" id="fabMain" aria-label="Open folders">
+        <i class="fas fa-layer-group"></i>
+    </button>
+</div>
+
+<!-- Folder View Panel (Full Screen) -->
+<div class="folder-view" id="folderView">
+    <div class="folder-header">
+        <button class="folder-close" id="folderClose">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2 class="folder-title" id="folderTitle">All Memories</h2>
+        <span class="folder-count" id="folderCount">(0)</span>
+    </div>
+    <div class="folder-content" id="folderContent">
+    </div>
+</div>
+
+<!-- Detail View Panel -->
+<div class="detail-view" id="detailView">
+    <div class="detail-header">
+        <button class="detail-close" id="detailClose">
+            <i class="fas fa-times"></i>
+        </button>
+        <span class="detail-type" id="detailType">Note</span>
+        <div class="detail-actions" id="detailActions"></div>
+    </div>
+    <div class="detail-content" id="detailContent">
+    </div>
+            </div>
+    <!-- Edit Modal -->
+<div class="edit-modal" id="editModal">
+    <div class="edit-modal-content">
+        <div class="edit-modal-header">
+            <h3><i class="fas fa-edit"></i> Edit Memory</h3>
+            <button class="edit-modal-close" id="editModalClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="edit-modal-body">
+            <textarea id="editModalInput" class="edit-modal-input" placeholder="Write your memory..." rows="6"></textarea>
+        </div>
+        <div class="edit-modal-footer">
+            <button class="edit-modal-cancel" id="editModalCancel">Cancel</button>
+            <button class="edit-modal-save" id="editModalSave">
+                <i class="fas fa-check"></i> Save Changes
+            </button>
+        </div>
+    </div>
+    </div>
+    <!-- Delete Confirmation Modal -->
+<div class="delete-modal" id="deleteModal">
+    <div class="delete-modal-content">
+        <div class="delete-modal-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3 class="delete-modal-title">Delete this memory?</h3>
+        <p class="delete-modal-text">
+            This action cannot be undone. This memory will be permanently removed from your account.
+        </p>
+        <div class="delete-modal-preview" id="deleteModalPreview"></div>
+        <div class="delete-modal-footer">
+            <button class="delete-modal-cancel" id="deleteModalCancel">Cancel</button>
+            <button class="delete-modal-confirm" id="deleteModalConfirm">
+                <i class="fas fa-trash-alt"></i> Delete
+            </button>
+        </div>
+    </div>
+</div>
+    
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <a class="logo" href="/" aria-label="Vaenorix home">
+                <i class="fas fa-brain logo-icon" aria-hidden="true"></i>
+                <span class="logo-text">Vaenorix</span>
+            </a>
+            <div class="nav-actions">
+            <button id="installBtn" class="install-btn" type="button" style="display:none;">
+    <i class="fas fa-download"></i> Install App
+            </button>
+    <button id="loginBtn" class="login-btn" type="button">Sign in with Google</button>
+    <div class="profile-container" id="profileContainer" style="display:none;">
+        <img id="userAvatar" class="user-avatar" src="" alt="Profile">
+        <div class="profile-menu" id="profileMenu">
+            <div class="profile-menu-header">
+                <img id="menuAvatar" class="profile-menu-avatar" src="" alt="Profile">
+                <div class="profile-menu-info">
+                    <div class="profile-menu-name" id="menuName">User</div>
+                    <div class="profile-menu-email" id="menuEmail">user@email.com</div>
+                </div>
+            </div>
+            <div class="profile-menu-divider"></div>
+            <button class="profile-menu-item" id="menuSettings">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+            <button class="profile-menu-item" id="menuExport">
+                <i class="fas fa-download"></i> Export Data
+            </button>
+            <button class="profile-menu-item danger" id="menuSignOut">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
+        </div>
+    </div>
+            </div>
+        </nav>
+<!-- Search Bar -->
+<div class="top-search-bar" id="topSearchBar" style="display:none;">
+    <div class="top-search-wrapper">
+        <i class="fas fa-search top-search-icon"></i>
+        <input type="text" id="topSearchInput" class="top-search-input" placeholder="Search your memories..." autocomplete="off">
+        <button class="top-search-clear" id="topSearchClear" style="display:none;">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="search-suggestions" id="searchSuggestions"></div>
+</div>
+        
+        <section class="hero">
+            <h1 class="hero-title">
+                Your <span class="glow-text">AI Second Brain</span>
+            </h1>
+            <p class="hero-desc">
+                Save anything from the internet. Find everything later.<br>
+                Your digital memory, forever organized.
+            </p>
+            <button class="btn-primary" id="getStartedBtn">
+                <i class="fas fa-rocket"></i> Start Saving Memories
+            </button>
+            <a href="/waitlist.html" class="btn-waitlist"><i class="fas fa-envelope"></i> Join Waitlist for Early Access</a>
+        </section>
+
+        <section class="save-section">
+            <h2 class="section-title"><i class="fas fa-database"></i> Save Memory</h2>
+            <div class="input-group">
+                <input type="text" id="noteInput" placeholder="Write a note... e.g., 'Startup idea: AI bookmark manager'">
+                <input type="text" id="linkInput" placeholder="Or paste a link... e.g., https://example.com">
+                <button class="btn-save" id="saveBtn">
+                    <i class="fas fa-save"></i> Save to Second Brain
+                </button>
+            </div>
+
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Click or drag & drop screenshot</p>
+                    <input type="file" id="screenshotInput" accept="image/*" style="display:none;">
+                </div>
+                <button class="btn-upload" id="uploadBtn">
+                    <i class="fas fa-camera"></i> Upload Screenshot
+                </button>
+            </div>
+        </section>
+
+        <section class="search-section">
+            <h2 class="section-title"><i class="fas fa-microchip"></i> AI Memory Recall</h2>
+            <div class="search-box">
+                <input type="text" id="aiSearchInput" placeholder='Example: "Show me links from last week" or "Find my note from yesterday"'>
+                <button class="btn-search" id="aiSearchBtn">
+                    <i class="fas fa-brain"></i> Ask AI
+                </button>
+            </div>
+            <div id="aiSearchResult" class="ai-result"></div>
+        </section>
+
+        <section class="memories-section">
+            <h2 class="section-title"><i class="fas fa-folder-open"></i> Saved Memories<span id="memoryCount" class="memory-count">(0)</span></h2>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="note">Notes</button>
+                <button class="filter-btn" data-filter="link">Links</button>
+                <button class="filter-btn" data-filter="image">Images</button>
+                <button id="clearAllBtn" class="clear-all-btn"><i class="fas fa-trash-alt"></i> Clear All</button>
+                <button id="exportBtn" class="export-btn"><i class="fas fa-download"></i> Export Data</button>
+                <button id="selectBtn" class="select-btn">
+    <i class="fas fa-check-square"></i> Select
+                </button>
+                <div class="sort-wrapper">
+    <button id="sortBtn" class="sort-btn">
+        <i class="fas fa-sort"></i> Sort
+    </button>
+    <div class="sort-menu" id="sortMenu">
+        <button class="sort-option active" data-sort="newest">
+            <i class="fas fa-clock"></i> Newest First
+        </button>
+        <button class="sort-option" data-sort="oldest">
+            <i class="fas fa-history"></i> Oldest First
+        </button>
+        <button class="sort-option" data-sort="alpha">
+            <i class="fas fa-font"></i> A to Z
+        </button>
+        <button class="sort-option" data-sort="pinned">
+            <i class="fas fa-star"></i> Pinned First
+        </button>
+    </div>
+        </div>
+            </div>
+            <div id="memoriesList" class="memories-list">
+            </div>
+        </section>
+    </div>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-logo">
+            <i class="fas fa-brain"></i> Vaenorix
+        </div>
+        <p class="footer-tagline">Save anything. Find everything later.</p>
+        
+        <div class="footer-links">
+            <a href="mailto:aethelarchon@gmail.com" class="footer-link">
+                <i class="fas fa-envelope"></i>
+                <span>aethelarchon@gmail.com</span>
+            </a>
+            <a href="https://github.com/aethelarchon" target="_blank" class="footer-link">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+            </a>
+        </div>
+        
+        <div class="footer-divider"></div>
+        <p class="footer-copyright">© 2026 Vaenorix — Your AI Second Brain</p>
+    </div>
+</footer>
+        <!-- KILL SWITCH: Force unregister old service workers -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                    console.log('✅ Old SW Killed');
+                } 
+            });
+        }
+    </script>
+    <!-- Load new app.js with cache buster -->
+    <script src="script.js"></script>
+</body>
+</html>
+        
