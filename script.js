@@ -576,14 +576,12 @@ if (exportBtn) {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            showToast('✅ Exported ' + memories.length + ' memories!');
-        } catch (error) {
+                    } catch (error) {
             showToast('Export failed: ' + error.message, true);
-         console.error(error);
-      }
-   };
-    
-}
+            console.error(error);
+        } // <--- এই নতুন ব্র্যাকেটটি যোগ করুন
+    }; // <--- এটি আগের `};` এর জায়গায় বসান
+} // <--- এটি আগের `}` থাকবে
 
 function renderMemoriesWithData(data) {
     if (!memoriesList) return;
