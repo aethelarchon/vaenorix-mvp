@@ -1867,8 +1867,8 @@ async function saveEditModal() {
         }
         
         // সরাসরি Firebase update
-        if (currentUser && window.db && window.doc && window.updateDoc) {
-            const memoryRef = window.doc(window.db, `users/${currentUser.uid}/memories`, editingMemoryId);
+        if (window.currentUser && window.db && window.doc && window.updateDoc) {
+            const memoryRef = window.doc(window.db, `users/${window.currentUser.uid}/memories`, editingMemoryId);
             await window.updateDoc(memoryRef, { content: newContent });
             
             if (typeof showToast === 'function') showToast('✅ Memory updated!');
