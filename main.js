@@ -1557,11 +1557,44 @@ if (bulkDeleteBtn) {
 async function addMemory() {
     if (!currentUser) { showToast('Please sign in first!', true); login(); return; }
     const note = noteInput ? noteInput.value.trim() : '';
-    const link = linkInput ? linkInput.value.trim() : '';
-    if (!note && !link) { showToast('Please write a note or paste a link', true); return; }
-    let type = '', content = '';
-    if (note) { type = 'note'; content = note; if (noteInput) noteInput.value = ''; } 
-    else if (link) { type = 'link'; content = link; if (linkInput) linkInput.value = ''; if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<span class="spinner"></span> Saving...'; } }
+const link = linkInput ? linkInput.value.trim() : '';
+
+if (!note && !link) {
+    showToast('Please write a note or paste a link', true);
+    return;
+}
+
+let type = '';
+let content = '';
+
+if (note && !link) {
+    type = 'note';
+    content = note;
+    if (noteInput) noteInput.value = '';
+} else if (link && !note) {
+    type = 'link';
+    content = link;
+    if (linkInput) linkInput.value = '';
+} else if (note && link) {
+    // note + link দুটোই save করবো
+    type = 'note';
+    content = note;
+    if (noteInput) noteInput.value = '';
+
+    // link আলাদা করে save করবো
+    const memoriesRef = window.collection(window.db, `users/${currentUser.uid}/memories`);
+    const tagRegex = /#([\w\u0980-\u09FF]+)/g;
+    const foundTags = link.match(tagRegex) || [];
+    const tags = [...new Set(foundTags.map(tag => tag.substring(1).toLowerCase()))];
+
+    await window.addDoc(memoriesRef, {
+        type: 'link',
+        content: link,
+        tags: tags,
+        timestamp: new Date().toISOString()
+    });
+        }
+    
     try {
         const tagRegex = /#([\w\u0980-\u09FF]+)/g;
         const foundTags = content.match(tagRegex) || [];
