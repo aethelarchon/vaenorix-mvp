@@ -657,7 +657,7 @@ function performTopSearch(query) {
         return;
     }
     
-    topSearchClear.style.display = 'flex';
+    if (topSearchClear) topSearchClear.style.display = 'flex';
     
     // memories লিস্ট থেকে টেক্সট সার্চ
     const results = memories.filter(m => 
