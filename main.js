@@ -437,37 +437,44 @@ if (memory) {
 
 }
 // ==================== PIN / STAR ====================
-document.querySelectorAll('.pin-btn').forEach(btn => {
-    btn.addEventListener('click', async function(e) {
-        e.stopPropagation();
-        const id = this.getAttribute('data-id');
-        const memory = memories.find(m => m.id === id);
-        if (!memory || !currentUser) return;
-        
-        const newPinnedState = !memory.pinned;
-        
-        try {
-            const memoryRef = window.doc(window.db, `users/${currentUser.uid}/memories`, id);
-            await window.updateDoc(memoryRef, { pinned: newPinnedState });
-            
-            memory.pinned = newPinnedState;
-            
-            // অ্যানিমেশন
-            if (newPinnedState) {
-                this.classList.add('pinned');
-                showToast('⭐ Pinned to top');
-            } else {
-                this.classList.remove('pinned');
-                showToast('Unpinned');
-            }
-            
-            // পুনরায় সর্ট করে রেন্ডার
-            sortAndRenderMemories();
-        } catch (error) {
-            console.error('Pin error:', error);
-            showToast('Failed to pin', true);
+memoriesList.addEventListener('click', async function(e) {
+    const btn = e.target.closest('.pin-btn');
+    if (!btn) return;
+
+    e.stopPropagation();
+
+    const id = btn.getAttribute('data-id');
+    const memory = memories.find(m => m.id === id);
+
+    if (!memory || !currentUser) return;
+
+    const newPinnedState = !memory.pinned;
+
+    try {
+        const memoryRef = window.doc(
+            window.db,
+            `users/${currentUser.uid}/memories`,
+            id
+        );
+
+        await window.updateDoc(memoryRef, {
+            pinned: newPinnedState
+        });
+
+        memory.pinned = newPinnedState;
+
+        if (newPinnedState) {
+            showToast('⭐ Pinned to top');
+        } else {
+            showToast('Unpinned');
         }
-    });
+
+        sortAndRenderMemories();
+
+    } catch (error) {
+        console.error('Pin error:', error);
+        showToast('Failed to pin', true);
+    }
 });
 
 // Pinned গুলো আগে দেখানোর জন্য সর্টিং
