@@ -576,12 +576,13 @@ if (exportBtn) {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-                    } catch (error) {
+        } catch (error) {
             showToast('Export failed: ' + error.message, true);
             console.error(error);
-        } // <--- এই নতুন ব্র্যাকেটটি যোগ করুন
-    }; // <--- এটি আগের `};` এর জায়গায় বসান
-} // <--- এটি আগের `}` থাকবে
+        }
+    }; 
+} // <-- শুধু if (exportBtn) এর ব্র্যাকেটটি থাকবে, এর নিচের অতিরিক্ত '}' টি থাকবে না।
+        
 
 function renderMemoriesWithData(data) {
     if (!memoriesList) return;
