@@ -2015,6 +2015,9 @@ async function confirmDelete() {
     if (!deletingMemoryId && !isClearAllMode) return;
     
     const confirmBtn = document.getElementById('deleteModalConfirm');
+
+    if (!confirmBtn) return;
+
     confirmBtn.disabled = true;
     confirmBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Deleting...';
     
