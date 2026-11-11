@@ -435,7 +435,7 @@ if (memory) {
     });
 });
 
-
+}
 // ==================== PIN / STAR ====================
 document.querySelectorAll('.pin-btn').forEach(btn => {
     btn.addEventListener('click', async function(e) {
