@@ -705,7 +705,7 @@ if (topSearchInput) {
 if (topSearchClear) {
     topSearchClear.addEventListener('click', function() {
         topSearchInput.value = '';
-        topSearchClear.style.display = 'none';
+        if (topSearchClear) topSearchClear.style.display = 'none';
         renderMemories();
     });
 }
