@@ -1828,7 +1828,7 @@ window.shareMemoryPublic = async function(memory) {
         
         // setDoc/updateDoc কাজ করবে না, তাই addDoc দিয়ে করতে হবে
         // তবে addDoc এর জন্য collection লাগে
-        const { setDoc } = await import('https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js');
+
         
         await window.setDoc(publicRef, {
             type: memory.type,
