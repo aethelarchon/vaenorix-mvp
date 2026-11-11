@@ -580,7 +580,6 @@ if (exportBtn) {
         } catch (error) {
             showToast('Export failed: ' + error.message, true);
             console.error(error);
-        }
     };
 }
 
