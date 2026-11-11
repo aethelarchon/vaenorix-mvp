@@ -438,7 +438,8 @@ if (memory) {
 
 }
 // ==================== PIN / STAR ====================
-memoriesList.addEventListener('click', async function(e) {
+if (memoriesList) {
+    memoriesList.addEventListener('click', async function(e) {
     const btn = e.target.closest('.pin-btn');
     if (!btn) return;
 
@@ -476,7 +477,8 @@ memoriesList.addEventListener('click', async function(e) {
         console.error('Pin error:', error);
         showToast('Failed to pin', true);
     }
-});
+   });
+}
 
 // Pinned গুলো আগে দেখানোর জন্য সর্টিং
 function sortAndRenderMemories() {
