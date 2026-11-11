@@ -494,7 +494,8 @@ function sortAndRenderMemories() {
 }
     
  // ==================== TAG FILTER ====================
-memoriesList.addEventListener('click', function(e) {
+if (memoriesList) {
+    memoriesList.addEventListener('click', function(e) {
     const tagEl = e.target.closest('.memory-tag');
     if (!tagEl) return;
 
